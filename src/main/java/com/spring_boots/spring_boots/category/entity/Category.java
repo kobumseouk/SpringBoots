@@ -31,7 +31,7 @@ public class Category extends BaseTimeEntity {
   @Column(name = "category_content")
   private String categoryContent;
 
-  @Column(name = "display_order")
+  @Column(name = "display_order", nullable = false)
   private int displayOrder;
 
   @Column(name = "image_url")
