@@ -3,8 +3,8 @@ INSERT INTO users (user_id, username, user_real_id, email, password, is_deleted,
 VALUES (1, 'test_user', 'test_real_id', 'test_user@example.com', 'password123', 0, NULL, 'USER', 'GOOGLE', NOW(), NOW());
 
 -- Category 테이블에 테스트 데이터 삽입
-INSERT INTO category (category_id, category_name, category_content, display_order, created_at, updated_at)
-VALUES (1, 'Shoes', 'All types of shoes', 1, NOW(), NOW());
+INSERT INTO category (category_id, category_name, category_thema, category_content, display_order, created_at, updated_at)
+VALUES (1, 'Shoes', 'Footwear', 'All types of shoes', 1, NOW(), NOW());
 
 -- Item 테이블에 테스트 데이터 삽입
 INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
