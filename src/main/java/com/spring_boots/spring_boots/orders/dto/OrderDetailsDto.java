@@ -19,6 +19,7 @@ public class OrderDetailsDto {
     private String recipientName;
     private String recipientContact;
     private int deliveryFee;
+    private int quantity;
     private List<OrderItemDetailsDto> items;
 
     @Data

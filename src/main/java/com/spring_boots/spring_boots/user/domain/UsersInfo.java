@@ -1,6 +1,6 @@
 package com.spring_boots.spring_boots.user.domain;
 
-import com.spring_boots.spring_boots.common.Timestamp;
+import com.spring_boots.spring_boots.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class UsersInfo extends Timestamp {
+public class UsersInfo extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
