@@ -1,8 +1,7 @@
 package com.spring_boots.spring_boots.category.dto;
 
-// import com.spring_boots.spring_boots.category.dto.*;
+
 import com.spring_boots.spring_boots.category.entity.Category;
-import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
