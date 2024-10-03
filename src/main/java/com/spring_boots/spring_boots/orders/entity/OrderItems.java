@@ -33,9 +33,6 @@ public class OrderItems extends BaseTimeEntity {
     @Column(name = "orderitems_quantity", nullable = false)
     private Integer orderItemsQuantity;
 
-    @Column(name = "order_status", nullable = false)
-    private String orderStatus;
-
     @Column(name = "shipping_address", nullable = false)
     private String shippingAddress;
 
@@ -54,6 +51,4 @@ public class OrderItems extends BaseTimeEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_canceled", nullable = false)
-    private Boolean isCanceled;
 }

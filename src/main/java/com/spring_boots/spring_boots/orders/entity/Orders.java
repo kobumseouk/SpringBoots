@@ -37,6 +37,13 @@ public class Orders extends BaseTimeEntity {
     @Column(name = "delivery_fee")
     private Integer deliveryFee;
 
+    @Column(name = "order_status", nullable = false)
+    private String orderStatus;
+
+    @Column(name = "is_canceled", nullable = false)
+    private Boolean isCanceled;
+
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
