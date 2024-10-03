@@ -1,4 +1,4 @@
-package com.spring_boots.spring_boots.category.config.error;
+package com.spring_boots.spring_boots.common.config.error;
 
 // 401 Unauthorized Error
 public class UnauthorizedException extends RuntimeException {

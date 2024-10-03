@@ -1,19 +1,20 @@
 package com.spring_boots.spring_boots.category.entity;
 
 import com.spring_boots.spring_boots.common.BaseTimeEntity;
+import com.spring_boots.spring_boots.item.entity.Item;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
 
 
 @Entity
 @Table(name = "category")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class Category extends BaseTimeEntity {
 
   @Id
@@ -21,15 +22,14 @@ public class Category extends BaseTimeEntity {
   @Column(name = "category_id")
   private Long id;
 
+  @Column(name = "category_thema", nullable = false)
+  private String categoryThema;
+
   @Column(name = "category_name", nullable = false)
   private String categoryName;
 
   @Column(name = "category_content")
   private String categoryContent;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "parent_category_id")
-  private Category parentCategory;
 
   @Column(name = "display_order")
   private int displayOrder;
@@ -37,10 +37,17 @@ public class Category extends BaseTimeEntity {
   @Column(name = "image_url")
   private String imageUrl;
 
+  @OneToMany(mappedBy = "category")
+  private List<Item> items;
+
+  @OneToMany(mappedBy = "category")
+  private List<Event> events;
+
+  // createdAt과 updatedAt은 BaseTimeEntity  상속
+
 
   // 1. 생성자를 통한 초기화
   // 2. 빌더 패턴 사용
   // 3. 비즈니스 메서드 구현
-
 
 }
