@@ -28,7 +28,7 @@ public class Event extends BaseTimeEntity {
   @Column(name = "event_title", nullable = false)
   private String eventTitle;
 
-  @Column(name = "event_content")
+  @Column(name = "event_content", nullable = false)
   private String eventContent;
 
   @Column(name = "thumbnail_image_url")
