@@ -27,6 +27,8 @@ public class Category extends BaseTimeEntity {
 
   @Column(name = "category_name", nullable = false)
   private String categoryName;
+  @Column(name = "category_name")
+  private String name;
 
   @Column(name = "category_content")
   private String categoryContent;
@@ -49,5 +51,6 @@ public class Category extends BaseTimeEntity {
   // 1. 생성자를 통한 초기화
   // 2. 빌더 패턴 사용
   // 3. 비즈니스 메서드 구현
+
 
 }
