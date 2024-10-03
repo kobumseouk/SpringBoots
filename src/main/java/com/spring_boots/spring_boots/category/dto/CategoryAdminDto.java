@@ -5,14 +5,16 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+
 @Getter
 @Setter
-public class CategoryAdminItem {
+public class CategoryAdminDto {
   private Long id;
-  private String name;
-  private Long parentId;
-  private String parentName;  // 카테고리 테마 (대분류 카테고리)
-  private Integer displayOrder;
+  private String categoryName;
+  private String categoryThema;
+  private int displayOrder;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 }
+
+

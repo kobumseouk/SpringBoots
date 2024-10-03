@@ -1,6 +1,9 @@
-package com.spring_boots.spring_boots.category.config;
+package com.spring_boots.spring_boots.common.config;
 
-import com.spring_boots.spring_boots.category.config.error.*;
+import com.spring_boots.spring_boots.common.config.error.BadRequestException;
+import com.spring_boots.spring_boots.common.config.error.ErrorResponseDto;
+import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
+import com.spring_boots.spring_boots.common.config.error.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -8,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 
 @ControllerAdvice
-public class CategoryExceptionHandler {
+public class GlobalExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(ResourceNotFoundException ex) {

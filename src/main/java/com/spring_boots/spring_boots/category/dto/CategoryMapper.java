@@ -1,31 +1,33 @@
 package com.spring_boots.spring_boots.category.dto;
 
+// import com.spring_boots.spring_boots.category.dto.*;
 import com.spring_boots.spring_boots.category.entity.Category;
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.springframework.stereotype.Component;
 
-import java.util.List;
 
-/*
-public interface CategoryMapper {
+@Mapper(componentModel = "spring")
+public abstract class CategoryMapper {
 
-  CategoryDetailDto categoryToCategoryDetailDto(Category category);
+  // Category -> CategoryResponseDto
+  public abstract CategoryResponseDto categoryToCategoryResponseDto(Category category);
 
-  void updateCategoryFromDto(CategoryRequestDto requestDto, @MappingTarget Category category);
+  // Category -> CategoryDto
+  public abstract CategoryDto categoryToCategoryDto(Category category);
 
-  CategoryAdminItem categoryToCategoryAdminItem(Category category);
+  // Category -> CategoryAdminDto
+  public abstract CategoryAdminDto categoryToCategoryAdminDto(Category category);
 
-  @Mapping(target = "totalCount", expression = "java(categories.size())")
-  @Mapping(target = "currentPage", constant = "0")
-  @Mapping(target = "pageSize", expression = "java(categories.size())")
-  CategoryAdminListDto toCategoryAdminListDtoWithoutPagination(List<Category> categories);
+  // CategoryRequestDto -> Category
+  @Mapping(target = "id", ignore = true)
+  public abstract Category categoryRequestDtoToCategory(CategoryRequestDto requestDto);
 
-  @Mapping(target = "categories", source = "categories")
-  @Mapping(target = "totalCount", source = "totalCount")
-  @Mapping(target = "currentPage", source = "page")
-  @Mapping(target = "pageSize", source = "size")
-  CategoryAdminListDto toCategoryAdminListDto(List<Category> categories, long totalCount, int page, int size);
+  // CategoryRequestDto -> Category (업데이트)
+  @Mapping(target = "id", ignore = true)
+  public abstract void updateCategoryFromDto(CategoryRequestDto dto, @MappingTarget Category category);
 
-}*/
+}
+
+
