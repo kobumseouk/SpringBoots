@@ -48,6 +48,12 @@ dependencies {
     implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
     implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
 
+    // @Length 어노테이션 의존성 추가
+    implementation 'commons-validator:commons-validator:1.6'
+    // Hibernate Validator 의존성 (필요한 경우)
+    implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+
 }
 
 tasks.named('test') {
