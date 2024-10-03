@@ -1,27 +1,25 @@
-package com.spring_boots.spring_boots.category.entity;
+package com.spring_boots.spring_boots.common;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-
 @Getter
-@MappedSuperclass // Super Class로 지정.
+@Setter
+@ToString
+@MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity{
+public class BaseTimeEntity {
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-  @CreatedDate
-  private LocalDateTime createdAt;
-
-  @LastModifiedDate
-  private LocalDateTime updatedAt;
-
-
-
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 }
