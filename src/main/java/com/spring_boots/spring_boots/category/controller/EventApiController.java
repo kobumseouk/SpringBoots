@@ -5,13 +5,16 @@ import com.spring_boots.spring_boots.category.dto.event.EventDto;
 import com.spring_boots.spring_boots.category.dto.event.EventRequestDto;
 import com.spring_boots.spring_boots.category.service.EventService;
 import com.spring_boots.spring_boots.common.config.error.BadRequestException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -22,7 +25,7 @@ public class EventApiController {
 
   // 새로운 이벤트를 생성하는 엔드포인트
   @PostMapping("/admin/events")
-  public ResponseEntity<EventDetailDto> createEvent(@RequestBody EventRequestDto eventRequestDto) {
+  public ResponseEntity<EventDetailDto> createEvent(@Valid @RequestBody EventRequestDto eventRequestDto) {
     if (eventRequestDto.getCategoryId() == null) {
       throw new BadRequestException("유효하지_않은_요청", "카테고리 ID는 필수 항목입니다.");
     }
@@ -46,7 +49,7 @@ public class EventApiController {
 
   // 특정 이벤트를 수정하는 엔드포인트
   @PutMapping("/admin/events/{event_id}")
-  public ResponseEntity<EventDetailDto> updateEvent(@PathVariable("event_id") Long eventId, @RequestBody EventRequestDto eventUpdateDto) {
+  public ResponseEntity<EventDetailDto> updateEvent(@PathVariable("event_id") Long eventId, @Valid @RequestBody EventRequestDto eventUpdateDto) {
     EventDetailDto updatedEvent = eventService.updateEvent(eventId, eventUpdateDto);
     return ResponseEntity.ok(updatedEvent);
   }
