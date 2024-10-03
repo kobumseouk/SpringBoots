@@ -17,6 +17,15 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/login").setViewName("forward:/login/login.html");
         //forward 는 서버 내에서 요청을 리다이렉트하지 않고 다른 경로로 넘겨주는 방식, 내부적으로 처리됨.
         registry.addViewController("/order-summary").setViewName("forward:/order-summary/order-summary.html");
-        registry.addViewController("/order-details").setViewName("forward:/order-details/order-details.html");
+
+        /*// 카테고리 목록 페이지
+        registry.addViewController("/categories").setViewName("forward:/category/list.html");
+        // 카테고리 상세 페이지
+        registry.addViewController("/category/**").setViewName("forward:/category/detail.html");
+        // 테마별 카테고리 목록
+        registry.addViewController("/categories/themes/**").setViewName("forward:/category/theme-list.html");
+        // 관리자 카테고리 관리 페이지
+        registry.addViewController("/admin/categories").setViewName("forward:/admin/category-management.html");*/
+
     }
 }

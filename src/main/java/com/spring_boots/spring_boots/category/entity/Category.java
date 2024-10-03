@@ -50,4 +50,5 @@ public class Category extends BaseTimeEntity {
   // 2. 빌더 패턴 사용
   // 3. 비즈니스 메서드 구현
 
+
 }
