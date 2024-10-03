@@ -27,8 +27,6 @@ public class Category extends BaseTimeEntity {
 
   @Column(name = "category_name", nullable = false)
   private String categoryName;
-  @Column(name = "category_name")
-  private String name;
 
   @Column(name = "category_content")
   private String categoryContent;
