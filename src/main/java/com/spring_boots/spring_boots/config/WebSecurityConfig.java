@@ -46,8 +46,10 @@ public class WebSecurityConfig {
                 .headers(headers -> headers.frameOptions().disable())  // H2 콘솔에서 iframe 사용을 허용
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(toH2Console()).permitAll()  // H2 콘솔에 대한 요청 허용
-                        .anyRequest().permitAll())  // 모든 요청에 대해 요청 허가
-//                        .anyRequest().authenticated()) //모든 요청에 대해 인증
+                        .requestMatchers(
+                                "/api/**","/login/**"
+                        ).permitAll()  // 모든 요청에 대해 요청 허가
+                        .anyRequest().authenticated()) //모든 요청에 대해 인증
 
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -71,7 +73,7 @@ public class WebSecurityConfig {
 //                .oauth2Login(oauth2Login->
 //                        oauth2Login
 //                                .defaultSuccessUrl("로그인 성공 페이지",true))
-
+                //Todo jwtFilter 필터를 추가하고,
                 .addFilterBefore(jwtFilter,
                         UsernamePasswordAuthenticationFilter.class) //JWT 필터추가
                 .build();
