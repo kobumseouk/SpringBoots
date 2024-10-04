@@ -37,8 +37,6 @@ public class Category extends BaseTimeEntity {
   @Column(name = "image_url")
   private String imageUrl;
 
-//  @OneToMany(mappedBy = "category")
-//  private List<Item> items;
 
   @OneToMany(mappedBy = "category")
   private List<Event> events;
