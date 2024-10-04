@@ -17,24 +17,37 @@ function renderCartItems() {
         itemCard.classList.add('card', 'cart-item');
 
         itemCard.innerHTML = `
-            <div class="card-content">
-                <div class="media">
-                    <div class="media-left">
-                        <input type="checkbox" class="item-checkbox" data-item-id="${item.item_id}" data-item-size="${item.item_size}">
-                    </div>
-                    <div class="media-left">
-                        <figure class="image is-64x64">
-                            <img src="${item.image_url}" alt="${item.item_name}">
-                        </figure>
-                    </div>
-                    <div class="media-content">
-                        <p class="title is-5">${item.item_name}</p>
-                        <p class="subtitle is-6">사이즈(UK): ${item.item_size}</p>
-                        <p class="subtitle is-6">수량: ${item.item_quantity}</p>
-                        <p id="total-price" class="has-text-right">$${item.item_price}</p>
-                    </div>
-                </div>
+    <div class="cart-item">
+    <div class="card-content">
+        <!-- 위쪽 DIV: 체크박스 및 버튼 -->
+        <div class="notification is-light" style="display: flex; justify-content: space-between; align-items: center;">
+            <!-- 왼쪽: 체크박스 -->
+            <input type="checkbox" class="item-checkbox" data-item-id="${item.item_id}" data-item-size="${item.item_size}">
+            
+            <!-- 오른쪽: 버튼 그룹 -->
+            <div class="buttons" style="margin-left: auto;">
+                <button class="button is-small">옵션/수량변경</button>
+                <button class="button is-small is-danger" onclick="deleteItemFromCart(${item.item_id}, '${item.item_size}')">삭제</button>
             </div>
+        </div>
+
+        <!-- 아래쪽 DIV: 상품 정보 -->
+        <div class="media">
+            <div class="media-left">
+                <figure class="image is-64x64">
+                    <img src="${item.image_url}" alt="${item.item_name}">
+                </figure>
+            </div>
+            <div class="media-content">
+                <p class="title is-5">${item.item_name}</p>
+                <p class="subtitle is-6">Size: ${item.item_size} | Color: ${item.item_color}</p>
+                <p class="subsubtitle is-6">수량: ${item.item_quantity}</p>
+                 <p class="has-text-right">$${item.item_price}</p>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
         `;
 
         cartContainer.appendChild(itemCard); // 생성한 카드 HTML을 컨테이너에 추가
