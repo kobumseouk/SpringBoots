@@ -26,9 +26,6 @@ public class EventApiController {
   // 새로운 이벤트를 생성하는 엔드포인트
   @PostMapping("/admin/events")
   public ResponseEntity<EventDetailDto> createEvent(@Valid @RequestBody EventRequestDto eventRequestDto) {
-    if (eventRequestDto.getCategoryId() == null) {
-      throw new BadRequestException("유효하지_않은_요청", "카테고리 ID는 필수 항목입니다.");
-    }
     EventDetailDto createdEvent = eventService.createEvent(eventRequestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
   }
