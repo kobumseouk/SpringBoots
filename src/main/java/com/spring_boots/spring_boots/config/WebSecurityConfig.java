@@ -49,7 +49,7 @@ public class WebSecurityConfig {
                         .requestMatchers(
                                 "/api/**","/login/**"
                         ).permitAll()  // 모든 요청에 대해 요청 허가
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
 
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
