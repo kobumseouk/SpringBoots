@@ -25,23 +25,26 @@ public class ItemRestService {
         this.itemRepository = itemRepository;
     }
 
-
+    // Item 전체 보기
     public List<ResponseItemDto> getAllItems() {
         List<Item> items = itemRepository.findAll();
         return items.stream().map(itemMapper::toResponseDto).collect(Collectors.toList());
     }
 
+    // Item 단일 보기
     public ResponseItemDto getItem(Long id) throws Exception {
         Item item = itemRepository.findById(id).orElseThrow(() -> new Exception("Item not found"));
         return itemMapper.toResponseDto(item);
     }
 
+    // Item 만들기
     public ResponseItemDto createItem(CreateItemDto itemDto) {
         Item created = itemMapper.toEntity(itemDto);
         Item result = itemRepository.save(created);
         return itemMapper.toResponseDto(result);
     }
 
+    // Item 수정하기
     public ResponseItemDto updateItem(Long id, UpdateItemDto itemDto) throws Exception {
         Item findItem = itemRepository.findById(id).orElseThrow(() -> new Exception("Item not found"));
         //Item Name 수정
@@ -73,6 +76,7 @@ public class ItemRestService {
         return itemMapper.toResponseDto(updated);
     }
 
+    // Item 삭제하기
     public void deleteItem(Long id) throws Exception {
         Item item = itemRepository.findById(id).orElseThrow(() -> new Exception("Item not found"));
         itemRepository.delete(item);
