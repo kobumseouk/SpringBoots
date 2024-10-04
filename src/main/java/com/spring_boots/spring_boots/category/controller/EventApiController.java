@@ -7,6 +7,10 @@ import com.spring_boots.spring_boots.category.service.EventService;
 import com.spring_boots.spring_boots.common.config.error.BadRequestException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,7 +21,7 @@ import java.util.List;
 
 @Validated
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/events")
 @RequiredArgsConstructor
 public class EventApiController {
 
@@ -25,35 +29,40 @@ public class EventApiController {
 
 
   // 새로운 이벤트를 생성하는 메서드
-  @PostMapping("/admin/events")
+  @PostMapping
   public ResponseEntity<EventDetailDto> createEvent(@Valid @RequestBody EventRequestDto eventRequestDto) {
     EventDetailDto createdEvent = eventService.createEvent(eventRequestDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
   }
 
-  // 모든 활성화된 이벤트를 조회하는 메서드
-  @GetMapping("/events")
-  public ResponseEntity<List<EventDto>> getAllEvents() {
-    List<EventDto> events = eventService.getAllActiveEvents();
+  // 모든 활성화된 이벤트를 조회하는 메서드 (페이지네이션 적용)
+  @GetMapping
+  public ResponseEntity<Page<EventDto>> getActiveEvents(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size) {
+
+    Pageable pageable = PageRequest.of(page, size, Sort.by("startDate").descending());
+    Page<EventDto> events = eventService.getActiveEvents(pageable);
+
     return ResponseEntity.ok(events);
   }
 
   // 특정 이벤트의 상세 정보를 조회하는 메서드
-  @GetMapping("/events/{event_id}")
+  @GetMapping("/{event_id}")
   public ResponseEntity<EventDetailDto> getEventDetail(@PathVariable("event_id") Long eventId) {
     EventDetailDto eventDetail = eventService.getEventDetail(eventId);
     return ResponseEntity.ok(eventDetail);
   }
 
   // 특정 이벤트를 수정하는 메서드
-  @PutMapping("/admin/events/{event_id}")
+  @PutMapping("/{event_id}")
   public ResponseEntity<EventDetailDto> updateEvent(@PathVariable("event_id") Long eventId, @Valid @RequestBody EventRequestDto eventUpdateDto) {
     EventDetailDto updatedEvent = eventService.updateEvent(eventId, eventUpdateDto);
     return ResponseEntity.ok(updatedEvent);
   }
 
   // 특정 이벤트를 삭제하는 메서드
-  @DeleteMapping("/admin/events/{event_id}")
+  @DeleteMapping("/{event_id}")
   public ResponseEntity<Void> deleteEvent(@PathVariable("event_id") Long eventId) {
     eventService.deleteEvent(eventId);
     return ResponseEntity.noContent().build();

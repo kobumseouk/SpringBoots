@@ -67,12 +67,12 @@ INSERT INTO event (
 ) VALUES
     (1, '여름 신발 세일', '모든 여름 신발 20% 할인! 더운 여름을 시원하게 보내세요.',
     'https://example.com/summer_sale_thumb.jpg', 'https://example.com/summer_sale_content.jpg',
-    '2023-07-01', '2023-07-31', true, NOW(), NOW()),
+    '2024-07-01', '2024-07-31', true, NOW(), NOW()),
 
     (2, '새 학기 특별전', '학생들을 위한 신발 특별 할인. 새 학기를 새 신발과 함께 시작하세요!',
     'https://example.com/back_to_school_thumb.jpg', 'https://example.com/back_to_school_content.jpg',
-    '2023-08-15', '2023-09-15', true, NOW(), NOW()),
+    '2024-08-15', '2024-09-15', true, NOW(), NOW()),
 
     (3, '겨울 부츠 프리뷰', '다가오는 겨울 시즌 부츠 미리보기. 따뜻하고 스타일리시한 겨울을 준비하세요.',
     'https://example.com/winter_preview_thumb.jpg', 'https://example.com/winter_preview_content.jpg',
-    '2023-10-01', '2023-10-31', true, NOW(), NOW());
+    '2024-10-01', '2024-10-31', true, NOW(), NOW());

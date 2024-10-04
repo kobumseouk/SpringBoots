@@ -5,6 +5,7 @@ import com.spring_boots.spring_boots.category.service.CategoryService;
 import com.spring_boots.spring_boots.common.config.error.BadRequestException;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -82,12 +83,12 @@ public class CategoryApiController {
 
   // 관리자 카테고리 전체 목록 조회 (페이지네이션)
   @GetMapping("/admin/categories")
-  public ResponseEntity<List<CategoryAdminDto>> getAdminCategories(
+  public ResponseEntity<Page<CategoryAdminDto>> getAdminCategories(
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "limit", defaultValue = "10") int limit) {
     try {
-      List<CategoryAdminDto> listDto = categoryService.getAdminCategories(page, limit);
-      return ResponseEntity.ok(listDto);
+      Page<CategoryAdminDto> pageDto = categoryService.getAdminCategories(page, limit);
+      return ResponseEntity.ok(pageDto);
     } catch (BadRequestException e) {
       throw new BadRequestException("잘못된_파라미터_형식", "잘못된 페이지네이션 파라미터: " + e.getMessage());
     }

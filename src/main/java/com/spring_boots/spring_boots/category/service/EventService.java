@@ -9,6 +9,9 @@ import com.spring_boots.spring_boots.category.entity.Event;
 import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.category.repository.EventRepository;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,10 +43,29 @@ public class EventService {
   }
 
   // 모든 활성화된 이벤트를 조회하는 메서드
-  public List<EventDto> getAllActiveEvents() {
-    return eventRepository.findByIsActiveTrue().stream()
+  /*public List<EventDto> getAllActiveEvents() {
+    List<Event> events = eventRepository.findAll();
+    events.forEach(Event::updateActiveStatus);
+    return events.stream()
+        .filter(Event::getIsActive)
         .map(eventMapper::eventToEventDto)
         .collect(Collectors.toList());
+  }*/
+
+  @Transactional
+  public Page<EventDto> getActiveEvents(Pageable pageable) {
+    // 모든 이벤트를 조회하고 상태를 업데이트
+    Page<Event> allEvents = eventRepository.findAll(pageable);
+    allEvents.forEach(Event::updateActiveStatus);
+
+    // 활성 상태인 이벤트만 필터링
+    List<EventDto> activeEventDtos = allEvents.getContent().stream()
+        .filter(Event::getIsActive)
+        .map(eventMapper::eventToEventDto)
+        .collect(Collectors.toList());
+
+    // 새로운 Page 객체 생성
+    return new PageImpl<>(activeEventDtos, pageable, allEvents.getTotalElements());
   }
 
   // 특정 이벤트의 상세 정보를 조회하는 메서드
