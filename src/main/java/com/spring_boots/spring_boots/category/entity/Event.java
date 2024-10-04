@@ -21,8 +21,9 @@ public class Event extends BaseTimeEntity {
   @Column(name = "event_id")
   private Long id;
 
+  // 카테고리와의 독립 필요
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "category_id", nullable = false)
+  @JoinColumn(name = "category_id")
   private Category category;
 
   @Column(name = "event_title", nullable = false)
@@ -44,7 +45,7 @@ public class Event extends BaseTimeEntity {
   private LocalDate endDate;
 
   @Column(name = "is_active", nullable = false)
-  private Boolean isActive = true;  // 기본값을 true로 설정
+  private Boolean isActive = true;  // 기본값을 true로 설정, false인 경우 이벤트 글이 사용자에게 보이지 않게 설정
 
 
   // end_date가 지났는지 확인하고 is_Active를 업데이트하는 메서드
@@ -60,6 +61,10 @@ public class Event extends BaseTimeEntity {
     updateActiveStatus();
   }
 
+  // 카테고리 id가 없는 경우 제거
+  public void removeCategory() {
+    this.category = null;
+  }
 
 
   // 1. 생성자를 통한 초기화

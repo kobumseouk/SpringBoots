@@ -23,7 +23,7 @@ public class EventRequestDto {
   private LocalDate startDate;
   private LocalDate endDate;
 
-  @NotNull(message = "카테고리 ID는 필수입니다.")
+//  @NotNull(message = "카테고리 ID는 필수입니다.")
   private Long categoryId;
 
 }
