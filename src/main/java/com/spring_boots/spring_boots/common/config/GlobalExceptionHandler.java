@@ -4,12 +4,13 @@ import com.spring_boots.spring_boots.common.config.error.BadRequestException;
 import com.spring_boots.spring_boots.common.config.error.ErrorResponseDto;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.common.config.error.UnauthorizedException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -33,6 +34,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponseDto> handleGeneralException(Exception ex) {
+    log.error("Unexpected error occurred", ex);
     ErrorResponseDto errorResponse = new ErrorResponseDto("서버_오류", "서버에서 오류가 발생했습니다.");
     return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
   }
