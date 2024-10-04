@@ -60,14 +60,14 @@ public class CategoryApiController {
 
   // TODO: 테마에 대한 추가 정보가 필요할 경우 CategoryThemaDto로 변경 고려
   // 모든 카테고리 테마 목록 조회
-  @GetMapping("/categories/themes")
-  public ResponseEntity<List<String>> getAllThemes() {
+  @GetMapping("/categories/themas")
+  public ResponseEntity<List<String>> getAllThemas() {
     List<String> themes = categoryService.getAllThemes();
     return ResponseEntity.ok(themes);
   }
 
   // 특정 테마의 카테고리 목록 조회
-  @GetMapping("/categories/themes/{category_thema}")
+  @GetMapping("/categories/themas/{category_thema}")
   public ResponseEntity<List<CategoryDto>> getCategoriesByThema(@PathVariable("category_thema") String thema) {
     List<CategoryDto> categories = categoryService.getCategoriesByThema(thema);
     return ResponseEntity.ok(categories);
