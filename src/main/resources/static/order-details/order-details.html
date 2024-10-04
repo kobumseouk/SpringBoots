@@ -26,8 +26,8 @@
 <script src="/common/sidebar.js"></script> <!-- 사이드바 JS 링크 추가 -->
 
 <script>
-  // Load header.html into #header-placeholder
   document.addEventListener("DOMContentLoaded", function() {
+    // Load header.html into #header-placeholder
     fetch("/common/header.html")
             .then(response => {
               if (!response.ok) {
@@ -37,13 +37,10 @@
             })
             .then(data => {
               document.getElementById("header-placeholder").innerHTML = data;
-            })
-            .catch(error => {
-              console.error("헤더를 로드할 수 없습니다:", error);
-            });
 
-    // Load sidebar.html into #sidebar-placeholder
-    fetch("/common/sidebar.html")
+              // Load sidebar.html after header is loaded
+              return fetch("/common/sidebar.html");
+            })
             .then(response => {
               if (!response.ok) {
                 throw new Error("사이드바를 불러오는 중 오류가 발생했습니다.");
@@ -52,17 +49,25 @@
             })
             .then(data => {
               document.getElementById("sidebar-placeholder").innerHTML = data;
+
+              // Extract order ID from the URL and load order summary
+              const orderId = getOrderIdFromUrl();
+              if (orderId) {
+                loadOrderSummary(orderId);
+              }
             })
             .catch(error => {
-              console.error("사이드바를 로드할 수 없습니다:", error);
+              console.error("헤더 또는 사이드바를 로드할 수 없습니다:", error);
             });
-
-    // Load order summary data and render
-    loadOrderSummary();
   });
 
-  function loadOrderSummary() {
-    const orderId = 1; // 임시로 사용한 주문 ID. 실제로는 URL 파라미터에서 가져와야 함
+  // Function to extract order ID from the URL
+  function getOrderIdFromUrl() {
+    const urlParts = window.location.pathname.split('/');
+    return urlParts[urlParts.length - 1];
+  }
+
+  function loadOrderSummary(orderId) {
     fetch(`/api/orders/${orderId}`)
             .then((response) => {
               if (!response.ok) {
@@ -99,7 +104,7 @@
             <div class="media-content">
               <div class="content">
                 <p><strong>제품명: </strong>${item.itemName}</p>
-                <p><strong>사이즈(mm): </strong>230</p>
+                <p><strong>사이즈(mm): </strong>${item.itemSize}</p>
                 <p><strong>수량: </strong>${item.orderitemsQuantity}개</p>
               </div>
             </div>
@@ -120,7 +125,7 @@
           <h5 class="title is-5">주문자</h5>
           <p class="mb-1">${order.recipientName}</p>
           <p class="mb-1">${order.recipientContact}</p>
-          <p>elice@naver.com</p>
+          <p>${order.recipientEmail}</p>
 
           <hr />
 

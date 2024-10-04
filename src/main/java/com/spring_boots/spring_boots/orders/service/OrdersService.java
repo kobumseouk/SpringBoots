@@ -66,6 +66,7 @@ public class OrdersService {
     }
 
 
+    /*
     // 사용자 주문 추가
     public Orders placeOrder(PlaceOrderRequest request) {
         Orders order = Orders.builder()
@@ -77,7 +78,7 @@ public class OrdersService {
                 .updatedAt(LocalDateTime.now())
                 .build();
         return ordersRepository.save(order);
-    }
+    } */
 
     // 사용자 주문 수정
     @Transactional
@@ -180,7 +181,7 @@ public class OrdersService {
         );
     }
 
-
+    /*
     private OrderDetailsDto convertToOrderDetailsDto(Orders orders) {
         List<OrderItems> orderItemsList = orderItemsRepository.findByOrders(orders);
 
@@ -209,6 +210,6 @@ public class OrdersService {
                 orders.getQuantity(),
                 orderItemDetailsDtos
         );
-    }
+    }*/
 
 }

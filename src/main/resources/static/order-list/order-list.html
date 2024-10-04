@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 목록</title>
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/common/sidebar.css"> <!-- 사이드바 CSS 링크 추가 -->
+</head>
+<body>
+
+<!-- Include header -->
+<div id="header-placeholder"></div>
+
+<!-- Main container -->
+<div class="container mt-5">
+    <div class="columns">
+        <!-- Include sidebar -->
+        <div id="sidebar-placeholder" class="column is-one-quarter"></div>
+
+        <!-- Order List Root Element -->
+        <div id="order-list-root" class="column"></div>
+    </div>
+</div>
+
+<script src="/common/sidebar.js"></script> <!-- 사이드바 JS 링크 추가 -->
+
+<script>
+    // Load header.html into #header-placeholder
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch("/common/header.html")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("헤더를 불러오는 중 오류가 발생했습니다.");
+                }
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById("header-placeholder").innerHTML = data;
+            })
+            .catch(error => {
+                console.error("헤더를 로드할 수 없습니다:", error);
+            });
+
+        // Load sidebar.html into #sidebar-placeholder
+        fetch("/common/sidebar.html")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("사이드바를 불러오는 중 오류가 발생했습니다.");
+                }
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById("sidebar-placeholder").innerHTML = data;
+            })
+            .catch(error => {
+                console.error("사이드바를 로드할 수 없습니다:", error);
+            });
+
+        // Load order list data and render
+        loadOrderList();
+    });
+
+    function loadOrderList() {
+        fetch(`/api/orders`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('주문 목록을 가져오는 중 오류가 발생했습니다.');
+                }
+                return response.json();
+            })
+            .then((orders) => {
+                renderOrderList(orders);
+            })
+            .catch((error) => {
+                document.getElementById('order-list-root').innerHTML = `<div class="notification is-danger">${error.message}</div>`;
+            });
+    }
+
+    function renderOrderList(orders) {
+        const orderListRoot = document.getElementById('order-list-root');
+
+        if (!orders || orders.length === 0) {
+            orderListRoot.innerHTML = "<p>주문 내역이 없습니다.</p>";
+            return;
+        }
+
+        let ordersHtml = `
+            <h2 class="title is-4 has-text-centered">주문 내역</h2>
+            <table class="table is-fullwidth is-striped">
+                <thead>
+                    <tr>
+                        <th>주문 번호</th>
+                        <th>주문 날짜</th>
+                        <th>상품</th>
+                        <th>주문 금액</th>
+                        <th>상태</th>
+                        <th>액션</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        orders.forEach(order => {
+            ordersHtml += `
+                <tr>
+                    <td><a href="/order-details/${order.ordersId}">${order.ordersId}</a></td>
+                    <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                    <td>${order.quantity}개</td>
+                    <td>₩${order.ordersTotalPrice}</td>
+                    <td>${order.orderStatus}</td>
+                    <td>
+                        <a class="button is-small is-link" href="/order-details/${order.ordersId}">상세 보기</a>
+                        ${
+                order.orderStatus === 'Pending'
+                    ? `<button class="button is-small is-danger ml-2" onclick="cancelOrder(${order.ordersId})">주문 취소</button>`
+                    : ''
+            }
+                    </td>
+                </tr>
+            `;
+        });
+
+        ordersHtml += `
+                </tbody>
+            </table>
+        `;
+
+        orderListRoot.innerHTML = ordersHtml;
+    }
+
+    function cancelOrder(orderId) {
+        // 주문 취소 로직
+        if (confirm("주문을 취소하시겠습니까?")) {
+            fetch(`/api/orders/${orderId}`, { method: 'DELETE' }) // DELETE 메소드로 변경
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("주문 취소 중 오류가 발생했습니다.");
+                    }
+                    alert("주문이 취소되었습니다.");
+                    loadOrderList(); // 주문 목록을 새로 로드
+                })
+                .catch(error => {
+                    alert("주문을 취소할 수 없습니다: " + error.message);
+                });
+        }
+    }
+
+</script>
+
+</body>
+</html>

@@ -40,6 +40,7 @@ public class OrdersApiController {
     }
 
     // 사용자 주문 추가
+    /*
     @PostMapping("/api/orders")
     public ResponseEntity<OrderResponseDto> placeOrder(@RequestBody PlaceOrderRequest request) {
         Long userId = 1L; // 임시 데이터로 사용자 ID 지정
@@ -49,7 +50,7 @@ public class OrdersApiController {
                 .status("주문이 성공적으로 추가되었습니다.")
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+    } */
 
     // 사용자 주문 수정
     @PutMapping("/api/orders/{orders_id}")
