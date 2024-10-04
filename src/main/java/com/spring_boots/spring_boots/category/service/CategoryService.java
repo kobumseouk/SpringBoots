@@ -72,12 +72,10 @@ public class CategoryService {
 
 
   // 관리자용 카테고리 목록 페이지네이션 적용하여 조회
-  public List<CategoryAdminDto> getAdminCategories(int page, int limit) {
+  public Page<CategoryAdminDto> getAdminCategories(int page, int limit) {
     PageRequest pageRequest = PageRequest.of(page, limit);
     Page<Category> categoryPage = categoryRepository.findAll(pageRequest);
-    return categoryPage.getContent().stream()
-        .map(categoryMapper::categoryToCategoryAdminDto)
-        .collect(Collectors.toList());
+    return categoryPage.map(categoryMapper::categoryToCategoryAdminDto);
   }
 
 
