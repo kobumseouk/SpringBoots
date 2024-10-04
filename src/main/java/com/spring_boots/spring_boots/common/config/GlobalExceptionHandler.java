@@ -31,11 +31,11 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
 
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponseDto> handleGeneralException(Exception ex) {
-    ErrorResponseDto errorResponse = new ErrorResponseDto("서버_오류", "서버에서 오류가 발생했습니다.");
-    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+//  @ExceptionHandler(Exception.class)
+//  public ResponseEntity<ErrorResponseDto> handleGeneralException(Exception ex) {
+//    ErrorResponseDto errorResponse = new ErrorResponseDto("서버_오류", "서버에서 오류가 발생했습니다.");
+//    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+//  }
 
 }
 

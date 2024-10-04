@@ -6,6 +6,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -14,22 +15,24 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Optional;
 
-import static com.spring_boots.spring_boots.config.UserConstants.AUTHORIZATION_TOKEN_KEY;
-import static com.spring_boots.spring_boots.config.UserConstants.TOKEN_PREFIX;
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.AUTHORIZATION_TOKEN_KEY;
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.TOKEN_PREFIX;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
     //    private final TokenProvider tokenProvider;
     private final JwtProviderImpl tokenProvider;
 
+    //todo request-header 정보를 가져와서 토큰이 있다면 토큰 유효성 검증! -> request-header 정보 null 발생...
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         Optional<String> token = resolveToken(request);   //토큰 발급
-
+        log.info("jwt-filter 실행");
         //토큰 유효성 검증
         if (token.isPresent()) {
             AuthTokenImpl jwtToken =

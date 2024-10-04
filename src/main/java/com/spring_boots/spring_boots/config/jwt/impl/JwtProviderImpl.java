@@ -4,17 +4,19 @@ import com.spring_boots.spring_boots.config.jwt.JwtProvider;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,8 +26,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import static com.spring_boots.spring_boots.config.UserConstants.ACCESS_TOKEN_TYPE_VALUE;
-import static com.spring_boots.spring_boots.config.UserConstants.REFRESH_TOKEN_TYPE_VALUE;
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.ACCESS_TOKEN_TYPE_VALUE;
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOKEN_TYPE_VALUE;
 import static com.spring_boots.spring_boots.config.jwt.AuthToken.AUTHORITIES_TOKEN_KEY;
 
 @Component
@@ -45,6 +47,19 @@ public class JwtProviderImpl implements JwtProvider<AuthTokenImpl> {
     public void init() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public String createToken(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + refreshExpires);
+
+        return Jwts.builder()
+                .setSubject(userDetails.getUsername())  // 사용자 이름을 subject로 설정
+                .setIssuedAt(new Date())
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
     }
 
     @Override

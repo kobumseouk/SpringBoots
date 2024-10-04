@@ -5,8 +5,12 @@ import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +18,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Slf4j
 public class UsersApiController {
 
     private final UserService userService;
@@ -38,8 +43,42 @@ public class UsersApiController {
     }
 
     //특정 회원 정보 조회
+    @GetMapping("/v1/users/{user_id}")
+    public ResponseEntity<UserResponseDto> getUser(@PathVariable("user_id") Long userId) {
+        Users findUser = userService.findById(userId);
+        UserResponseDto responseDto = findUser.toResponseDto();
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    //Todo SecurityContextHolder 에서 인증객체를 가져와 log 를 찍어 값이 들어오나 확인해봤으나 들어오지 않음을 확인!
+    @GetMapping("/users/{user_id}")
+    public ResponseEntity<UserResponseDto> testGetUser(@PathVariable("user_id") Long userId) {
+        // SecurityContext에서 인증 정보(Authentication)를 가져옴
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+
+            // principal이 Users 객체일 때만 캐스팅
+            if (principal instanceof Users) {
+                Users user = (Users) principal;
+                log.info("유저 아이디: {}", user.getUserRealId());
+                log.info("유저 이메일: {}", user.getEmail());
+            } else if (principal instanceof String) {
+                // principal이 String이면 (JWT 인증 시 보통 username이 담김)
+                String username = (String) principal;
+                log.info("유저 이름(혹은 아이디): {}", username);
+            } else {
+                log.warn("알 수 없는 타입의 principal: {}", principal.getClass().getName());
+            }
+
+        }
+        return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
 
     //회원 정보 수정
+//    @PutMapping("/v1/users/")
 
     //회원 탈퇴
 
