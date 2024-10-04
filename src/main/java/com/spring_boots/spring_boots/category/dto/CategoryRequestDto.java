@@ -2,6 +2,7 @@ package com.spring_boots.spring_boots.category.dto;
 
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +21,7 @@ public class CategoryRequestDto {
 
   private String imageUrl;
 
+  @NotNull
   private int displayOrder;
 
 }
