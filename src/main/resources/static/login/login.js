@@ -44,9 +44,9 @@ async function handleSubmit(e) {
 
   // 로그인 api 요청
   try {
-    const data = { email, password };
+    const data = { userRealId, password };
 
-    const result = await Api.post("/login", data);
+    const result = await Api.post("/api/v1/login", data);
     const { token, isAdmin } = result;
 
     // 로그인 성공, 토큰을 세션 스토리지에 저장

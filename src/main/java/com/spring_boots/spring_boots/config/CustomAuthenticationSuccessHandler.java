@@ -4,7 +4,6 @@ import com.spring_boots.spring_boots.config.jwt.TokenProvider;
 import com.spring_boots.spring_boots.orders.entity.RefreshToken;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.repository.RefreshTokenRepository;
-import com.spring_boots.spring_boots.user.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,9 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.time.Duration;
 
-import static com.spring_boots.spring_boots.config.UserConstants.*;
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.*;
 
 @Component
 @RequiredArgsConstructor

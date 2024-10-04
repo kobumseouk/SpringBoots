@@ -1,4 +1,4 @@
-package com.spring_boots.spring_boots.config;
+package com.spring_boots.spring_boots.config.jwt;
 
 import lombok.NoArgsConstructor;
 
