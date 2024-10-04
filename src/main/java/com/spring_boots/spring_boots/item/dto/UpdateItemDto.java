@@ -2,11 +2,14 @@ package com.spring_boots.spring_boots.item.dto;
 
 import com.spring_boots.spring_boots.category.entity.Category;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.Positive;
 
 @Getter
 @Setter
@@ -16,10 +19,11 @@ public class UpdateItemDto {
     @Length(max = 200)
     private String itemName;
 
-    @NotBlank(message = "카테고리는 필수입니다.")
+    @NotNull(message = "카테고리는 필수입니다.")
     private Category category;
 
     @NotBlank(message = "가격은 필수입니다.")
+    @Positive(message = "가격은 0보다 커야 합니다.")
     private Integer itemPrice;
 
     @Length(max = 10000, message = "설명란의 최대 글자수는 10000입니다.")
