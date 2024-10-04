@@ -2,10 +2,7 @@ package com.spring_boots.spring_boots.config.jwt.impl;
 
 import com.spring_boots.spring_boots.config.jwt.JwtProvider;
 import com.spring_boots.spring_boots.user.domain.UserRole;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -119,10 +116,15 @@ public class JwtProviderImpl{
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(secret)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            // JWT가 만료된 경우에도 Claims를 반환할 수 있도록 예외에서 Claims를 가져옴
+            return e.getClaims();  // 만료된 토큰에서 Claims 정보를 가져옴
+        }
     }
 
 
