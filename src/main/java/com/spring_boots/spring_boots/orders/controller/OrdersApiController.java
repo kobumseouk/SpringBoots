@@ -47,7 +47,6 @@ public class OrdersApiController {
         OrderResponseDto response = OrderResponseDto.builder()
                 .ordersId(order.getOrdersId())
                 .status("주문이 성공적으로 추가되었습니다.")
-                .ordersTotalPrice(order.getOrdersTotalPrice())
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -55,9 +54,13 @@ public class OrdersApiController {
     // 사용자 주문 수정
     @PutMapping("/api/orders/{orders_id}")
     public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable Long orders_id, @RequestBody UpdateOrderRequest request) {
-        return ordersService.updateOrder(orders_id, request)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            return ordersService.updateOrder(orders_id, request)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new OrderResponseDto(orders_id, e.getMessage()));
+        }
     }
 
     // 사용자 주문 취소

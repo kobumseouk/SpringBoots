@@ -4,6 +4,7 @@ import com.spring_boots.spring_boots.category.dto.event.EventDetailDto;
 import com.spring_boots.spring_boots.category.dto.event.EventDto;
 import com.spring_boots.spring_boots.category.dto.event.EventMapper;
 import com.spring_boots.spring_boots.category.dto.event.EventRequestDto;
+import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.category.entity.Event;
 import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.category.repository.EventRepository;
@@ -28,9 +29,12 @@ public class EventService {
   @Transactional
   public EventDetailDto createEvent(EventRequestDto eventRequestDto) {
     Event event = eventMapper.eventRequestDtoToEvent(eventRequestDto);
-    // 카테고리를 찾아 이벤트에 설정, 없으면 ResourceNotFoundException 발생
-    event.setCategory(categoryRepository.findById(eventRequestDto.getCategoryId())
-        .orElseThrow(() -> new ResourceNotFoundException("해당 카테고리를 찾을 수 없습니다: " + eventRequestDto.getCategoryId())));
+    // 카테고리 id가 있는 경우 id를 찾아 이벤트에 설정, 없으면 ResourceNotFoundException 발생
+    if (eventRequestDto.getCategoryId() != null) {
+        Category category = categoryRepository.findById(eventRequestDto.getCategoryId())
+            .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + eventRequestDto.getCategoryId()));
+        event.setCategory(category);
+    }
     Event savedEvent = eventRepository.save(event);
     return eventMapper.eventToEventDetailDto(savedEvent);
   }
@@ -59,9 +63,13 @@ public class EventService {
     eventMapper.updateEventFromDto(eventUpdateDto, event);
     // 카테고리 ID가 제공된 경우 카테고리 업데이트
     if (eventUpdateDto.getCategoryId() != null) {
-      event.setCategory(categoryRepository.findById(eventUpdateDto.getCategoryId())
-          .orElseThrow(() -> new ResourceNotFoundException("해당 카테고리를 찾을 수 없습니다: " + eventUpdateDto.getCategoryId())));
+      Category category = categoryRepository.findById(eventUpdateDto.getCategoryId())
+          .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + eventUpdateDto.getCategoryId()));
+      event.setCategory(category);
+    } else {
+      event.removeCategory();
     }
+
     Event updatedEvent = eventRepository.save(event);
     return eventMapper.eventToEventDetailDto(updatedEvent);
   }
