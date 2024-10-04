@@ -53,6 +53,7 @@ dependencies {
     // Hibernate Validator 의존성 (필요한 경우)
     implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
     implementation 'javax.validation:validation-api:2.0.1.Final'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'	//Swagger
 
 }
 
