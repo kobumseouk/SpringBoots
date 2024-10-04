@@ -19,14 +19,24 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/order-summary").setViewName("forward:/order-summary/order-summary.html");
         registry.addViewController("/order-list").setViewName("forward:/order-list/order-list.html");
         registry.addViewController("/order-details").setViewName("forward:/order-details/order-details.html");
-        /*// 카테고리 목록 페이지
+
+
+        // 카테고리 목록 페이지
         registry.addViewController("/categories").setViewName("forward:/category/list.html");
         // 카테고리 상세 페이지
-        registry.addViewController("/category/**").setViewName("forward:/category/detail.html");
+        // registry.addViewController("/category/**").setViewName("forward:/category/detail.html");
         // 테마별 카테고리 목록
-        registry.addViewController("/categories/themes/**").setViewName("forward:/category/theme-list.html");
+        registry.addViewController("/categories/themas").setViewName("forward:/category/thema-list.html");
         // 관리자 카테고리 관리 페이지
-        registry.addViewController("/admin/categories").setViewName("forward:/admin/category-management.html");*/
+        registry.addViewController("/admin/categories").setViewName("forward:/admin/category-management.html");
+        // 카테고리 생성 페이지
+        registry.addViewController("/admin/categories/create").setViewName("forward:/admin/category-create.html");
+
+        // 이벤트 목록 페이지
+        registry.addViewController("/events").setViewName("forward:/event/list.html");
+        // 이벤트 생성 페이지
+        registry.addViewController("/events/create").setViewName("forward:/event-create.html");
+
 
     }
 }
