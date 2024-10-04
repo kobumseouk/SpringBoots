@@ -10,6 +10,7 @@ import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,13 +26,15 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import static com.spring_boots.spring_boots.config.jwt.UserConstants.ACCESS_TOKEN_TYPE_VALUE;
 import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOKEN_TYPE_VALUE;
 import static com.spring_boots.spring_boots.config.jwt.AuthToken.AUTHORITIES_TOKEN_KEY;
 
 @Component
-public class JwtProviderImpl implements JwtProvider<AuthTokenImpl> {
+@RequiredArgsConstructor
+public class JwtProviderImpl{
     @Value("${jwt.secret}") //설정 정보 파일에 값을 가져옴.
     private String secret;
 
@@ -42,6 +45,8 @@ public class JwtProviderImpl implements JwtProvider<AuthTokenImpl> {
     private long refreshExpires;
 
     private Key key;
+
+    private final UserDetailsServiceImpl userDetailsService;
 
     @PostConstruct
     public void init() {
@@ -62,43 +67,16 @@ public class JwtProviderImpl implements JwtProvider<AuthTokenImpl> {
                 .compact();
     }
 
-    @Override
     public AuthTokenImpl convertAuthToken(String token) {
         return new AuthTokenImpl(token, key);
     }
 
-    @Override
-    public Authentication getAuthentication(AuthTokenImpl authToken) {
-        if (authToken.validate()) {
-            Claims claims = authToken.getDate();
-
-            if (!claims.get("type").equals(ACCESS_TOKEN_TYPE_VALUE)) {
-                throw new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED,
-                        "Invalid token type"
-                );
-            }
-
-            Set<SimpleGrantedAuthority> authorities = Collections.singleton(
-                    new SimpleGrantedAuthority(claims.get(
-                            AUTHORITIES_TOKEN_KEY,
-                            String.class)
-                    ));
-
-            User principal =
-                    new User(claims.getSubject(), "", authorities);
-
-            return new UsernamePasswordAuthenticationToken(
-                    principal,
-                    authToken,
-                    authorities
-            );
-        } else {
-            throw new JwtException("token Error");
-        }
+    public Authentication getAuthentication(String authToken) {
+        String username = extractUsername(authToken);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    @Override
     public AuthTokenImpl createAccessToken(
             String userId,
             UserRole role,
@@ -115,7 +93,6 @@ public class JwtProviderImpl implements JwtProvider<AuthTokenImpl> {
         );
     }
 
-    @Override
     public AuthTokenImpl createRefreshToken(
             String userId,
             UserRole role,
@@ -131,4 +108,34 @@ public class JwtProviderImpl implements JwtProvider<AuthTokenImpl> {
                 new Date(System.currentTimeMillis() + refreshExpires)
         );
     }
+
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+
+    public boolean validateToken(String jwtToken) {
+        return !isTokenExpired(jwtToken);
+    }
+
+    private boolean isTokenExpired(String jwtToken) {
+        return extractExpiration(jwtToken).before(new Date());
+    }
+
+    private Date extractExpiration(String jwtToken) {
+        return extractAllClaims(jwtToken).getExpiration();
+    }
+
 }
