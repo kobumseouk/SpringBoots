@@ -6,6 +6,7 @@
   <title>주문 배송 상세</title>
   <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/common/sidebar.css"> <!-- 사이드바 CSS 링크 추가 -->
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script> <!-- Daum 주소찾기 API 추가 -->
 </head>
 <body>
 
@@ -23,9 +24,51 @@
   </div>
 </div>
 
+<!-- 배송지 변경 모달 -->
+<div id="edit-shipping-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">배송지 변경</p>
+      <button class="delete" aria-label="close" onclick="closeShippingModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      <form id="edit-shipping-form">
+        <div class="field">
+          <label class="label">받는 분</label>
+          <div class="control">
+            <input class="input" type="text" id="edit-recipient-name" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">주소</label>
+          <div class="control">
+            <input class="input" type="text" id="edit-shipping-address" required>
+            <button type="button" class="button is-small is-info mt-2" onclick="openDaumPostcode()">주소찾기</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">전화번호</label>
+          <div class="control">
+            <input class="input" type="tel" id="edit-recipient-contact" required>
+          </div>
+        </div>
+      </form>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success" onclick="submitShippingUpdate()">수정</button>
+      <button class="button" onclick="closeShippingModal()">취소</button>
+    </footer>
+  </div>
+</div>
+
 <script src="/common/sidebar.js"></script> <!-- 사이드바 JS 링크 추가 -->
 
 <script>
+  let currentOrder = null; // 현재 주문 정보를 저장할 전역 변수
+
   function getOrderIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('id');
@@ -66,8 +109,6 @@
             });
   });
 
-
-
   function loadOrderSummary(orderId) {
     fetch(`/api/orders/${orderId}`)
             .then((response) => {
@@ -79,6 +120,7 @@
               return response.json();
             })
             .then((order) => {
+              currentOrder = order; // 현재 주문 정보를 전역 변수에 저장
               renderOrderSummary(order);
             })
             .catch((error) => {
@@ -164,8 +206,65 @@
   }
 
   function editShippingAddress() {
-    // 배송지 수정 로직 추가
-    alert("배송지 수정 기능을 구현하세요.");
+    // 모달 열기
+    document.getElementById("edit-shipping-modal").classList.add("is-active");
+
+    // 현재 배송 정보를 모달 폼에 채우기
+    document.getElementById("edit-recipient-name").value = currentOrder.recipientName;
+    document.getElementById("edit-shipping-address").value = currentOrder.shippingAddress;
+    document.getElementById("edit-recipient-contact").value = currentOrder.recipientContact;
+  }
+
+  function closeShippingModal() {
+    document.getElementById("edit-shipping-modal").classList.remove("is-active");
+  }
+
+  function submitShippingUpdate() {
+    let updateOrderRequest = {
+      recipient_name: document.getElementById("edit-recipient-name").value,
+      shipping_address: document.getElementById("edit-shipping-address").value,
+      recipient_contact: document.getElementById("edit-recipient-contact").value,
+    };
+
+    // 유효성 검사 추가
+    if (!updateOrderRequest.recipient_name || !updateOrderRequest.shipping_address || !updateOrderRequest.recipient_contact) {
+      alert('모든 필수 정보를 입력해주세요: 받는 분, 주소, 전화번호');
+      return;
+    }
+
+    // PUT 요청으로 배송 정보 업데이트
+    fetch(`/api/orders/${currentOrder.ordersId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(updateOrderRequest)
+    })
+            .then(response => {
+              if (!response.ok) {
+                return response.json().then((error) => {
+                  throw new Error(error.errorMessage || '배송 정보를 업데이트하는 중 오류가 발생했습니다.');
+                });
+              }
+              return response.json();
+            })
+            .then(() => {
+              closeShippingModal();
+              loadOrderSummary(currentOrder.ordersId); // 업데이트된 주문 정보 다시 로드
+            })
+            .catch(error => {
+              alert(error.message);
+            });
+  }
+
+
+  function openDaumPostcode() {
+    new daum.Postcode({
+      oncomplete: function(data) {
+        // 검색 결과에서 선택된 주소를 가져와서 입력
+        document.getElementById("edit-shipping-address").value = data.address;
+      }
+    }).open();
   }
 </script>
 </body>
