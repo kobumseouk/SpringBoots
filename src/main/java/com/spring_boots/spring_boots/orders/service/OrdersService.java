@@ -42,6 +42,7 @@ public class OrdersService {
                             item.getItem().getItemName(),
                             item.getOrderItemsQuantity(),
                             item.getOrderItemsTotalPrice(),
+                            item.getItem().getItemSize(),
                             item.getItem().getImageUrl() // 이미지 URL 가져오기
                     )).collect(Collectors.toList());
 
