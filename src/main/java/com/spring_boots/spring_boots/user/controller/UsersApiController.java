@@ -42,16 +42,17 @@ public class UsersApiController {
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
-    //특정 회원 정보 조회
-    @GetMapping("/v1/users/{user_id}")
-    public ResponseEntity<UserResponseDto> getUser(@PathVariable("user_id") Long userId) {
+    //특정 회원 정보 조회(관리자)
+    @GetMapping("/v1/admin/users/{user_id}")
+    public ResponseEntity<UserResponseDto> getUserByAdmin(@PathVariable("user_id") Long userId) {
         Users findUser = userService.findById(userId);
         UserResponseDto responseDto = findUser.toResponseDto();
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-    @GetMapping("/users/{user_id}")
-    public ResponseEntity<UserResponseDto> testGetUser(@PathVariable("user_id") Long userId) {
+    //개인 정보 조회
+    @GetMapping("/v1/users-info")
+    public ResponseEntity<UserResponseDto> getUser() {
         // SecurityContext에서 인증 정보(Authentication)를 가져옴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -63,17 +64,19 @@ public class UsersApiController {
                 Users user = (Users) principal;
                 log.info("유저 아이디: {}", user.getUserRealId());
                 log.info("유저 이메일: {}", user.getEmail());
+                UserResponseDto responseDto = user.toResponseDto();
+                return ResponseEntity.status(HttpStatus.OK).body(responseDto);
             } else if (principal instanceof String) {
                 // principal이 String이면 (JWT 인증 시 보통 username이 담김)
                 String username = (String) principal;
                 log.info("유저 이름(혹은 아이디): {}", username);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             } else {
                 log.warn("알 수 없는 타입의 principal: {}", principal.getClass().getName());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
-
         }
-        return ResponseEntity.status(HttpStatus.OK).build();
-
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     //회원 정보 수정
