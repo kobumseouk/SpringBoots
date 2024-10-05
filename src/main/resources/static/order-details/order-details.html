@@ -26,6 +26,11 @@
 <script src="/common/sidebar.js"></script> <!-- 사이드바 JS 링크 추가 -->
 
 <script>
+  function getOrderIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('id');
+  }
+
   document.addEventListener("DOMContentLoaded", function() {
     // Load header.html into #header-placeholder
     fetch("/common/header.html")
@@ -61,17 +66,15 @@
             });
   });
 
-  // Function to extract order ID from the URL
-  function getOrderIdFromUrl() {
-    const urlParts = window.location.pathname.split('/');
-    return urlParts[urlParts.length - 1];
-  }
+
 
   function loadOrderSummary(orderId) {
     fetch(`/api/orders/${orderId}`)
             .then((response) => {
               if (!response.ok) {
-                throw new Error('주문 정보를 가져오는 중 오류가 발생했습니다.');
+                return response.json().then((error) => {
+                  throw new Error(error.errorMessage || '주문 정보를 가져오는 중 오류가 발생했습니다.');
+                });
               }
               return response.json();
             })
@@ -104,7 +107,7 @@
             <div class="media-content">
               <div class="content">
                 <p><strong>제품명: </strong>${item.itemName}</p>
-                <p><strong>사이즈(mm): </strong>${item.itemSize}</p>
+                <p><strong>사이즈(mm): </strong>${item.itemsSize}</p>
                 <p><strong>수량: </strong>${item.orderitemsQuantity}개</p>
               </div>
             </div>
@@ -125,7 +128,6 @@
           <h5 class="title is-5">주문자</h5>
           <p class="mb-1">${order.recipientName}</p>
           <p class="mb-1">${order.recipientContact}</p>
-          <p>${order.recipientEmail}</p>
 
           <hr />
 
