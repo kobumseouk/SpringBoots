@@ -50,7 +50,6 @@ public class UsersApiController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-    //Todo SecurityContextHolder 에서 인증객체를 가져와 log 를 찍어 값이 들어오나 확인해봤으나 들어오지 않음을 확인!
     @GetMapping("/users/{user_id}")
     public ResponseEntity<UserResponseDto> testGetUser(@PathVariable("user_id") Long userId) {
         // SecurityContext에서 인증 정보(Authentication)를 가져옴
