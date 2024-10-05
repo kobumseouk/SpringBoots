@@ -1,6 +1,7 @@
 package com.spring_boots.spring_boots.user.domain;
 
 import com.spring_boots.spring_boots.common.BaseTimeEntity;
+import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -98,5 +100,11 @@ public class Users extends BaseTimeEntity implements UserDetails {
                 .username(username)
                 .userRealId(userRealId)
                 .build();
+    }
+
+    public void updateUser(UserUpdateRequestDto userUpdateRequestDto) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        this.password = encoder.encode(userUpdateRequestDto.getPassword());
+        this.email = userUpdateRequestDto.getEmail();
     }
 }

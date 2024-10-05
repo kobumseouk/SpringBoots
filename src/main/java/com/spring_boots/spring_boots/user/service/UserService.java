@@ -7,12 +7,14 @@ import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.dto.request.JwtTokenDto;
 import com.spring_boots.spring_boots.user.dto.request.JwtTokenLoginRequest;
 import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
+import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -93,5 +95,10 @@ public class UserService {
         return users.stream()
                 .map(Users::toResponseDto)  // Users 객체를 UserResponseDto로 변환
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void update(Users user, UserUpdateRequestDto userUpdateRequestDto) {
+        user.updateUser(userUpdateRequestDto);
     }
 }
