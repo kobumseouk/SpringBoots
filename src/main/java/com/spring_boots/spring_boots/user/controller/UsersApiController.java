@@ -2,6 +2,7 @@ package com.spring_boots.spring_boots.user.controller;
 
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
+import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +81,15 @@ public class UsersApiController {
     }
 
     //회원 정보 수정
-//    @PutMapping("/v1/users/")
+    @PutMapping("/v1/users")
+    public ResponseEntity<Users> updateUser(@AuthenticationPrincipal Users user,
+                                                      @RequestBody UserUpdateRequestDto request) {
+        Users authUser = userService.findById(user.getUserId());    //인증객체 가져올시 영속성컨텍스트에서 가져와야함
+
+        userService.update(authUser,request);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
     //회원 탈퇴
 
