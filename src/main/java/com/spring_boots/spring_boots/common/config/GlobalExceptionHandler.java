@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(ResourceNotFoundException ex) {
-    ErrorResponseDto errorResponse = new ErrorResponseDto("리소스_없음", ex.getMessage());
+    ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getErrorCode(), ex.getMessage());
     return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
   }
 
