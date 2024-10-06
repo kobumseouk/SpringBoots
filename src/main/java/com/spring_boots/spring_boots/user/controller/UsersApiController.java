@@ -1,6 +1,7 @@
 package com.spring_boots.spring_boots.user.controller;
 
 import com.spring_boots.spring_boots.user.domain.Users;
+import com.spring_boots.spring_boots.user.dto.request.UserPasswordRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
@@ -134,8 +135,42 @@ public class UsersApiController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-
     //비밀번호 확인
+    @PostMapping("/v1/users/check-password")
+    public ResponseEntity<Void> checkPassword(@AuthenticationPrincipal Users user,
+                                              @RequestBody UserPasswordRequestDto request) {
+        Users authUser = userService.findByEmail(user.getEmail());
+
+        if (userService.checkPassword(authUser, request)) {
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    //로그아웃
+    @PostMapping("/v1/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // 쿠키 즉시 만료
+        response.addCookie(cookie);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
     //아이디 중복확인
+    @GetMapping("/v1/signup/check-id")
+    public ResponseEntity<Void> checkUsername(@RequestParam("userRealId") String userRealId) {
+        boolean isUsernameTaken = userService.isDuplicateUserRealId(userRealId);
+
+        if (isUsernameTaken) {
+            // 아이디가 이미 존재하는 경우
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        // 아이디 사용 가능
+        return ResponseEntity.ok().build();
+    }
 }
