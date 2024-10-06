@@ -5,6 +5,8 @@ import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -92,6 +94,25 @@ public class UsersApiController {
     }
 
     //회원 탈퇴
+    @DeleteMapping("/v1/users")
+    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal Users user,
+                                           HttpServletResponse response) {
+        Users authUser = userService.findByEmail(user.getEmail());
+        userService.deleteUser(authUser);
+
+        if (userService.isDeleteUser(authUser)) {
+            Cookie cookie = new Cookie("refreshToken", null);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(0); // 쿠키 즉시 만료
+            response.addCookie(cookie);
+
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
 
     //비밀번호 확인
 

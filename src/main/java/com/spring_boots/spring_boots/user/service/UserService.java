@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -101,5 +102,19 @@ public class UserService {
     @Transactional
     public void update(Users user, UserUpdateRequestDto userUpdateRequestDto) {
         user.updateUser(userUpdateRequestDto);
+    }
+
+    @Transactional
+    public void deleteUser(Users authUser) {
+        userRepository.delete(authUser);
+    }
+
+    public boolean isDeleteUser(Users authUser) {
+        Optional<Users> findUser = userRepository.findById(authUser.getUserId());
+        if (findUser.isPresent()) {
+            return false;   //존재하면 false 반환
+        }
+
+        return true;
     }
 }
