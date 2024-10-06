@@ -4,10 +4,7 @@ import com.spring_boots.spring_boots.config.jwt.impl.AuthTokenImpl;
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
-import com.spring_boots.spring_boots.user.dto.request.JwtTokenDto;
-import com.spring_boots.spring_boots.user.dto.request.JwtTokenLoginRequest;
-import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
-import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
+import com.spring_boots.spring_boots.user.dto.request.*;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -124,5 +121,15 @@ public class UserService {
     @Transactional
     public void softDeleteUser(Users authUser) {
         authUser.deleteUser();  //소프트 딜리트
+    }
+
+    public boolean checkPassword(Users authUser, UserPasswordRequestDto request) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String requestPassword = encoder.encode(request.getPassword());
+        if (!bCryptPasswordEncoder.matches(authUser.getPassword(), requestPassword)) {
+            return true;    //비밀번호가 맞으면 true
+        }
+
+        return false;   //맞지않으면 false
     }
 }
