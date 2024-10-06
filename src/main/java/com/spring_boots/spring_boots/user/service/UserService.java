@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +61,10 @@ public class UserService {
     public JwtTokenDto login(JwtTokenLoginRequest request) {
         Users user = userRepository.findByUserRealId(request.getUserRealId())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 실제 ID 입니다."));
-        log.info("요청 비밀번호 : {}, 실제 비밀번호 : {}", request.getPassword(), user.getPassword());
+
+        if (user.isDeleted()) {
+            throw new IllegalArgumentException("정보가 삭제된 회원입니다.");
+        }
 
         if (!bCryptPasswordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
@@ -68,17 +72,18 @@ public class UserService {
 
         Map<String, Object> claims = Map.of(
                 "accountId", user.getUserId(),  //JWT 클래임에 accountId
-                "role", user.getRole()  //JWT 클래임에 role
+                "role", user.getRole(),  //JWT 클래임에 role
+                "userRealId",user.getUserRealId()   //JWT 클래임에 실제 ID 추가
         );
 
         AuthTokenImpl accessToken = jwtProvider.createAccessToken(
-                user.getUserId().toString(),
+                user.getUserRealId(),   //토큰에 실제 ID 정보 입력
                 user.getRole(),
                 claims
         );
 
         AuthTokenImpl refreshToken = jwtProvider.createRefreshToken(
-                user.getUserId().toString(),
+                user.getUserRealId(),   //토큰에 실제 ID 정보 입력
                 user.getRole(),
                 claims
         );
@@ -100,5 +105,24 @@ public class UserService {
     @Transactional
     public void update(Users user, UserUpdateRequestDto userUpdateRequestDto) {
         user.updateUser(userUpdateRequestDto);
+    }
+
+    @Transactional
+    public void deleteUser(Users authUser) {
+        userRepository.delete(authUser);
+    }
+
+    public boolean isDeleteUser(Users authUser) {
+        Optional<Users> findUser = userRepository.findById(authUser.getUserId());
+        if (findUser.isPresent()) {
+            return false;   //존재하면 false 반환
+        }
+
+        return true;
+    }
+
+    @Transactional
+    public void softDeleteUser(Users authUser) {
+        authUser.deleteUser();  //소프트 딜리트
     }
 }
