@@ -161,4 +161,16 @@ public class UsersApiController {
     }
 
     //아이디 중복확인
+    @GetMapping("/v1/signup/check-id")
+    public ResponseEntity<Void> checkUsername(@RequestParam("userRealId") String userRealId) {
+        boolean isUsernameTaken = userService.isDuplicateUserRealId(userRealId);
+
+        if (isUsernameTaken) {
+            // 아이디가 이미 존재하는 경우
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        // 아이디 사용 가능
+        return ResponseEntity.ok().build();
+    }
 }
