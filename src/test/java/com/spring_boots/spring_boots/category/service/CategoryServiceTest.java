@@ -110,6 +110,7 @@ class CategoryServiceTest {
     when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(existingCategory));
     when(categoryRepository.save(any(Category.class))).thenReturn(updatedCategory);
     when(categoryMapper.categoryToCategoryResponseDto(any(Category.class))).thenReturn(responseDto);
+    // updateCategoryFromDto() 메서드의 동작을 검증만 하고, 실제로 엔티티를 수정 x
     doNothing().when(categoryMapper).updateCategoryFromDto(any(CategoryRequestDto.class), any(Category.class));
 
     // when
