@@ -93,6 +93,13 @@ class CategoryServiceTest {
         .displayOrder(1)
         .build();
 
+    Category updatedCategory = Category.builder()
+        .id(categoryId)
+        .categoryName("Updated Category")
+        .categoryThema("Updated thema")
+        .displayOrder(2)
+        .build();
+
     CategoryResponseDto responseDto = CategoryResponseDto.builder()
         .id(categoryId)
         .categoryName("Updated Category")
@@ -101,7 +108,9 @@ class CategoryServiceTest {
         .build();
 
     when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(existingCategory));
+    when(categoryRepository.save(any(Category.class))).thenReturn(updatedCategory);
     when(categoryMapper.categoryToCategoryResponseDto(any(Category.class))).thenReturn(responseDto);
+    doNothing().when(categoryMapper).updateCategoryFromDto(any(CategoryRequestDto.class), any(Category.class));
 
     // when
     CategoryResponseDto result = categoryService.updateCategory(categoryId, requestDto);
@@ -112,7 +121,7 @@ class CategoryServiceTest {
     verify(categoryRepository).findById(categoryId);
     verify(categoryRepository).save(any(Category.class));
     verify(categoryMapper).updateCategoryFromDto(eq(requestDto), eq(existingCategory));
-
+    verify(categoryMapper).categoryToCategoryResponseDto(any(Category.class));
 
   }
 
