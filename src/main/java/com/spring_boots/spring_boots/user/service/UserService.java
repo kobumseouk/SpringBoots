@@ -125,11 +125,14 @@ public class UserService {
 
     public boolean checkPassword(Users authUser, UserPasswordRequestDto request) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        String requestPassword = encoder.encode(request.getPassword());
-        if (!bCryptPasswordEncoder.matches(authUser.getPassword(), requestPassword)) {
+        if (encoder.matches(request.getPassword(), authUser.getPassword())) {
             return true;    //비밀번호가 맞으면 true
         }
 
         return false;   //맞지않으면 false
+    }
+
+    public boolean isDuplicateUserRealId(String userRealId) {
+        return userRepository.existsByUserRealId(userRealId);
     }
 }
