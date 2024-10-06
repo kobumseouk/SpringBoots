@@ -46,22 +46,20 @@ class EventServiceTest {
         .eventTitle("Test Event")
         .build();
 
-    EventDetailDto expectedDto = EventDetailDto.builder()
+    EventDetailDto responseDto = EventDetailDto.builder()
         .id(1L)
         .eventTitle("Test Event")
         .build();
     
     when(eventMapper.eventRequestDtoToEvent(requestDto)).thenReturn(event);
     when(eventRepository.save(any(Event.class))).thenReturn(event);
-    when(eventMapper.eventToEventDetailDto(event)).thenReturn(expectedDto);
+    when(eventMapper.eventToEventDetailDto(event)).thenReturn(responseDto);
 
     // when
     EventDetailDto result = eventService.createEvent(requestDto);
 
     // then
-    assertThat(result).isNotNull();
-    assertThat(result.getId()).isEqualTo(expectedDto.getId());
-    assertThat(result.getEventTitle()).isEqualTo(expectedDto.getEventTitle());
+    assertThat(result).usingRecursiveComparison().isEqualTo(responseDto);
 
     verify(eventRepository).save(any(Event.class));
 
@@ -99,21 +97,19 @@ class EventServiceTest {
     // given
     Long eventId = 1L;
     Event event = Event.builder().id(eventId).build();
-    EventDetailDto expectedDto = EventDetailDto.builder()
+    EventDetailDto detailDto = EventDetailDto.builder()
         .id(eventId)
         .eventTitle("테스트 이벤트")
         .build();
 
     when(eventRepository.findById(eventId)).thenReturn(Optional.of(event));
-    when(eventMapper.eventToEventDetailDto(event)).thenReturn(expectedDto);
+    when(eventMapper.eventToEventDetailDto(event)).thenReturn(detailDto);
 
     // when
     EventDetailDto result = eventService.getEventDetail(eventId);
 
     // then
-    assertThat(result).isNotNull();
-    assertThat(result.getId()).isEqualTo(expectedDto.getId());
-    assertThat(result.getEventTitle()).isEqualTo(expectedDto.getEventTitle());
+    assertThat(result).usingRecursiveComparison().isEqualTo(detailDto);
 
     verify(eventRepository).findById(eventId);
 
@@ -131,7 +127,8 @@ class EventServiceTest {
         .build();
 
     Event existingEvent = Event.builder().id(eventId).build();
-    EventDetailDto expectedDto = EventDetailDto.builder()
+
+    EventDetailDto responseDto = EventDetailDto.builder()
         .id(eventId)
         .eventTitle("Updated Event")
         .build();
@@ -139,15 +136,13 @@ class EventServiceTest {
     
     when(eventRepository.findById(eventId)).thenReturn(Optional.of(existingEvent));
     when(eventRepository.save(any(Event.class))).thenReturn(existingEvent);
-    when(eventMapper.eventToEventDetailDto(existingEvent)).thenReturn(expectedDto);
+    when(eventMapper.eventToEventDetailDto(existingEvent)).thenReturn(responseDto);
 
     // when
     EventDetailDto result = eventService.updateEvent(eventId, updateDto);
 
     // then
-    assertThat(result).isNotNull();
-    assertThat(result.getId()).isEqualTo(expectedDto.getId());
-    assertThat(result.getEventTitle()).isEqualTo(expectedDto.getEventTitle());
+    assertThat(result).usingRecursiveComparison().isEqualTo(responseDto);
 
     verify(eventRepository).findById(eventId);
     verify(eventRepository).save(any(Event.class));
