@@ -68,17 +68,18 @@ public class UserService {
 
         Map<String, Object> claims = Map.of(
                 "accountId", user.getUserId(),  //JWT 클래임에 accountId
-                "role", user.getRole()  //JWT 클래임에 role
+                "role", user.getRole(),  //JWT 클래임에 role
+                "userRealId",user.getUserRealId()   //JWT 클래임에 실제 ID 추가
         );
 
         AuthTokenImpl accessToken = jwtProvider.createAccessToken(
-                user.getUserId().toString(),
+                user.getUserRealId(),   //토큰에 실제 ID 정보 입력
                 user.getRole(),
                 claims
         );
 
         AuthTokenImpl refreshToken = jwtProvider.createRefreshToken(
-                user.getUserId().toString(),
+                user.getUserRealId(),   //토큰에 실제 ID 정보 입력
                 user.getRole(),
                 claims
         );
