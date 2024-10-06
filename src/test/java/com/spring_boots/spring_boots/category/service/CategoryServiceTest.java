@@ -37,7 +37,7 @@ class CategoryServiceTest {
   private CategoryService categoryService;
 
   @Test
-  @DisplayName("카테고리 저장 테스트")
+  @DisplayName("카테고리 저장 확인 테스트")
   void createCategoryTest() {
     // given
     CategoryRequestDto requestDto = CategoryRequestDto.builder()
@@ -76,7 +76,7 @@ class CategoryServiceTest {
   }
 
   @Test
-  @DisplayName("카테고리 업데이트 테스트")
+  @DisplayName("카테고리 업데이트 확인 테스트")
   void updateCategory() {
     // given
     Long categoryId = 1L;
@@ -127,7 +127,7 @@ class CategoryServiceTest {
   }
 
   @Test
-  @DisplayName("카테고리 삭제 테스트")
+  @DisplayName("카테고리 삭제 확인 테스트")
   void deleteCategory() {
     // given
     Long categoryId = 1L;
@@ -143,7 +143,7 @@ class CategoryServiceTest {
   }
 
   @Test
-  @DisplayName("카테고리 전체 테마 목록 조회 테스트")
+  @DisplayName("카테고리 전체 테마 목록 조회 확인 테스트")
   void getAllthemas() {
     // given
     List<String> themas = Arrays.asList("thema1", "thema2", "thema3");
@@ -158,7 +158,7 @@ class CategoryServiceTest {
   }
 
   @Test
-  @DisplayName("테마별 카테고리 목록 테스트")
+  @DisplayName("테마별 카테고리 목록 확인 테스트")
   void getCategoriesByThema() {
     // given
     String thema = "TestThema";
@@ -193,7 +193,7 @@ class CategoryServiceTest {
   }
 
   @Test
-  @DisplayName("카테고리 상세 조회 테스트")
+  @DisplayName("카테고리 상세 조회 확인 테스트")
   void getCategoryDetail() {
     // given
     Long categoryId = 1L;
@@ -226,7 +226,7 @@ class CategoryServiceTest {
   }
 
   @Test
-  @DisplayName("관리자용 카테고리 목록 조회 테스트")
+  @DisplayName("관리자용 카테고리 목록 조회 확인 테스트")
   void getAdminCategories() {
     // given
     int page = 0;
