@@ -8,10 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -23,8 +20,20 @@ public class TokenApiController {
     @PostMapping("/v1/login")
     public ResponseEntity<JwtTokenResponse> jwtLogin(
             @RequestBody JwtTokenLoginRequest request,
-            HttpServletResponse response
+            HttpServletResponse response,
+            @CookieValue(value = "refreshToken", required = false) Cookie existingRefreshTokenCookie
     ) {
+        // 기존 쿠키 삭제 로직
+        if (existingRefreshTokenCookie != null) {
+            Cookie deleteRefreshTokenCookie = new Cookie("refreshToken", null);
+            deleteRefreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
+            deleteRefreshTokenCookie.setSecure(true); // HTTPS에서만 전송
+            deleteRefreshTokenCookie.setPath("/"); // 동일한 경로
+            deleteRefreshTokenCookie.setMaxAge(0); // 쿠키 삭제 설정
+
+            response.addCookie(deleteRefreshTokenCookie); // 삭제할 쿠키를 response에 추가
+        }
+
         JwtTokenDto jwtTokenResponse = userService.login(request);
 
         Cookie refreshTokenCookie = new Cookie(
