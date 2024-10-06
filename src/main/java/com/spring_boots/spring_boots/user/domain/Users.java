@@ -1,6 +1,8 @@
 package com.spring_boots.spring_boots.user.domain;
 
 import com.spring_boots.spring_boots.common.BaseTimeEntity;
+import com.spring_boots.spring_boots.orders.entity.Orders;
+import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,6 +59,9 @@ public class Users extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UsersInfo> usersInfoList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Orders> ordersList = new ArrayList<>();
+
     @Override // 권한 반환
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("user"));
@@ -89,7 +95,12 @@ public class Users extends BaseTimeEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        //isDeleted 가 false 일 때만 활성화된 사용자로 간주
+        return !isDeleted;
+    }
+
+    public void deleteUser() {
+        this.isDeleted = true;
     }
 
     public UserResponseDto toResponseDto() {
@@ -98,5 +109,11 @@ public class Users extends BaseTimeEntity implements UserDetails {
                 .username(username)
                 .userRealId(userRealId)
                 .build();
+    }
+
+    public void updateUser(UserUpdateRequestDto userUpdateRequestDto) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        this.password = encoder.encode(userUpdateRequestDto.getPassword());
+        this.email = userUpdateRequestDto.getEmail();
     }
 }

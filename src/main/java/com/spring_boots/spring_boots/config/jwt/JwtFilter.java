@@ -28,7 +28,6 @@ public class JwtFilter extends OncePerRequestFilter {
     //        private final TokenProvider tokenProvider;
     private final JwtProviderImpl tokenProvider;
 
-    //todo request-header 정보를 가져와서 토큰이 있다면 토큰 유효성 검증! -> request-header 정보 null 발생...
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,

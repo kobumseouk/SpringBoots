@@ -73,7 +73,6 @@ public class WebSecurityConfig {
 //                .oauth2Login(oauth2Login->
 //                        oauth2Login
 //                                .defaultSuccessUrl("로그인 성공 페이지",true))
-                //Todo jwtFilter 필터를 추가하고,
                 .addFilterBefore(jwtFilter,
                         UsernamePasswordAuthenticationFilter.class) //JWT 필터추가
                 .build();

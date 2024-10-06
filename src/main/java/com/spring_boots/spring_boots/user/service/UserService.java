@@ -4,18 +4,18 @@ import com.spring_boots.spring_boots.config.jwt.impl.AuthTokenImpl;
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
-import com.spring_boots.spring_boots.user.dto.request.JwtTokenDto;
-import com.spring_boots.spring_boots.user.dto.request.JwtTokenLoginRequest;
-import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
+import com.spring_boots.spring_boots.user.dto.request.*;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,7 +58,10 @@ public class UserService {
     public JwtTokenDto login(JwtTokenLoginRequest request) {
         Users user = userRepository.findByUserRealId(request.getUserRealId())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 실제 ID 입니다."));
-        log.info("요청 비밀번호 : {}, 실제 비밀번호 : {}", request.getPassword(), user.getPassword());
+
+        if (user.isDeleted()) {
+            throw new IllegalArgumentException("정보가 삭제된 회원입니다.");
+        }
 
         if (!bCryptPasswordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
@@ -66,17 +69,18 @@ public class UserService {
 
         Map<String, Object> claims = Map.of(
                 "accountId", user.getUserId(),  //JWT 클래임에 accountId
-                "role", user.getRole()  //JWT 클래임에 role
+                "role", user.getRole(),  //JWT 클래임에 role
+                "userRealId",user.getUserRealId()   //JWT 클래임에 실제 ID 추가
         );
 
         AuthTokenImpl accessToken = jwtProvider.createAccessToken(
-                user.getUserId().toString(),
+                user.getUserRealId(),   //토큰에 실제 ID 정보 입력
                 user.getRole(),
                 claims
         );
 
         AuthTokenImpl refreshToken = jwtProvider.createRefreshToken(
-                user.getUserId().toString(),
+                user.getUserRealId(),   //토큰에 실제 ID 정보 입력
                 user.getRole(),
                 claims
         );
@@ -93,5 +97,42 @@ public class UserService {
         return users.stream()
                 .map(Users::toResponseDto)  // Users 객체를 UserResponseDto로 변환
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void update(Users user, UserUpdateRequestDto userUpdateRequestDto) {
+        user.updateUser(userUpdateRequestDto);
+    }
+
+    @Transactional
+    public void deleteUser(Users authUser) {
+        userRepository.delete(authUser);
+    }
+
+    public boolean isDeleteUser(Users authUser) {
+        Optional<Users> findUser = userRepository.findById(authUser.getUserId());
+        if (findUser.isPresent()) {
+            return false;   //존재하면 false 반환
+        }
+
+        return true;
+    }
+
+    @Transactional
+    public void softDeleteUser(Users authUser) {
+        authUser.deleteUser();  //소프트 딜리트
+    }
+
+    public boolean checkPassword(Users authUser, UserPasswordRequestDto request) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (encoder.matches(request.getPassword(), authUser.getPassword())) {
+            return true;    //비밀번호가 맞으면 true
+        }
+
+        return false;   //맞지않으면 false
+    }
+
+    public boolean isDuplicateUserRealId(String userRealId) {
+        return userRepository.existsByUserRealId(userRealId);
     }
 }
