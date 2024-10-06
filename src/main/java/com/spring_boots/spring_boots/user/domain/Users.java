@@ -95,7 +95,12 @@ public class Users extends BaseTimeEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        //isDeleted 가 false 일 때만 활성화된 사용자로 간주
+        return !isDeleted;
+    }
+
+    public void deleteUser() {
+        this.isDeleted = true;
     }
 
     public UserResponseDto toResponseDto() {

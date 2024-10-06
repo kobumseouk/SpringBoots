@@ -9,6 +9,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -85,15 +86,15 @@ public class UsersApiController {
     //회원 정보 수정
     @PutMapping("/v1/users")
     public ResponseEntity<Users> updateUser(@AuthenticationPrincipal Users user,
-                                                      @RequestBody UserUpdateRequestDto request) {
+                                            @RequestBody UserUpdateRequestDto request) {
         Users authUser = userService.findById(user.getUserId());    //인증객체 가져올시 영속성컨텍스트에서 가져와야함
 
-        userService.update(authUser,request);
+        userService.update(authUser, request);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    //회원 탈퇴
+    //회원 탈퇴(hard delete)
     @DeleteMapping("/v1/users")
     public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal Users user,
                                            HttpServletResponse response) {
@@ -101,6 +102,26 @@ public class UsersApiController {
         userService.deleteUser(authUser);
 
         if (userService.isDeleteUser(authUser)) {
+            Cookie cookie = new Cookie("refreshToken", null);
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(0); // 쿠키 즉시 만료
+            response.addCookie(cookie);
+
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    //회원 탈퇴(soft delete)
+    @PostMapping("/v2/users")
+    public ResponseEntity<Void> softDeleteUser(@AuthenticationPrincipal Users user,
+                                               HttpServletResponse response) {
+        Users authUser = userService.findByEmail(user.getEmail());
+        userService.softDeleteUser(authUser);
+
+        if (authUser.isDeleted()) {
             Cookie cookie = new Cookie("refreshToken", null);
             cookie.setHttpOnly(true);
             cookie.setPath("/");

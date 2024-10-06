@@ -61,7 +61,10 @@ public class UserService {
     public JwtTokenDto login(JwtTokenLoginRequest request) {
         Users user = userRepository.findByUserRealId(request.getUserRealId())
                 .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 실제 ID 입니다."));
-        log.info("요청 비밀번호 : {}, 실제 비밀번호 : {}", request.getPassword(), user.getPassword());
+
+        if (user.isDeleted()) {
+            throw new IllegalArgumentException("정보가 삭제된 회원입니다.");
+        }
 
         if (!bCryptPasswordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
@@ -116,5 +119,10 @@ public class UserService {
         }
 
         return true;
+    }
+
+    @Transactional
+    public void softDeleteUser(Users authUser) {
+        authUser.deleteUser();  //소프트 딜리트
     }
 }
