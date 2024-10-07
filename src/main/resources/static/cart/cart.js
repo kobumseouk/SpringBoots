@@ -23,7 +23,7 @@ const itemData1 = {
 
 function addItemToCart(item_name, item_price, item_id, item_quantity, item_color, item_size, image_url) {
   // 장바구니에 담긴 아이템을 로컬 스토리지에서 가져오기
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
   // 새로운 아이템 객체 생성
   const newItem = {
@@ -38,10 +38,10 @@ function addItemToCart(item_name, item_price, item_id, item_quantity, item_color
 
 
   // 장바구니에 아이템 추가 (중복 체크)
-  const existingItemIndex = cart.findIndex(item => item.item_id === item_id && item.item_size === item_size);
-  if (existingItemIndex > -1) {
+  const existingItem = cart.find(item => item.item_id === item_id && item.item_size === item_size);
+  if (existingItem) {
     // 이미 존재하는 아이템이면 수량만 증가
-    cart[existingItemIndex].item_quantity += item_quantity; // item_quantity로 수정
+    existingItem.item_quantity += item_quantity;
   } else {
     // 새로운 아이템이면 추가
     cart.push(newItem);
@@ -52,13 +52,13 @@ function addItemToCart(item_name, item_price, item_id, item_quantity, item_color
 }
 
 function deleteItemFromCart(item_id, item_size) {
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
   // 삭제할 아이템 찾기 (item_id와 item_size로 식별)
-  const itemIndex = cart.findIndex(item => item.item_id === item_id && item.item_size === item_size);
+  const existingItem = cart.find(item => item.item_id === item_id && item.item_size === item_size);
 
-  if (itemIndex > -1) {
-    cart.splice(itemIndex, 1);
+  if (existingItem) {
+    cart.splice(existingItem, 1);
     localStorage.setItem('cart', JSON.stringify(cart));
   } else {
     // 아이템이 존재하지 않으면 404 not found 로그 출력
@@ -70,22 +70,22 @@ function deleteItemFromCart(item_id, item_size) {
 function updateItemSizeOrQuantity(item_id, item_size, new_quantity = null, new_size = null) {
   console.log("updateItemSizeOrQuantity function called");
   // 로컬 스토리지에서 장바구니를 가져오기
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
   // 업데이트할 아이템 찾기
   console.log("Searching for item_id:", item_id, "and item_size:", item_size);
   console.log("Current cart:", cart);
-  const itemIndex = cart.findIndex(item => item.item_id === item_id && item.item_size === item_size);
+  const existingItem = cart.find(item => item.item_id === item_id && item.item_size === item_size);
 
-  if (itemIndex > -1) {
+  if (existingItem) {
     // 새로운 수량이 주어지면 업데이트
     if (new_quantity !== null) {
-      cart[itemIndex].item_quantity = new_quantity;
+      existingItem.item_quantity = new_quantity;
     }
 
     // 새로운 사이즈가 주어지면 업데이트
     if (new_size !== null) {
-      cart[itemIndex].item_size = new_size;
+      existingItem.item_size = new_size;
     }
 
     // 업데이트된 장바구니를 로컬 스토리지에 저장
@@ -100,16 +100,14 @@ function updateItemSizeOrQuantity(item_id, item_size, new_quantity = null, new_s
 export function calculateTotal() {
   const selectedItems = getSelectedItems(); // 선택된 아이템 목록 가져오기
 
-  // 총 가격 초기화
-  let totalPrice = 0;
+  // reduce를 이용해 총 가격 계산
+  const totalPrice = selectedItems.reduce((total, item) => {
+    return total + item.item_price * item.item_quantity;
+  }, 0);
 
-  // 선택된 아이템의 가격 계산
-  selectedItems.forEach(item => {
-    totalPrice += item.item_price * item.item_quantity; // 각 아이템의 가격과 수량을 곱해서 총 가격에 추가
-  });
-
-  return totalPrice; // 계산된 총 가격 반환
+  return totalPrice;
 }
+
 
 // 선택된 아이템들 목록 가져오기
 export function getSelectedItems() {
