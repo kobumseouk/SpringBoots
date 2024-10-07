@@ -80,27 +80,34 @@
       <div class="container">
         <div class="cart-header">
           <div class="title">
-            <p class="is-size-2" style="text-align: center">장바구니</p>
+            <p class="is-size-2">장바구니</p>
           </div>
 
         </div>
 
         <div class="tile is-ancestor">
           <div class="tile is-8 is-parent cart-products">
-            <!-- 장바구니에 담긴 상품 모음 -->
-            <div class="box cart-products-container" id="cartProductsContainer">
-              <div class="cart-products-header">
+            <div class="cart-products-header">
+              <div class="field">
                 <label class="checkbox">
                   <input type="checkbox" id="allSelectCheckbox" />
-                  <p class="help">전체선택</p>
-                </label>
-                <label class="seperator">
-                  <p class="help help-seperator">&nbsp;&nbsp;|&nbsp;&nbsp;</p>
-                </label>
-                <label class="delete-part" id="partialDeleteLabel">
-                  <p class="help">선택삭제</p>
+                  <span class="help">전체선택</span>
                 </label>
               </div>
+
+              <div class="seperator">
+                <p class="help help-seperator">&nbsp;&nbsp;|&nbsp;&nbsp;</p>
+              </div>
+
+              <div class="delete-part">
+                <!-- 선택 삭제 버튼 -->
+                <button class="button is-danger is-small" id="deleteSelectedButton">선택삭제</button>
+              </div>
+            </div>
+
+
+            <!-- 장바구니에 담긴 상품 모음 -->
+            <div class="box cart-products-container" id="cartProductsContainer">
 
               <!-- 장바구니에 담긴 상품들의 html 요소(카드 형태)가 주입되는 곳 -->
             </div>
@@ -115,15 +122,15 @@
               <div class="order-info">
                 <div class="info">
                   <p>총 상품금액</p>
-                  <p id="productsCount"></p>
-                </div>
-                <div class="info">
-                  <p>총 배송비</p>
                   <p id="productsTotal"></p>
                 </div>
                 <div class="info">
+                  <p>총 배송비</p>
+                  <p id="deliveryTotal"></p>
+                </div>
+                <div class="info">
                   <p>총 할인</p>
-                  <p id="deliveryFee"></p>
+                  <p id="discountTotal"></p>
                 </div>
               </div>
               <div class="total">
@@ -131,7 +138,7 @@
                 <p class="total-price" id="orderTotal"></p>
               </div>
               <div class="purchase">
-                <button class="button is-info" id="purchaseButton">
+                <button class="button is-info" id="purchaseButton" onClick="location.href='../order/order.html'">
                   구매하기
                 </button>
               </div>
