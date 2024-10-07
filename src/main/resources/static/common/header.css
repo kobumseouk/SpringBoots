@@ -1,0 +1,54 @@
+.navbar-top, .navbar-main {
+  background-color: black;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-top .navbar-end {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-item {
+  color: white !important;
+  font-weight: bold;
+}
+
+.navbar-item:hover {
+  background-color: #333 !important;
+}
+
+.logo-icon {
+  color: #4caf50;
+  font-size: 1.5rem;
+}
+
+.search-input {
+  background-color: white;
+  border: none;
+  color: black;
+}
+
+.search-input::placeholder {
+  color: #888;
+}
+
+.search-button {
+  background-color: white;
+  border: none;
+}
+
+.search-icon {
+  color: black;
+}
+
+.has-text-danger {
+  color: red !important;
+}
+
+/* NEW-IN, BEST, EVENT 섹션 */
+.navbar-main .navbar-end {
+  margin-left: auto;
+}

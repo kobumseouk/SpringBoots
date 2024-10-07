@@ -1,0 +1,68 @@
+.account-header {
+  display: block;
+  border-bottom: #ddd 1px solid;
+  padding-bottom: 0.7rem;
+  margin-bottom: 2rem;
+}
+
+.register-category-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 3rem;
+}
+
+.register-category-form-box {
+  width: 100%;
+  max-width: 40rem;
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02);
+}
+
+.register-category-form-box .title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.register-category-form-box .label {
+  font-weight: 600;
+}
+
+.register-category-form-box .input,
+.register-category-form-box .textarea,
+.register-category-form-box .select select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.register-category-form-box .input:focus,
+.register-category-form-box .textarea:focus,
+.register-category-form-box .select select:focus {
+  border-color: #3273dc;
+  box-shadow: 0 0 0 0.125em rgba(50, 115, 220, 0.25);
+  outline: none;
+}
+
+.register-category-form-box .button {
+  font-weight: bold;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.register-category-form-box .file {
+  margin-top: 0.5rem;
+}
+
+.register-category-form-box .file-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
