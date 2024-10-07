@@ -1,5 +1,6 @@
 package com.spring_boots.spring_boots.item.service;
 
+import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
 import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
@@ -32,8 +33,8 @@ public class ItemRestService {
     }
 
     // Item 단일 보기
-    public ResponseItemDto getItem(Long id) throws Exception {
-        Item item = itemRepository.findById(id).orElseThrow(() -> new Exception("Item not found"));
+    public ResponseItemDto getItem(Long itemId)  {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: " + itemId));
         return itemMapper.toResponseDto(item);
     }
 
@@ -45,8 +46,8 @@ public class ItemRestService {
     }
 
     // Item 수정하기
-    public ResponseItemDto updateItem(Long id, UpdateItemDto itemDto) throws Exception {
-        Item findItem = itemRepository.findById(id).orElseThrow(() -> new Exception("Item not found"));
+    public ResponseItemDto updateItem(Long itemId, UpdateItemDto itemDto)  {
+        Item findItem = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("아이템을 찾을 수 없습니다: " + itemId));
         //Item Name 수정
         Optional.ofNullable(itemDto.getItemName())
                 .ifPresent(findItem::setItemName);
@@ -77,8 +78,8 @@ public class ItemRestService {
     }
 
     // Item 삭제하기
-    public void deleteItem(Long id) throws Exception {
-        Item item = itemRepository.findById(id).orElseThrow(() -> new Exception("Item not found"));
+    public void deleteItem(Long itemId) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: "+ itemId));
         itemRepository.delete(item);
     }
 }

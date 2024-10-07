@@ -20,12 +20,7 @@ import java.util.List;
 public class ItemRestController {
     private  ItemRestService itemRestService;
     private ItemMapper mapper;
-
-    @Autowired
-    public ItemRestController(ItemRestService itemRestService, ItemMapper mapper) {
-        this.itemRestService = itemRestService;
-        this.mapper = mapper;
-    }
+    
 
     // Item 만들기
     @PostMapping("/admin/items")
