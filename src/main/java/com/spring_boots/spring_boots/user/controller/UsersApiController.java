@@ -40,21 +40,6 @@ public class UsersApiController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    //모든 회원 정보 조회(관리자)
-    @GetMapping("/v1/admin/users")
-    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
-        List<UserResponseDto> users = userService.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(users);
-    }
-
-    //특정 회원 정보 조회(관리자)
-    @GetMapping("/v1/admin/users/{user_id}")
-    public ResponseEntity<UserResponseDto> getUserByAdmin(@PathVariable("user_id") Long userId) {
-        Users findUser = userService.findById(userId);
-        UserResponseDto responseDto = findUser.toResponseDto();
-        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-    }
-
     //개인 정보 조회
     @GetMapping("/v1/users-info")
     public ResponseEntity<UserResponseDto> getUser() {
