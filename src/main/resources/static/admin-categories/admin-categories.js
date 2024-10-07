@@ -1,3 +1,4 @@
+import { loadHeader } from "../../common/common-header.js";
 import { addCommas, checkAdmin, createNavbar } from "../../useful-functions.js";
 import * as Api from "../../api.js";
 
@@ -9,9 +10,13 @@ const modalBackground = document.querySelector("#modalBackground");
 const deleteCompleteButton = document.querySelector("#deleteCompleteButton");
 const deleteCancelButton = document.querySelector("#deleteCancelButton");
 
-checkAdmin();
-addAllElements();
-addAllEvents();
+// 페이지 초기화 함수
+async function initializePage() {
+  await loadHeader();
+  checkAdmin();
+  addAllElements();
+  addAllEvents();
+}
 
 // 요소 삽입 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllElements() {
@@ -123,3 +128,6 @@ function keyDownCloseModal(e) {
     closeModal();
   }
 }
+
+// 페이지 초기화
+window.addEventListener('DOMContentLoaded', initializePage);
