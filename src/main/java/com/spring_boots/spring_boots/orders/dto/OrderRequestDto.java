@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class PlaceOrderRequest {
+public class OrderRequestDto {
     private Long userId;
     private String shippingAddress;
     private String recipientName;

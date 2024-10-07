@@ -19,6 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/order-summary").setViewName("forward:/order-summary/order-summary.html");
         registry.addViewController("/order-list").setViewName("forward:/order-list/order-list.html");
         registry.addViewController("/order").setViewName("forward:/order/order.html");
+        registry.addViewController("/order-details").setViewName("forward:/order-details/order-details.html");
         // 카테고리 목록 페이지
         registry.addViewController("/categories").setViewName("forward:/category/list.html");
         // 카테고리 상세 페이지
