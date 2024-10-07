@@ -186,57 +186,139 @@ function renderCartItems() {
             
             <!-- 오른쪽: 버튼 그룹 -->
             <div class="buttons" style="margin-left: auto;">
-                <button class="button is-small">옵션/수량변경</button>
+                <button class="button is-small option-change-btn">옵션/수량변경</button>
                 <button class="button is-small is-danger delete-btn" onclick="deleteItemFromCart(${item.item_id}, '${item.item_size}')">삭제</button>
             </div>
         </div>
 
-        <!-- 아래쪽 DIV: 상품 정보 -->
-        <div class="media">
+           <!-- 아래쪽 DIV: 상품 정보 -->
+          <div class="media">
             <div class="media-left">
-                <figure class="image is-64x64">
-                    <img src="${item.image_url}" alt="${item.item_name}">
-                </figure>
+              <figure class="image is-64x64">
+                <img src="${item.image_url}" alt="${item.item_name}">
+              </figure>
             </div>
             <div class="media-content">
-                <p class="title is-5">${item.item_name}</p>
-                <p class="subtitle is-6">Size: ${item.item_size} | Color: ${item.item_color}</p>
-                <p class="subsubtitle is-6">수량: ${item.item_quantity}</p>
-                 <p class="has-text-right">$${item.item_price}</p>
+              <p class="title is-5">${item.item_name}</p>
+              <p class="subtitle is-6">Size: <span class="item-size">${item.item_size}</span> | Color: ${item.item_color}</p>
+              <p class="subsubtitle is-6">수량: <span class="item-quantity">${item.item_quantity}</span></p>
+              <p class="has-text-right">$${item.item_price}</p>
             </div>
+          </div>
         </div>
-    </div>
-</div>
-</div>
-        `;
+      </div>
+    `;
+
     // 삭제 버튼 이벤트 리스너 추가
     const deleteBtn = itemCard.querySelector('.delete-btn');
     deleteBtn.addEventListener('click', () => {
-      alert('장바구니에서 상품을 삭제하시겠습니까?');
-      deleteItemFromCart(item.item_id, item.item_size); // 버튼이 눌리면 해당 아이템 삭제
-      renderCartItems();    //TODO: 새로고침으로 바꾸기
+      const confirmed = confirm('장바구니에서 상품을 삭제하시겠습니까?');
+      if (confirmed) {
+        deleteItemFromCart(item.item_id, item.item_size); // 버튼이 눌리면 해당 아이템 삭제
+        location.reload(); // 새로고침
+      }
     });
+
+    // 옵션/수량변경 버튼 이벤트 리스너 추가
+    const optionChangeBtn = itemCard.querySelector('.option-change-btn');
+    optionChangeBtn.addEventListener('click', () => {
+      // 수량 조절 UI 추가
+      const quantityControl = document.createElement('div');
+      quantityControl.classList.add('quantity-control');
+      quantityControl.innerHTML = `
+        <div style="margin-bottom: 10px;">
+          <label>수량: </label>
+          <button class="button is-small quantity-decrease">-</button>
+          <span class="item-quantity">${item.item_quantity}</span>
+          <button class="button is-small quantity-increase">+</button>
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label>사이즈: </label>
+          <button class="button is-small size-decrease">-</button>
+          <span class="item-size">${item.item_size}</span>
+          <button class="button is-small size-increase">+</button>
+        </div>
+        <button class="button is-success apply-btn">적용</button>
+      `;
+
+      // 수량 변경 이벤트
+      const decreaseBtn = quantityControl.querySelector('.quantity-decrease');
+      const increaseBtn = quantityControl.querySelector('.quantity-increase');
+      const quantityDisplay = quantityControl.querySelector('.item-quantity');
+      let currentQuantity = item.item_quantity;
+
+      decreaseBtn.addEventListener('click', () => {
+        if (currentQuantity > 1) {
+          currentQuantity--;
+          quantityDisplay.innerText = currentQuantity;
+        }
+      });
+
+      increaseBtn.addEventListener('click', () => {
+        currentQuantity++;
+        quantityDisplay.innerText = currentQuantity;
+      });
+
+      // 사이즈 변경 이벤트
+      const sizeDisplay = quantityControl.querySelector('.item-size');
+      const sizeDecreaseBtn = quantityControl.querySelector('.size-decrease');
+      const sizeIncreaseBtn = quantityControl.querySelector('.size-increase');
+      const sizes = [230, 240, 250, 260, 270, 280, 290]; // 가능한 사이즈 배열
+      let currentSizeIndex = sizes.indexOf(item.item_size);
+
+      sizeDecreaseBtn.addEventListener('click', () => {
+        if (currentSizeIndex > 0) {
+          currentSizeIndex--;
+          sizeDisplay.innerText = sizes[currentSizeIndex];
+        }
+      });
+
+      sizeIncreaseBtn.addEventListener('click', () => {
+        if (currentSizeIndex < sizes.length - 1) {
+          currentSizeIndex++;
+          sizeDisplay.innerText = sizes[currentSizeIndex];
+        }
+      });
+
+      // 적용 버튼 클릭 시 이벤트
+      const applyBtn = quantityControl.querySelector('.apply-btn');
+      applyBtn.addEventListener('click', () => {
+        updateItemSizeOrQuantity(item.item_id,item.item_size , currentQuantity,sizes[currentSizeIndex],); // 로컬 스토리지 업데이트
+        location.reload(); // 새로고침
+      });
+
+      // 수량 및 사이즈 조절 UI를 카드에 추가
+      const mediaContent = itemCard.querySelector('.media-content');
+      mediaContent.appendChild(quantityControl);
+    });
+
     cartContainer.appendChild(itemCard);
   });
 
-// 체크박스 이벤트 리스너 추가
+  // 체크박스 이벤트 리스너 추가
   document.querySelectorAll('.item-checkbox').forEach(checkbox => {
     checkbox.addEventListener('change', () => {
-      // 1. 선택된 아이템 정보 가져오기
+      // 선택된 아이템 정보 가져오기
       const selectedItems = getSelectedItems();
       console.log('Selected items:', selectedItems);
 
-      // 2. 총 가격 계산
+      // 총 가격 계산
       updateOrderTotal();
     });
   });
-
 }
 
 // 총 결제금액 업데이트 함수
 function updateOrderTotal() {
-  const totalPrice = calculateTotal(); // calculateTotal 함수로 총 가격 계산
-  document.getElementById('orderTotal').innerText = `￦${totalPrice}`; // HTML에 값 넣기
+  const productsTotal = calculateTotal(); // calculateTotal 함수로 총 가격 계산
+  let deliveryTotal = 0;
+  let discountTotal = 0;
+  let orderTotal = productsTotal + deliveryTotal - discountTotal;
+  document.getElementById('productsTotal').innerText = `￦${productsTotal}`; // HTML에 값 넣기
+  document.getElementById('deliveryTotal').innerText = `￦${deliveryTotal}`;
+  document.getElementById('discountTotal').innerText = `￦${discountTotal}`;
+  document.getElementById('orderTotal').innerText = `￦${orderTotal}`;
+
 }
 
 // 페이지 로드 시 장바구니 아이템 카드 표시
