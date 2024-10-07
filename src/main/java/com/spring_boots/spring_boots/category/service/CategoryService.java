@@ -1,7 +1,7 @@
 package com.spring_boots.spring_boots.category.service;
 
+import com.spring_boots.spring_boots.category.dto.category.*;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
-import com.spring_boots.spring_boots.category.dto.*;
 import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,24 +34,29 @@ public class CategoryService {
   @Transactional
   public CategoryResponseDto updateCategory(Long categoryId, CategoryRequestDto requestDto) {
     Category category = categoryRepository.findById(categoryId)
+        .map(existingCategory -> {
+          categoryMapper.updateCategoryFromDto(requestDto, existingCategory);
+          return categoryRepository.save(existingCategory);
+        })
         .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
-    categoryMapper.updateCategoryFromDto(requestDto, category);
 
-    return categoryMapper.categoryToCategoryResponseDto(categoryRepository.save(category));
+    return categoryMapper.categoryToCategoryResponseDto(category);
   }
 
 
   // 카테고리 삭제
   @Transactional
   public void deleteCategory(Long categoryId) {
-    Category category = categoryRepository.findById(categoryId)
-        .orElseThrow(() -> new ResourceNotFoundException("삭제할 카테고리를 찾을 수 없습니다: " + categoryId));
-    categoryRepository.delete(category);
+    categoryRepository.findById(categoryId)
+        .ifPresentOrElse(
+            categoryRepository::delete,
+            () -> { throw new ResourceNotFoundException("삭제할 카테고리를 찾을 수 없습니다: " + categoryId); }
+        );
   }
 
 
   // 카테고리 전체 테마 목록 조회
-  public List<String> getAllThemes() {
+  public List<String> getAllThemas() {
     return categoryRepository.findDistinctThemas();
   }
 
@@ -65,9 +70,9 @@ public class CategoryService {
 
   // 카테고리 상세 조회
   public CategoryDto getCategoryDetail(Long categoryId) {
-    Category category = categoryRepository.findById(categoryId)
+    return categoryRepository.findById(categoryId)
+        .map(categoryMapper::categoryToCategoryDto)
         .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
-    return categoryMapper.categoryToCategoryDto(category);
   }
 
 

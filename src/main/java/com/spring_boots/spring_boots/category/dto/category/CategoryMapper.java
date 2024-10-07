@@ -1,4 +1,4 @@
-package com.spring_boots.spring_boots.category.dto;
+package com.spring_boots.spring_boots.category.dto.category;
 
 
 import com.spring_boots.spring_boots.category.entity.Category;

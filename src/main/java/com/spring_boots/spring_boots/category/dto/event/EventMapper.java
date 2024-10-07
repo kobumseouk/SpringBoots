@@ -1,7 +1,6 @@
 package com.spring_boots.spring_boots.category.dto.event;
 
 
-import com.spring_boots.spring_boots.category.dto.event.*;
 import com.spring_boots.spring_boots.category.entity.Event;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
