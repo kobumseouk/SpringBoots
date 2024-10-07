@@ -27,7 +27,9 @@ public class OrdersService {
     public List<OrderDto> getUserOrders(Long userId) {
         List<Orders> orders = ordersRepository.findAll(); // 나중에 userId 필터 적용 필요
         return orders.stream()
-                .filter(order -> order.getUser() != null && order.getUser().getUserId().equals(userId))
+                .filter(order -> order.getUser() != null &&
+                        order.getUser().getUserId().equals(userId) &&
+                        !order.getIsCanceled()) // isCanceled가 false인 경우만 필터링
                 .map(this::convertToOrderDto)
                 .collect(Collectors.toList());
     }

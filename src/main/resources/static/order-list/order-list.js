@@ -64,7 +64,7 @@ function renderOrderList(orders) {
                 <td>
                     <a class="button is-small is-link" href="/order-details/order-details.html?id=${order.ordersId}">상세 보기</a>
                     ${
-            order.orderStatus === 'Pending'
+            order.orderStatus === '주문완료'
                 ? `<button class="button is-small is-danger ml-2" onclick="cancelOrder(${order.ordersId})">주문 취소</button>`
                 : ''
         }
