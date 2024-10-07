@@ -37,7 +37,8 @@
 .cart-header .title {
   margin-bottom: 0;
   padding: 1rem 0 0 1rem;
-  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .cart-header .subtitle {
@@ -47,6 +48,7 @@
 
 .cart-products {
   height: 100%;
+  flex-direction: column;
 }
 
 .cart-products-container {
@@ -59,6 +61,7 @@
   border-bottom: #555 solid 1px;
   padding-top: 0.75rem;
   display: flex;
+
 }
 
 .cart-products-header .help {

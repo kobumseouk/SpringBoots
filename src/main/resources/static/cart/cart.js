@@ -101,11 +101,9 @@ export function calculateTotal() {
   const selectedItems = getSelectedItems(); // 선택된 아이템 목록 가져오기
 
   // reduce를 이용해 총 가격 계산
-  const totalPrice = selectedItems.reduce((total, item) => {
+  return selectedItems.reduce((total, item) => {
     return total + item.item_price * item.item_quantity;
   }, 0);
-
-  return totalPrice;
 }
 
 
@@ -142,20 +140,29 @@ document.querySelectorAll('.item-checkbox').forEach(checkbox => {
 
 // 선택된 모든 아이템 삭제
 function deleteSelectedItems() {
-  const selectedItems = getSelectedItems(); // 체크박스 선택된 아이템 목록 가져오기
-
-  // 선택된 아이템 목록이 있는지 확인
+  const selectedItems = getSelectedItems(); // 선택된 아이템 목록 가져오기
   if (selectedItems.length > 0) {
-    selectedItems.forEach(item => {
-      deleteItemFromCart(item.item_id, item.item_size); // 각 선택된 아이템 삭제
-      console.log(`${item.item_id} with size of ${item.item_size} have been deleted`);
+    const cart = JSON.parse(localStorage.getItem('cart')) || []; // 기존 장바구니 데이터
+
+    // 선택된 아이템들을 장바구니에서 제거
+    const updatedCart = cart.filter(item => {
+      return !selectedItems.some(selectedItem =>
+          selectedItem.item_id === item.item_id && selectedItem.item_size === item.item_size);
     });
 
+    // 로컬 스토리지에 업데이트된 장바구니 저장
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+
+    // 장바구니 아이템 다시 렌더링
+    renderCartItems();
+
+    console.log('Selected items have been deleted.');
+
     // 삭제 후 총 가격 다시 계산
-    const totalPrice = calculateTotal(getSelectedItems()); // 총 가격 재계산
-    document.getElementById('total-price').innerText = `Total Price: $${totalPrice}`; // 화면에 표시
+    const totalPrice = calculateTotal(updatedCart); // 총 가격 재계산
+    document.getElementById('orderTotal').innerText = `￦${totalPrice}`;
   } else {
-    console.log("No items selected to delete."); // 선택된 항목이 없을 때
+    console.log('No items selected to delete.'); // 선택된 항목이 없을 때
   }
 }
 
@@ -327,7 +334,34 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCartItems(); // 장바구니 아이템 표시 함수 호출
 });
 
+// 전체선택 체크박스 이벤트 추가
+const allSelectCheckbox = document.getElementById('allSelectCheckbox');
+allSelectCheckbox.addEventListener('change', function () {
+  const itemCheckboxes = document.querySelectorAll('.item-checkbox'); // 모든 아이템 체크박스
+  itemCheckboxes.forEach(checkbox => {
+    checkbox.checked = allSelectCheckbox.checked; // 전체선택의 상태에 따라 개별 체크박스 설정
+  });
+    const selectedItems = getSelectedItems();
+    console.log('Selected items:', selectedItems);
 
+    // 총 가격 계산
+    updateOrderTotal();
+});
+
+// 개별 체크박스와 전체 선택 동기화 (모든 체크박스가 선택되었을 때 전체 선택도 체크되도록)
+function syncAllSelectCheckbox() {
+  const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+  const allChecked = Array.from(itemCheckboxes).every(checkbox => checkbox.checked);
+  allSelectCheckbox.checked = allChecked;
+}
+
+document.getElementById('deleteSelectedButton').addEventListener('click', () => {
+  const confirmed = confirm('선택된 아이템을 삭제하시겠습니까?');
+
+  if (confirmed) {
+    deleteSelectedItems(); // 선택된 아이템 삭제
+  }
+});
 
 
 
