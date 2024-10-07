@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @Slf4j
-public class UsersApiController {
+public class UserApiController {
 
     private final UserService userService;
 
@@ -135,7 +135,13 @@ public class UsersApiController {
 
     //로그아웃
     @PostMapping("/v1/logout")
-    public ResponseEntity<Void> logout(HttpServletResponse response) {
+    public ResponseEntity<Void> logout(HttpServletResponse response,
+                                       @AuthenticationPrincipal Users user) {
+        Users authUser = userService.findByEmail(user.getEmail());
+        if (authUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         Cookie cookie = new Cookie("refreshToken", null);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
