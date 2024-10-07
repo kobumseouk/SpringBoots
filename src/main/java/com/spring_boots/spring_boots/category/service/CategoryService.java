@@ -83,5 +83,12 @@ public class CategoryService {
     return categoryPage.map(categoryMapper::categoryToCategoryAdminDto);
   }
 
+  // 관리자용 카테고리 개별 조회 - 카테고리 수정 시 사용
+  public CategoryAdminDto getAdminCategory(Long categoryId) {
+    return categoryRepository.findById(categoryId)
+        .map(categoryMapper::categoryToCategoryAdminDto)
+        .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
+  }
+
 
 }
