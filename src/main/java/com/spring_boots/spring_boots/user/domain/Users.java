@@ -108,6 +108,7 @@ public class Users extends BaseTimeEntity implements UserDetails {
                 .email(email)
                 .username(username)
                 .userRealId(userRealId)
+                .role(role)
                 .build();
     }
 
@@ -115,5 +116,8 @@ public class Users extends BaseTimeEntity implements UserDetails {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         this.password = encoder.encode(userUpdateRequestDto.getPassword());
         this.email = userUpdateRequestDto.getEmail();
+    }
+    public void updateToAdminRole() {
+        role = UserRole.ADMIN;
     }
 }

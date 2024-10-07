@@ -135,4 +135,23 @@ public class UserService {
     public boolean isDuplicateUserRealId(String userRealId) {
         return userRepository.existsByUserRealId(userRealId);
     }
+
+    @Transactional
+    public boolean grantAdminToken(Users authUser, AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
+        //임의 토큰 만들기
+        String tempToken = bCryptPasswordEncoder.encode("admin");
+        String adminToken = adminGrantTokenRequestDto.getAdminToken();
+        if (bCryptPasswordEncoder.matches(adminToken, tempToken)) {
+            authUser.updateToAdminRole();
+            return true;
+        } else {
+            log.info("잘못된 관리자 토큰");
+            return false;
+        }
+
+    }
+
+    public boolean isGrantAdmin(Users authUser) {
+        return authUser.getRole().equals(UserRole.ADMIN);
+    }
 }

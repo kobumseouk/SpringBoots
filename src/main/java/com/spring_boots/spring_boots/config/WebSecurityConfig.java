@@ -47,7 +47,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(toH2Console()).permitAll()  // H2 콘솔에 대한 요청 허용
                         .requestMatchers(
-                                "/api/**","/login/**"
+                                "/api/**", "/login/**"
                         ).permitAll()  // 모든 요청에 대해 요청 허가
                         .anyRequest().authenticated())
 
