@@ -14,6 +14,14 @@
   padding-bottom: 0.7rem;
 }
 
+.account-header .level {
+  align-items: center;
+}
+
+.account-header .subtitle {
+  margin-bottom: 0;
+}
+
 .heading {
   font-size: 0.8rem;
   text-transform: none;
@@ -50,3 +58,4 @@
 .level.is-left-aligned {
   justify-content: flex-start;
 }
+
