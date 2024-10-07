@@ -1,0 +1,55 @@
+<div class="container mt-3">
+  <nav class="navbar-brand">
+    <a href="/" class="navbar-item">
+      <img src="/elice-rabbit.png" width="30" height="30">
+      <span class="has-text-link">Shopping Mall</span>
+    </a>
+  </nav>
+
+  <nav class="navbar-end breadcrumb my-auto" aria-label="breadcrumbs">
+    <ul>
+      <li><a href="/cart"><span class="icon"></span> 카트</a></li>
+    </ul>
+  </nav>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="block account-header">
+      <h2 class="subtitle is-4">카테고리 관리</h2>
+    </div>
+
+    <div class="level">
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">총 카테고리 수</p>
+          <p class="title" id="categoriesCount">-</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="categoriesContainer" class="container orders-container">
+      <div class="columns notification is-info is-light is-mobile orders-top">
+        <div class="column is-2">카테고리명</div>
+        <div class="column is-2">카테고리 테마</div>
+        <div class="column is-2">표시 순서</div>
+        <div class="column is-2">생성 날짜</div>
+        <div class="column is-2">수정 날짜</div>
+        <div class="column is-2">관리</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="modal" class="modal">
+  <div id="modalBackground" class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box">
+      <p>카테고리를 삭제하시겠습니까?</p>
+      <div class="buttons">
+        <button id="deleteCompleteButton" class="button is-danger">네</button>
+        <button id="deleteCancelButton" class="button">아니오</button>
+      </div>
+    </div>
+  </div>
+</div>
