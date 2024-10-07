@@ -36,6 +36,9 @@ class CategoryServiceTest {
   @InjectMocks
   private CategoryService categoryService;
 
+  private final Long INVALID_CATEGORY_ID = 99999L;
+
+
   @Test
   @DisplayName("카테고리 저장 확인 테스트")
   void createCategoryTest() {
@@ -128,24 +131,23 @@ class CategoryServiceTest {
   }
 
   @Test
-  @DisplayName("존재하지 않는 ID로 카테고리 업데이트 시 예외 발생 확인")
+  @DisplayName("존재하지 않는 ID로 카테고리 업데이트 시 예외 발생 확인 테스트")
   void updateCategory_WithInvalidId_ShouldThrowResourceNotFoundException() {
     // given
-    Long categoryId = 99999L;
     CategoryRequestDto requestDto = CategoryRequestDto.builder()
         .categoryName("Updated Category")
         .categoryThema("Updated thema")
         .displayOrder(2)
         .build();
 
-    when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+    when(categoryRepository.findById(INVALID_CATEGORY_ID)).thenReturn(Optional.empty());
 
     // when & then
-    assertThatThrownBy(() -> categoryService.updateCategory(categoryId, requestDto))
+    assertThatThrownBy(() -> categoryService.updateCategory(INVALID_CATEGORY_ID, requestDto))
         .isInstanceOf(ResourceNotFoundException.class)
-        .hasMessageContaining("카테고리를 찾을 수 없습니다: " + categoryId);
+        .hasMessageContaining("업데이트할 카테고리를 찾을 수 없습니다: " + INVALID_CATEGORY_ID);
 
-    verify(categoryRepository).findById(categoryId);
+    verify(categoryRepository).findById(INVALID_CATEGORY_ID);
     verify(categoryRepository, times(0)).save(any(Category.class));
 
   }
@@ -168,19 +170,19 @@ class CategoryServiceTest {
   }
 
   @Test
-  @DisplayName("존재하지 않는 ID로 카테고리 삭제 시 예외 발생 확인")
+  @DisplayName("존재하지 않는 ID로 카테고리 삭제 시 예외 발생 확인 테스트")
   void deleteCategory_WithInvalidId_ShouldThrowResourceNotFoundException() {
     // given
-    Long categoryId = 99999L;
+    // Long categoryId = 99999L;
     Category category = new Category();
-    when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+    when(categoryRepository.findById(INVALID_CATEGORY_ID)).thenReturn(Optional.empty());
 
     // when & then
-    assertThatThrownBy(() -> categoryService.deleteCategory(categoryId))
+    assertThatThrownBy(() -> categoryService.deleteCategory(INVALID_CATEGORY_ID))
         .isInstanceOf(ResourceNotFoundException.class)
-        .hasMessageContaining("카테고리를 찾을 수 없습니다: " + categoryId);
+        .hasMessageContaining("삭제할 카테고리를 찾을 수 없습니다: " + INVALID_CATEGORY_ID);
     
-    verify(categoryRepository).findById(categoryId);
+    verify(categoryRepository).findById(INVALID_CATEGORY_ID);
     verify(categoryRepository, times(0)).delete(category);
   }
 
@@ -273,19 +275,17 @@ class CategoryServiceTest {
   }
 
   @Test
-  @DisplayName("존재하지 않는 ID로 카테고리 상세 조회 시 예외 발생 확인")
+  @DisplayName("존재하지 않는 ID로 카테고리 상세 조회 시 예외 발생 확인 테스트")
   void getCategoryDetail_WithInvalidId_ShouldThrowResourceNotFoundException() {
     // given
-    Long categoryId = 99999L;
-
-    when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
+    when(categoryRepository.findById(INVALID_CATEGORY_ID)).thenReturn(Optional.empty());
 
     // when & then
-    assertThatThrownBy(() -> categoryService.getCategoryDetail(categoryId))
+    assertThatThrownBy(() -> categoryService.getCategoryDetail(INVALID_CATEGORY_ID))
         .isInstanceOf(ResourceNotFoundException.class)
-        .hasMessageContaining("카테고리를 찾을 수 없습니다: " + categoryId);
+        .hasMessageContaining("조회할 카테고리를 찾을 수 없습니다: " + INVALID_CATEGORY_ID);
 
-    verify(categoryRepository).findById(categoryId);
+    verify(categoryRepository).findById(INVALID_CATEGORY_ID);
 
   }
 

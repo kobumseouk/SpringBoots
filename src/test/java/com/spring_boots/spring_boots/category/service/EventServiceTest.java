@@ -3,6 +3,7 @@ package com.spring_boots.spring_boots.category.service;
 import com.spring_boots.spring_boots.category.dto.event.*;
 import com.spring_boots.spring_boots.category.entity.Event;
 import com.spring_boots.spring_boots.category.repository.EventRepository;
+import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -30,6 +32,8 @@ class EventServiceTest {
 
   @InjectMocks
   private EventService eventService;
+
+  private final Long INVALID_EVENT_ID = 99999L;
 
 
   @Test
@@ -115,6 +119,21 @@ class EventServiceTest {
 
   }
 
+  @Test
+  @DisplayName("존재하지 않는 ID로 이벤트 상세 조회 시 예외 발생 확인 테스트")
+  void getEventDetail_WithInvalidId_ShouldResourceNotFoundException() {
+    // given
+    when(eventRepository.findById(INVALID_EVENT_ID)).thenReturn(Optional.empty());
+
+    // when & then
+    assertThatThrownBy(() -> eventService.getEventDetail(INVALID_EVENT_ID))
+        .isInstanceOf(ResourceNotFoundException.class)
+        .hasMessageContaining("조회할 이벤트를 찾을 수 없습니다: " + INVALID_EVENT_ID);
+
+    verify(eventRepository).findById(INVALID_EVENT_ID);
+
+  }
+
 
   @Test
   @DisplayName("이벤트 업데이트 확인 테스트")
@@ -149,6 +168,27 @@ class EventServiceTest {
 
   }
 
+  @Test
+  @DisplayName("존재하지 않는 ID로 이벤트 업데이트 시 예외 발생 확인 테스트")
+  void updateEvent_WithInvalidId_ShouldThrowResourceNotFoundException() {
+    // given
+    EventRequestDto updateDto = EventRequestDto.builder()
+        .eventTitle("Updated Event")
+        .eventContent("Updated Content")
+        .build();
+
+    when(eventRepository.findById(INVALID_EVENT_ID)).thenReturn(Optional.empty());
+
+    // when & then
+    assertThatThrownBy(() -> eventService.updateEvent(INVALID_EVENT_ID, updateDto))
+        .isInstanceOf(ResourceNotFoundException.class)
+        .hasMessageContaining("업데이트할 이벤트를 찾을 수 없습니다: " + INVALID_EVENT_ID);
+
+    verify(eventRepository).findById(INVALID_EVENT_ID);
+    verify(eventRepository, times(0)).save(any(Event.class));
+
+  }
+
 
   @Test
   @DisplayName("이벤트 삭제 확인 테스트")
@@ -165,6 +205,22 @@ class EventServiceTest {
     // then
     verify(eventRepository).findById(eventId);
     verify(eventRepository).deleteById(eventId);
+
+  }
+
+  @Test
+  @DisplayName("존재하지 않는 ID로 이벤트 삭제 시 예외 발생 확인 테스트")
+  void deleteEvent_WithInvalidId_ShouldThrowResourceNotFoundException() {
+    // given
+    when(eventRepository.findById(INVALID_EVENT_ID)).thenReturn(Optional.empty());
+
+    // when & then
+    assertThatThrownBy(() -> eventService.deleteEvent(INVALID_EVENT_ID))
+        .isInstanceOf(ResourceNotFoundException.class)
+        .hasMessageContaining("삭제할 이벤트를 찾을 수 없습니다: " + INVALID_EVENT_ID);
+
+    verify(eventRepository).findById(INVALID_EVENT_ID);
+    verify(eventRepository, times(0)).deleteById(INVALID_EVENT_ID);
 
   }
 
