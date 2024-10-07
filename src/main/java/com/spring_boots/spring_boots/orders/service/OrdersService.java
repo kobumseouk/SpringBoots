@@ -92,8 +92,8 @@ public class OrdersService {
 
             List<OrderItems> orderItemsList = orderItemsRepository.findByOrders(order);
 
-            // 배송이 시작되지 않은 경우에만 수정 가능 (예시: "Pending" 상태일 때만 수정 가능)
-            if ("Pending".equals(order.getOrderStatus())) {
+            // 배송이 시작되지 않은 경우에만 수정 가능 (예시: "주문완료" 상태일 때만 수정 가능)
+            if ("주문완료".equals(order.getOrderStatus())) {
                 orderItemsList.forEach(orderItem -> {
 
                     // 필수 필드가 null인 경우 예외 발생
