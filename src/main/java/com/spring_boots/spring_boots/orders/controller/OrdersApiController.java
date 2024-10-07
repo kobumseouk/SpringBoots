@@ -1,9 +1,10 @@
 package com.spring_boots.spring_boots.orders.controller;
 
 import com.spring_boots.spring_boots.orders.dto.*;
-import com.spring_boots.spring_boots.orders.entity.Orders;
 import com.spring_boots.spring_boots.orders.service.OrdersService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,8 @@ import java.util.List;
 public class OrdersApiController {
 
     private final OrdersService ordersService;
+    private static final Logger log = LoggerFactory.getLogger(OrdersApiController.class);
+
 
     // 사용자 주문 목록 조회
     @GetMapping("/api/orders")
@@ -25,9 +28,8 @@ public class OrdersApiController {
             return ResponseEntity.ok(orders);
         } catch (Exception e) {
             // 오류 발생 시 로그를 남기고, 500 상태 코드와 오류 메시지를 반환합니다.
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("서버에서 오류가 발생했습니다. 상세 정보: " + e.getMessage());
+            log.error("사용자 주문을 가져오는 도중 오류 발생: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("내부 서버 오류가 발생했습니다.");
         }
     }
 
@@ -42,7 +44,7 @@ public class OrdersApiController {
     // 사용자 주문 추가
     /*
     @PostMapping("/api/orders")
-    public ResponseEntity<OrderResponseDto> placeOrder(@RequestBody PlaceOrderRequest request) {
+    public ResponseEntity<OrderResponseDto> placeOrder(@RequestBody OrderRequestDto request) {
         Long userId = 1L; // 임시 데이터로 사용자 ID 지정
         Orders order = ordersService.placeOrder(request);
         OrderResponseDto response = OrderResponseDto.builder()

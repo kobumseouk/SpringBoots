@@ -69,7 +69,7 @@ public class OrdersService {
 
     /*
     // 사용자 주문 추가
-    public Orders placeOrder(PlaceOrderRequest request) {
+    public Orders placeOrder(OrderRequestDto request) {
         Orders order = Orders.builder()
                 .user(null) // 사용자 정보 설정 필요 (예: userId 이용)
                 .quantity(1) // 하드코딩된 값, 나중에 장바구니 정보 반영 필요
