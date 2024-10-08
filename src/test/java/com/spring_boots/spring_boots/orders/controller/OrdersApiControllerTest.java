@@ -19,6 +19,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -26,8 +27,10 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -62,21 +65,18 @@ class OrdersApiControllerTest {
                 new UsernamePasswordAuthenticationToken(mockUser, null,
                         List.of(new SimpleGrantedAuthority("ROLE_USER")))
         );
+
+        // 공통적으로 사용될 Mock 서비스 데이터 설정
+        OrderDto.OrderItemDto mockOrderItem = new OrderDto.OrderItemDto("Test Item", 2, 10000);
+        List<OrderDto.OrderItemDto> mockItems = List.of(mockOrderItem);
+        OrderDto mockOrder = new OrderDto(1L, LocalDateTime.now(), 20000, "주문완료", "123 Main St", 5000, 2, mockItems);
+
+        Mockito.when(ordersService.getUserOrders(1L)).thenReturn(List.of(mockOrder));
     }
 
     // 사용자 주문 목록 조회 테스트
     @Test
     void getUserOrders() throws Exception {
-        // OrderItemDto Mock 데이터 생성
-        OrderDto.OrderItemDto mockOrderItem = new OrderDto.OrderItemDto("Test Item", 2, 10000);
-
-        // OrderDto Mock 데이터 생성
-        List<OrderDto.OrderItemDto> mockItems = List.of(mockOrderItem);
-        OrderDto mockOrder = new OrderDto(1L, LocalDateTime.now(), 20000, "PENDING", "123 Main St", 5000, 2, mockItems);
-
-        // 서비스에서 반환하는 Mock 데이터 설정
-        Mockito.when(ordersService.getUserOrders(1L)).thenReturn(List.of(mockOrder));
-
         // MockMvc로 API 호출 및 응답 출력
         MvcResult result = mockMvc.perform(get("/api/orders"))
                 .andExpect(status().isOk())
@@ -90,31 +90,50 @@ class OrdersApiControllerTest {
 
         // 응답 본문을 JSON으로 변환하여 예쁘게 출력
         String content = result.getResponse().getContentAsString();
-
-        // ObjectMapper를 이용해 Pretty-Print
         ObjectMapper mapper = new ObjectMapper();
         ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
         String prettyJson = writer.writeValueAsString(mapper.readTree(content));
 
-        // JSON 출력
         System.out.println("정렬된 응답 본문: " + prettyJson);
     }
-
-
-
-
-
 
     // 특정 주문 상세 조회 테스트
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     void getOrderDetails() throws Exception {
-        Mockito.when(ordersService.getOrderDetails(anyLong(), any(Users.class)))
-                .thenReturn(Optional.of(new OrderDetailsDto()));
+        OrderDetailsDto.OrderItemDetailsDto mockOrderItemDetails = new OrderDetailsDto.OrderItemDetailsDto(
+                "Test Item", 2, 10000, 42, "http://example.com/image.png"
+        );
+        List<OrderDetailsDto.OrderItemDetailsDto> mockItems = List.of(mockOrderItemDetails);
+        OrderDetailsDto mockOrderDetails = new OrderDetailsDto(
+                1L, LocalDateTime.now(), 20000, "주문완료", "123 Main St",
+                "엘리스", "010-1234-5678", 5000, 2, mockItems
+        );
 
-        mockMvc.perform(get("/api/orders/1"))
+        Mockito.when(ordersService.getOrderDetails(anyLong(), any(Users.class)))
+                .thenReturn(Optional.of(mockOrderDetails));
+
+        MvcResult result = mockMvc.perform(get("/api/orders/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ordersId").exists());
+                .andExpect(jsonPath("$.ordersId").value(1L))
+                .andExpect(jsonPath("$.ordersTotalPrice").value(20000))
+                .andExpect(jsonPath("$.orderStatus").value("주문완료"))
+                .andExpect(jsonPath("$.shippingAddress").value("123 Main St"))
+                .andExpect(jsonPath("$.recipientName").value("엘리스"))
+                .andExpect(jsonPath("$.recipientContact").value("010-1234-5678"))
+                .andExpect(jsonPath("$.items[0].itemName").value("Test Item"))
+                .andExpect(jsonPath("$.items[0].orderitemsQuantity").value(2))
+                .andExpect(jsonPath("$.items[0].orderitemsTotalPrice").value(10000))
+                .andExpect(jsonPath("$.items[0].itemsSize").value(42))
+                .andExpect(jsonPath("$.items[0].itemImage").value("http://example.com/image.png"))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+        String prettyJson = writer.writeValueAsString(mapper.readTree(content));
+
+        System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
     // 사용자 주문 수정 테스트
@@ -125,12 +144,23 @@ class OrdersApiControllerTest {
         Mockito.when(ordersService.updateOrder(anyLong(), any(UpdateOrderRequest.class), any(Users.class)))
                 .thenReturn(Optional.of(response));
 
-        mockMvc.perform(put("/api/orders/1")
+        String updateRequest = "{ \"recipientName\":\"엘리스\", \"shippingAddress\":\"456 Street\", \"recipientContact\":\"010-9876-5432\" }";
+
+        MvcResult result = mockMvc.perform(put("/api/orders/1")
+                        .with(csrf())  // CSRF 토큰을 추가
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"recipientName\":\"Jane\", \"shippingAddress\":\"456 Street\"}"))
+                        .content(updateRequest))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.ordersId").exists())
-                .andExpect(jsonPath("$.status").value("주문이 성공적으로 수정되었습니다."));
+                .andExpect(jsonPath("$.ordersId").value(1L))
+                .andExpect(jsonPath("$.status").value("주문이 성공적으로 수정되었습니다."))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+        String prettyJson = writer.writeValueAsString(mapper.readTree(content));
+
+        System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
     // 사용자 주문 취소 테스트
@@ -141,21 +171,39 @@ class OrdersApiControllerTest {
         Mockito.when(ordersService.cancelOrder(anyLong(), any(Users.class)))
                 .thenReturn(Optional.of(response));
 
-        mockMvc.perform(delete("/api/orders/1"))
+        MvcResult result = mockMvc.perform(delete("/api/orders/1")
+                        .with(csrf()))  // CSRF 토큰을 추가
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ordersId").exists())
-                .andExpect(jsonPath("$.status").value("주문이 성공적으로 취소되었습니다."));
+                .andExpect(jsonPath("$.status").value("주문이 성공적으로 취소되었습니다."))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+        String prettyJson = writer.writeValueAsString(mapper.readTree(content));
+
+        System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
     // 관리자 모든 주문 조회 테스트
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getAllOrders() throws Exception {
-        Mockito.when(ordersService.getAllOrders()).thenReturn(Collections.singletonList(new OrderDto()));
+        OrderDto mockOrder = new OrderDto(1L, LocalDateTime.now(), 20000, "주문완료", "123 Main St", 5000, 2, List.of());
+        Mockito.when(ordersService.getAllOrders()).thenReturn(Collections.singletonList(mockOrder));
 
-        mockMvc.perform(get("/api/admin/orders"))
+        MvcResult result = mockMvc.perform(get("/api/admin/orders"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$").isArray())
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+        String prettyJson = writer.writeValueAsString(mapper.readTree(content));
+
+        System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
     // 관리자 주문 상태 수정 테스트
@@ -166,12 +214,23 @@ class OrdersApiControllerTest {
         Mockito.when(ordersService.updateOrderStatus(anyLong(), any(UpdateOrderStatusRequest.class)))
                 .thenReturn(Optional.of(response));
 
-        mockMvc.perform(patch("/api/admin/orders/1/status")
+        String updateStatusRequest = "{\"status\":\"SHIPPED\"}";
+
+        MvcResult result = mockMvc.perform(patch("/api/admin/orders/1/status")
+                        .with(csrf())  // CSRF 토큰을 추가
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"status\":\"SHIPPED\"}"))
+                        .content(updateStatusRequest))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ordersId").exists())
-                .andExpect(jsonPath("$.status").value("주문 상태가 성공적으로 업데이트되었습니다."));
+                .andExpect(jsonPath("$.status").value("주문 상태가 성공적으로 업데이트되었습니다."))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+        String prettyJson = writer.writeValueAsString(mapper.readTree(content));
+
+        System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
     // 관리자 주문 삭제 테스트
@@ -182,9 +241,19 @@ class OrdersApiControllerTest {
         Mockito.when(ordersService.adminCancelOrder(anyLong()))
                 .thenReturn(Optional.of(response));
 
-        mockMvc.perform(delete("/api/admin/orders/1"))
+        MvcResult result = mockMvc.perform(delete("/api/admin/orders/1")
+                        .with(csrf()))  // CSRF 토큰을 추가
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.ordersId").exists())
-                .andExpect(jsonPath("$.status").value("주문이 성공적으로 삭제되었습니다."));
+                .andExpect(jsonPath("$.status").value("주문이 성공적으로 삭제되었습니다."))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+        String prettyJson = writer.writeValueAsString(mapper.readTree(content));
+
+        System.out.println("정렬된 응답 본문: " + prettyJson);
     }
+
 }
