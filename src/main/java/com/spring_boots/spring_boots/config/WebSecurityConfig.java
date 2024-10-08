@@ -45,7 +45,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())  // H2 콘솔 접근을 위해 CSRF 비활성화
-                .headers(headers -> headers.frameOptions().disable())  // H2 콘솔에서 iframe 사용을 허용
+                .headers(headers -> headers.frameOptions(frameOptionsConfig -> frameOptionsConfig.disable()))  // H2 콘솔에서 iframe 사용을 허용
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(toH2Console()).permitAll()  // H2 콘솔에 대한 요청 허용
                         .requestMatchers(
