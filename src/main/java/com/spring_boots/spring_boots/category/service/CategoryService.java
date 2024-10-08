@@ -7,6 +7,7 @@ import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ public class CategoryService {
 
 
   // 새 카테고리 생성
+  @PreAuthorize("hasRole('ADMIN')")  // 컨트롤러 선에서 작동 중이라 생략 or 2차 보안
   @Transactional
   public CategoryResponseDto createCategory(CategoryRequestDto requestDto) {
     Category category = categoryMapper.categoryRequestDtoToCategory(requestDto);
@@ -31,6 +33,7 @@ public class CategoryService {
 
 
   // 카테고리 수정
+  @PreAuthorize("hasRole('ADMIN')")
   @Transactional
   public CategoryResponseDto updateCategory(Long categoryId, CategoryRequestDto requestDto) {
     Category category = categoryRepository.findById(categoryId)
@@ -45,6 +48,7 @@ public class CategoryService {
 
 
   // 카테고리 삭제
+  @PreAuthorize("hasRole('ADMIN')")
   @Transactional
   public void deleteCategory(Long categoryId) {
     categoryRepository.findById(categoryId)
@@ -77,6 +81,7 @@ public class CategoryService {
 
 
   // 관리자용 카테고리 목록 페이지네이션 적용하여 조회
+  @PreAuthorize("hasRole('ADMIN')")
   public Page<CategoryAdminDto> getAdminCategories(int page, int limit) {
     PageRequest pageRequest = PageRequest.of(page, limit);
     Page<Category> categoryPage = categoryRepository.findAll(pageRequest);
@@ -84,6 +89,7 @@ public class CategoryService {
   }
 
   // 관리자용 카테고리 개별 조회 - 카테고리 수정 시 사용
+  @PreAuthorize("hasRole('ADMIN')")
   public CategoryAdminDto getAdminCategory(Long categoryId) {
     return categoryRepository.findById(categoryId)
         .map(categoryMapper::categoryToCategoryAdminDto)

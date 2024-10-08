@@ -5,6 +5,10 @@ VALUES (1, 'test_user', 'test_real_id', 'test_user@example.com', '$2a$10$V1hEUNf
 INSERT INTO users (user_id, username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
 VALUES (2, 'second_user', 'second_real_id', 'second_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'GOOGLE', NOW(), NOW());
 
+INSERT INTO users (user_id, username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES (3, 'third_user', 'third_real_id', 'third_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'ADMIN', 'GOOGLE', NOW(), NOW());
+
+
 -- UsersInfo 테이블에 테스트 데이터 삽입
 INSERT INTO users_info (
     user_info_id, user_id, address, phone, created_at, updated_at
