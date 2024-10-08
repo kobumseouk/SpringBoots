@@ -36,15 +36,15 @@ function addAllEvents() {
 
 async function fetchCategoryData() {
   try {
-    const category = await Api.get('/categories', categoryId);
-    titleInput.value = category.categoryName;
-    descriptionInput.value = category.categoryContent;
-    themeSelectBox.value = category.categoryThema;
-    fileNameSpan.innerText = category.imageUrl ? category.imageUrl.split('/').pop() : '사진파일 (png, jpg, jpeg)';
-  } catch (err) {
-    console.error(err);
-    alert('카테고리 정보를 불러오는데 실패했습니다.');
-  }
+      const category = await Api.get('/api/admin/categories', categoryId);
+      titleInput.value = category.categoryName;
+      descriptionInput.value = category.categoryContent;
+      themeSelectBox.value = category.categoryThema;
+      fileNameSpan.innerText = category.imageUrl ? category.imageUrl.split('/').pop() : '사진파일 (png, jpg, jpeg)';
+    } catch (err) {
+      console.error(err);
+      alert('카테고리 정보를 불러오는데 실패했습니다.');
+    }
 }
 
 async function handleSubmit(e) {
@@ -71,15 +71,13 @@ async function handleSubmit(e) {
     }
 
     if (isEditMode) {
-      await Api.patch(`/categories/${categoryId}`, data);
+      await Api.patch(`/api/admin/categories/${categoryId}`, data);
       alert(`정상적으로 ${title} 카테고리가 수정되었습니다.`);
-      window.location.href = '/admin/categories';
     } else {
-      await Api.post("/categories", data);
+      await Api.post("/api/admin/categories", data);  // 여기를 수정했습니다.
       alert(`정상적으로 ${title} 카테고리가 등록되었습니다.`);
-      categoryForm.reset();
-      fileNameSpan.innerText = "";
     }
+    window.location.href = '/admin/categories';  // 생성 후에도 목록 페이지로 이동하도록 수정
   } catch (err) {
     console.error(err.stack);
     alert(`문제가 발생하였습니다. 확인 후 다시 시도해 주세요: ${err.message}`);
