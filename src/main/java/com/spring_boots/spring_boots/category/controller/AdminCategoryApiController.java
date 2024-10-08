@@ -73,4 +73,15 @@ public class AdminCategoryApiController {
     }
   }
 
+  // 관리자 개별 카테고리 조회 - 카테고리 수정 시 필요
+  @GetMapping("/{category_id}")
+  public ResponseEntity<CategoryAdminDto> getAdminCategory(@PathVariable("category_id") Long categoryId) {
+    try {
+      CategoryAdminDto categoryDto = categoryService.getAdminCategory(categoryId);
+      return ResponseEntity.ok(categoryDto);
+    } catch (ResourceNotFoundException e) {
+      throw new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId);
+    }
+  }
+
 }

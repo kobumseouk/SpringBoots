@@ -336,4 +336,52 @@ class CategoryServiceTest {
   }
 
 
+  @Test
+  @DisplayName("관리자용 개별 카테고리 조회 확인 테스트")
+  void getAdminCategory() {
+    // given
+    Long categoryId = 1L;
+    Category category = Category.builder()
+        .id(categoryId)
+        .categoryName("Test Category")
+        .categoryThema("Test Thema")
+        .displayOrder(1)
+        .build();
+
+    CategoryAdminDto categoryAdminDto = CategoryAdminDto.builder()
+        .id(categoryId)
+        .categoryName("Test Category")
+        .categoryThema("Test Thema")
+        .displayOrder(1)
+        .build();
+
+    when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
+    when(categoryMapper.categoryToCategoryAdminDto(category)).thenReturn(categoryAdminDto);
+
+    // when
+    CategoryAdminDto result = categoryService.getAdminCategory(categoryId);
+
+    // then
+    assertThat(result).usingRecursiveComparison().isEqualTo(categoryAdminDto);
+
+    verify(categoryRepository).findById(categoryId);
+    verify(categoryMapper).categoryToCategoryAdminDto(category);
+  }
+
+  @Test
+  @DisplayName("존재하지 않는 ID로 관리자용 개별 카테고리 조회 시 예외 발생 확인 테스트")
+  void getAdminCategory_WithInvalidId_ShouldThrowResourceNotFoundException() {
+    // given
+    when(categoryRepository.findById(INVALID_CATEGORY_ID)).thenReturn(Optional.empty());
+
+    // when & then
+    assertThatThrownBy(() -> categoryService.getAdminCategory(INVALID_CATEGORY_ID))
+        .isInstanceOf(ResourceNotFoundException.class)
+        .hasMessageContaining("카테고리를 찾을 수 없습니다: " + INVALID_CATEGORY_ID);
+
+    verify(categoryRepository).findById(INVALID_CATEGORY_ID);
+  }
+
+
+
 }
