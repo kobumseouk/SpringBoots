@@ -30,6 +30,14 @@ function addAllEvents() {
   document.addEventListener("keydown", keyDownCloseModal);
   deleteCompleteButton.addEventListener("click", deleteCategoryData);
   deleteCancelButton.addEventListener("click", cancelDelete);
+
+  // 카테고리 등록 버튼 이벤트 리스너 추가
+  const addCategoryButton = document.querySelector("#addCategoryButton");
+  if (addCategoryButton) {
+    addCategoryButton.addEventListener("click", () => {
+      window.location.href = "/admin/categories/create";
+    });
+  }
 }
 
 // 페이지 로드 시 실행, 삭제할 카테고리 id를 전역변수로 관리함
@@ -62,23 +70,14 @@ async function insertCategories() {
       `
     );
 
-    // 요소 선택
+    // 수정 버튼 이벤트 리스너
     const editButton = document.querySelector(`#editButton-${id}`);
-    const deleteButton = document.querySelector(`#deleteButton-${id}`);
-    const addCategoryButton = document.querySelector("#addCategoryButton");
-
-    // 이벤트 - 추가버튼 클릭 시 추카 페이지 이동
-    addCategoryButton.addEventListener("click", () => {
-      // 카테고리 추가 페이지로 이동하거나 모달을 여는 로직 구현
-      window.location.href = "/admin/categories/create";
-    });
-
-    // 이벤트 - 수정버튼 클릭 시 수정 페이지로 이동
     editButton.addEventListener("click", () => {
       window.location.href = `/admin/categories/edit?id=${id}`;
     });
 
-    // 이벤트 - 삭제버튼 클릭 시 Modal 창 띄우고, 동시에, 전역변수에 해당 카테고리의 id 할당
+    // 삭제 버튼 이벤트 리스너
+    const deleteButton = document.querySelector(`#deleteButton-${id}`);
     deleteButton.addEventListener("click", () => {
       categoryIdToDelete = id;
       openModal();
