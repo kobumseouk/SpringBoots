@@ -1,7 +1,7 @@
 package com.spring_boots.spring_boots.config;
 
 import com.spring_boots.spring_boots.config.jwt.TokenProvider;
-import com.spring_boots.spring_boots.orders.entity.RefreshToken;
+import com.spring_boots.spring_boots.user.domain.RefreshToken;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.repository.RefreshTokenRepository;
 import jakarta.servlet.ServletException;
