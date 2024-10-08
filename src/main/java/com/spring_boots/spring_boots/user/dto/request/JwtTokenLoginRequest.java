@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JwtTokenLoginRequest {
-    private String username;
     private String userRealId;
     private String password;
-    private String email;
 }
