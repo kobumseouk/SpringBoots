@@ -1,6 +1,5 @@
 package com.spring_boots.spring_boots.config.jwt;
 
-import com.spring_boots.spring_boots.config.jwt.impl.AuthTokenImpl;
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
 import jakarta.servlet.*;
 import jakarta.servlet.http.Cookie;
@@ -16,9 +15,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
-
-import static com.spring_boots.spring_boots.config.jwt.UserConstants.AUTHORIZATION_TOKEN_KEY;
-import static com.spring_boots.spring_boots.config.jwt.UserConstants.TOKEN_PREFIX;
 
 @RequiredArgsConstructor
 @Component
