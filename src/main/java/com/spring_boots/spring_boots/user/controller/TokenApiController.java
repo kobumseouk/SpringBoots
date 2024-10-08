@@ -17,7 +17,7 @@ public class TokenApiController {
 
     private final UserService userService;
 
-    @PostMapping("/login")
+    @PostMapping("/v1/login")
     public ResponseEntity<JwtTokenResponse> jwtLogin(
             @RequestBody JwtTokenLoginRequest request,
             HttpServletResponse response,

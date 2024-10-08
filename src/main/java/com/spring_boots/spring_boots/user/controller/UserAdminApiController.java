@@ -20,14 +20,14 @@ public class UserAdminApiController {
     private final UserService userService;
 
     //모든 회원 정보 조회(관리자)
-    @GetMapping("/admin/users")
+    @GetMapping("/v1/admin/users")
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
         List<UserResponseDto> users = userService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(users);
     }
 
     //특정 회원 정보 조회(관리자)
-    @GetMapping("/admin/users/{user_id}")
+    @GetMapping("/v1/admin/users/{user_id}")
     public ResponseEntity<UserResponseDto> getUserByAdmin(@PathVariable("user_id") Long userId) {
         Users findUser = userService.findById(userId);
         UserResponseDto responseDto = findUser.toResponseDto();
@@ -35,7 +35,7 @@ public class UserAdminApiController {
     }
 
     //관리자 부여
-    @PatchMapping("/admin/grant")
+    @PatchMapping("/v1/admin/grant")
     public ResponseEntity<String> grantAdmin(@AuthenticationPrincipal Users user,
                                            @RequestBody AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
         Users authUser = userService.findByEmail(user.getEmail());
