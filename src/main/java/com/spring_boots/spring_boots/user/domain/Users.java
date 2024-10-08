@@ -5,10 +5,7 @@ import com.spring_boots.spring_boots.orders.entity.Orders;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,17 +39,17 @@ public class Users extends BaseTimeEntity implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "is_deleted", nullable = true)
+    @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
     @Column(name = "delete_reason")
     private String deleteReason;
 
-    @Column(name = "role", nullable = true)
+    @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @Column(name = "provider", nullable = true)
+    @Column(name = "provider")
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
@@ -62,9 +59,9 @@ public class Users extends BaseTimeEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Orders> ordersList = new ArrayList<>();
 
-    @Override // 권한 반환
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("user"));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override //사용자의 id를 반환(고유 값)

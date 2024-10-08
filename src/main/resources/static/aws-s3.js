@@ -3,7 +3,7 @@ import { randomId } from "./useful-functions.js";
 // aws-s3 사이트에서의 설정값들
 const s3BucketName = "project-springboots";
 const bucketRegion = "ap-northeast-2"; // 한국은 항상 ap-northeast-2임.
-const IdentityPoolId = "ap-northeast-2:23dbe192-a382-459f-aa64-2b9eb2fc68aa";
+const IdentityPoolId = "ap-northeast-2:86ef0773-cb9a-49ec-b184-0e87a1d5db0b";
 
 // aws 공식문서 그대로 가져옴
 AWS.config.update({
@@ -22,7 +22,7 @@ const s3 = new AWS.S3({
 // 아마존 S3에 사진파일 올리는 함수
 // fileInputElement: input 요소
 // album: S3에서 업로드된 사진파일이 속할 폴더 이름.
-async function addImageToS3(fileInputElement, ItemBox) {
+async function addImageToS3(fileInputElement, album) {
   // 파일 input 요소에, 사용자가 올린 파일이 있는지 여부 확인
   const files = fileInputElement.files;
   if (!files.length) {
@@ -33,7 +33,7 @@ async function addImageToS3(fileInputElement, ItemBox) {
   const file = files[0];
   // 유니크한 사진파일 주소를 만들 수 있게 함.
   const fileName = randomId() + "_" + file.name;
-  const albumPhotosKey = encodeURIComponent(ItemBox) + "/";
+  const albumPhotosKey = encodeURIComponent(album) + "/";
   const photoKey = albumPhotosKey + fileName;
 
   const upload = new AWS.S3.ManagedUpload({

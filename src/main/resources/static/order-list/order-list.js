@@ -17,7 +17,10 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 async function loadOrderList() {
     try {
-        const response = await fetch(`/api/orders`);
+        const response = await fetch(`/api/orders`, {
+            method: 'GET',
+            credentials: 'include' // 인증 쿠키를 포함하여 요청을 보냄
+        });
         if (!response.ok) {
             throw new Error('주문 목록을 가져오는 중 오류가 발생했습니다.');
         }
@@ -64,7 +67,7 @@ function renderOrderList(orders) {
                 <td>
                     <a class="button is-small is-link" href="/order-details/order-details.html?id=${order.ordersId}">상세 보기</a>
                     ${
-            order.orderStatus === 'Pending'
+            order.orderStatus === '주문완료'
                 ? `<button class="button is-small is-danger ml-2" onclick="cancelOrder(${order.ordersId})">주문 취소</button>`
                 : ''
         }
@@ -84,7 +87,23 @@ function renderOrderList(orders) {
 function cancelOrder(orderId) {
     // 주문 취소 로직
     if (confirm("주문을 취소하시겠습니까?")) {
-        fetch(`/api/orders/${orderId}`, { method: 'DELETE' }) // DELETE 메소드로 변경
+        // 쿠키에서 토큰을 가져오기
+        const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+            const [key, value] = cookie.trim().split('=');
+            acc[key] = value;
+            return acc;
+        }, {});
+
+        const accessToken = cookies['accessToken']; // 쿠키에서 accessToken 가져오기
+
+        fetch(`/api/orders/${orderId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include' // 쿠키를 포함하여 요청
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error("주문 취소 중 오류가 발생했습니다.");
