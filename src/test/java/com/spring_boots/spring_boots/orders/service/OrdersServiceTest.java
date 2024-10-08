@@ -6,6 +6,7 @@ import com.spring_boots.spring_boots.orders.entity.OrderItems;
 import com.spring_boots.spring_boots.orders.entity.Orders;
 import com.spring_boots.spring_boots.orders.repository.OrderItemsRepository;
 import com.spring_boots.spring_boots.orders.repository.OrdersRepository;
+import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,8 +42,13 @@ class OrdersServiceTest {
         MockitoAnnotations.openMocks(this);
 
         // Mock 사용자 데이터 생성
-        mockUser = new Users();
-        mockUser.setUserId(1L);
+        mockUser = Users.builder()
+                .userId(1L)
+                .username("testuser")
+                .userRealId("user_real_id")
+                .email("test@example.com")
+                .role(UserRole.USER)
+                .build();
 
         // Mock 주문 데이터 생성
         mockOrder = new Orders();
