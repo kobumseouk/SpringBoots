@@ -10,15 +10,12 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +26,7 @@ public class UserApiController {
     private final UserService userService;
 
     //회원가입
-    @PostMapping("/v1/signup")
+    @PostMapping("/signup")
     public ResponseEntity<Users> signup(@RequestBody UserSignupRequestDto userSignupRequestDto) {
 
         if (userSignupRequestDto == null) {
@@ -41,7 +38,7 @@ public class UserApiController {
     }
 
     //개인 정보 조회
-    @GetMapping("/v1/users-info")
+    @GetMapping("/users-info")
     public ResponseEntity<UserResponseDto> getUser() {
         // SecurityContext에서 인증 정보(Authentication)를 가져옴
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -70,7 +67,7 @@ public class UserApiController {
     }
 
     //회원 정보 수정
-    @PutMapping("/v1/users")
+    @PutMapping("/users")
     public ResponseEntity<Users> updateUser(@AuthenticationPrincipal Users user,
                                             @RequestBody UserUpdateRequestDto request) {
         Users authUser = userService.findById(user.getUserId());    //인증객체 가져올시 영속성컨텍스트에서 가져와야함
@@ -81,7 +78,7 @@ public class UserApiController {
     }
 
     //회원 탈퇴(hard delete)
-    @DeleteMapping("/v1/users")
+    @DeleteMapping("/users-hard")
     public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal Users user,
                                            HttpServletResponse response) {
         Users authUser = userService.findByEmail(user.getEmail());
@@ -101,7 +98,7 @@ public class UserApiController {
     }
 
     //회원 탈퇴(soft delete)
-    @PostMapping("/v2/users")
+    @DeleteMapping("/users-soft")
     public ResponseEntity<Void> softDeleteUser(@AuthenticationPrincipal Users user,
                                                HttpServletResponse response) {
         Users authUser = userService.findByEmail(user.getEmail());
@@ -121,7 +118,7 @@ public class UserApiController {
     }
 
     //비밀번호 확인
-    @PostMapping("/v1/users/check-password")
+    @PostMapping("/users/check-password")
     public ResponseEntity<Void> checkPassword(@AuthenticationPrincipal Users user,
                                               @RequestBody UserPasswordRequestDto request) {
         Users authUser = userService.findByEmail(user.getEmail());
@@ -134,7 +131,7 @@ public class UserApiController {
     }
 
     //로그아웃
-    @PostMapping("/v1/logout")
+    @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response,
                                        @AuthenticationPrincipal Users user) {
         Users authUser = userService.findByEmail(user.getEmail());
@@ -152,7 +149,7 @@ public class UserApiController {
     }
 
     //아이디 중복확인
-    @GetMapping("/v1/signup/check-id")
+    @GetMapping("/signup/check-id")
     public ResponseEntity<Void> checkUsername(@RequestParam("userRealId") String userRealId) {
         boolean isUsernameTaken = userService.isDuplicateUserRealId(userRealId);
 

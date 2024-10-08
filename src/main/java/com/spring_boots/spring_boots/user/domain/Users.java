@@ -40,17 +40,17 @@ public class Users extends BaseTimeEntity implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "is_deleted", nullable = true)
+    @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
     @Column(name = "delete_reason")
     private String deleteReason;
 
-    @Column(name = "role", nullable = true)
+    @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @Column(name = "provider", nullable = true)
+    @Column(name = "provider")
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
