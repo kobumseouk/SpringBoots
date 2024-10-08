@@ -5,6 +5,7 @@ import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
 import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
 import com.spring_boots.spring_boots.item.mapper.ItemMapper;
 import com.spring_boots.spring_boots.item.service.ItemRestService;
+import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,14 +21,15 @@ import java.util.List;
 @NoArgsConstructor
 @RequestMapping("/api")
 public class ItemRestController {
-    @Autowired
     private  ItemRestService itemRestService;
     private ItemMapper mapper;
+    private S3BucketService s3BucketService;
     
 
     // Item 만들기
     @PostMapping("/admin/items")
-    public ResponseEntity<ResponseItemDto> createItem(@Valid @RequestBody CreateItemDto requestItemDto) {
+    public ResponseEntity<ResponseItemDto> createItem(@Valid @RequestBody CreateItemDto requestItemDto,
+                                                      @RequestParam("file") MultipartFile file) {
         ResponseItemDto responseDto = itemRestService.createItem(requestItemDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
