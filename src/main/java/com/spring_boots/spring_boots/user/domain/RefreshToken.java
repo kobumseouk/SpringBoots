@@ -1,4 +1,4 @@
-package com.spring_boots.spring_boots.orders.entity;
+package com.spring_boots.spring_boots.user.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
