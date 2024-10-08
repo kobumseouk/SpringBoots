@@ -1,5 +1,3 @@
-
-
 // 헤더 로드 함수
 async function loadHeader() {
   try {

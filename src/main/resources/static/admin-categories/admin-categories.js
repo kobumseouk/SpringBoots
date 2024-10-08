@@ -13,7 +13,7 @@ const deleteCancelButton = document.querySelector("#deleteCancelButton");
 // 페이지 초기화 함수
 async function initializePage() {
   await loadHeader();
-  checkAdmin();
+  // checkAdmin();
   addAllElements();
   addAllEvents();
 }

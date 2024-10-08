@@ -1,4 +1,4 @@
-import { loadHeader } from "../../common.js";
+import { loadHeader } from "../../common/common-header.js";
 import { addImageToS3 } from "../../aws-s3.js";
 import * as Api from "../../api.js";
 import { checkLogin, createNavbar } from "../../useful-functions.js";
@@ -17,7 +17,7 @@ const isEditMode = !!categoryId;
 
 async function initializePage() {
   await loadHeader();
-  checkLogin();
+  // checkLogin();
   addAllElements();
   addAllEvents();
   if (isEditMode) {
