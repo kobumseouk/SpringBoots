@@ -20,7 +20,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Setter
 public class Users extends BaseTimeEntity implements UserDetails {
 
     @Id

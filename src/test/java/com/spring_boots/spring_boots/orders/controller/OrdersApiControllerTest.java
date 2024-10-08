@@ -3,6 +3,7 @@ package com.spring_boots.spring_boots.orders.controller;
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
 import com.spring_boots.spring_boots.orders.dto.*;
 import com.spring_boots.spring_boots.orders.service.OrdersService;
+import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,9 +57,13 @@ class OrdersApiControllerTest {
     @BeforeEach
     void setUp() {
         // Mock User 생성
-        mockUser = new Users();
-        mockUser.setUserId(1L);
-        mockUser.setUsername("testuser");
+        mockUser = Users.builder()
+                .userId(1L)
+                .username("testuser")
+                .userRealId("user_real_id")
+                .email("test@example.com")
+                .role(UserRole.USER)
+                .build();
 
         // SecurityContextHolder에 Mock된 인증 정보를 설정
         SecurityContextHolder.getContext().setAuthentication(
