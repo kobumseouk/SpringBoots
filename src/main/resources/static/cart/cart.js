@@ -4,14 +4,14 @@ const itemData = {
   item_id: 101,
   item_quantity: 2,
   item_size: 280,
-  item_color: 'black',
+  item_color: 'black'
 };
 
 const itemData1 = {
   item_id: 102,
   item_quantity: 5,
   item_size: 270,
-  item_color: 'white',
+  item_color: 'white'
 };
 
 
@@ -235,26 +235,34 @@ function renderCartItems() {
         });
 
         // 옵션/수량변경 버튼 이벤트 리스너 추가
+        // 옵션/수량변경 버튼 이벤트 리스너 추가
         const optionChangeBtn = itemCard.querySelector('.option-change-btn');
         optionChangeBtn.addEventListener('click', () => {
           // 수량 조절 UI 추가
           const quantityControl = document.createElement('div');
           quantityControl.classList.add('quantity-control');
           quantityControl.innerHTML = `
-            <div style="margin-bottom: 10px;">
-              <label>수량: </label>
-              <button class="button is-small quantity-decrease">-</button>
-              <span class="item-quantity">${item.item_quantity}</span>
-              <button class="button is-small quantity-increase">+</button>
-            </div>
-            <div style="margin-bottom: 10px;">
-              <label>사이즈: </label>
-              <button class="button is-small size-decrease">-</button>
-              <span class="item-size">${item.item_size}</span>
-              <button class="button is-small size-increase">+</button>
-            </div>
-            <button class="button is-success apply-btn">적용</button>
-          `;
+    <div style="margin-bottom: 10px;">
+      <label>수량: </label>
+      <button class="button is-small quantity-decrease">-</button>
+      <span class="item-quantity">${item.item_quantity}</span>
+      <button class="button is-small quantity-increase">+</button>
+    </div>
+    <div style="margin-bottom: 10px;">
+      <label>사이즈: </label>
+      <select class="size-select">
+        <option value="${item.item_size}" selected>${item.item_size}</option>
+        <option value="230">230</option>
+        <option value="240">240</option>
+        <option value="250">250</option>
+        <option value="260">260</option>
+        <option value="270">270</option>
+        <option value="280">280</option>
+        <option value="290">290</option>
+      </select>
+    </div>
+    <button class="button is-success apply-btn">적용</button>
+  `;
 
           // 수량 변경 이벤트
           const decreaseBtn = quantityControl.querySelector('.quantity-decrease');
@@ -274,31 +282,18 @@ function renderCartItems() {
             quantityDisplay.innerText = currentQuantity;
           });
 
-          // 사이즈 변경 이벤트
-          const sizeDisplay = quantityControl.querySelector('.item-size');
-          const sizeDecreaseBtn = quantityControl.querySelector('.size-decrease');
-          const sizeIncreaseBtn = quantityControl.querySelector('.size-increase');
-          const sizes = [230, 240, 250, 260, 270, 280, 290]; // 가능한 사이즈 배열
-          let currentSizeIndex = sizes.indexOf(item.item_size);
-
-          sizeDecreaseBtn.addEventListener('click', () => {
-            if (currentSizeIndex > 0) {
-              currentSizeIndex--;
-              sizeDisplay.innerText = sizes[currentSizeIndex];
-            }
-          });
-
-          sizeIncreaseBtn.addEventListener('click', () => {
-            if (currentSizeIndex < sizes.length - 1) {
-              currentSizeIndex++;
-              sizeDisplay.innerText = sizes[currentSizeIndex];
-            }
+          // 사이즈 선택 이벤트
+          const sizeSelect = quantityControl.querySelector('.size-select');
+          sizeSelect.addEventListener('change', () => {
+            const selectedSize = sizeSelect.value;
+            console.log(`Selected size: ${selectedSize}`);
           });
 
           // 적용 버튼 클릭 시 이벤트
           const applyBtn = quantityControl.querySelector('.apply-btn');
           applyBtn.addEventListener('click', () => {
-            updateItemSizeOrQuantity(item.item_id, item.item_size, currentQuantity, sizes[currentSizeIndex]); // 로컬 스토리지 업데이트
+            const selectedSize = sizeSelect.value; // 선택된 사이즈 가져오기
+            updateItemSizeOrQuantity(item.item_id, item.item_size, currentQuantity, selectedSize); // 로컬 스토리지 업데이트
             location.reload(); // 새로고침
           });
 
@@ -306,6 +301,7 @@ function renderCartItems() {
           const mediaContent = itemCard.querySelector('.media-content');
           mediaContent.appendChild(quantityControl);
         });
+
 
         cartContainer.appendChild(itemCard); // itemCard를 컨테이너에 추가
       }
