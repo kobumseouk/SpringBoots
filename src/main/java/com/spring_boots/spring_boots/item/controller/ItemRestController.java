@@ -27,8 +27,7 @@ public class ItemRestController {
 
     // Item 만들기
     @PostMapping("/admin/items")
-    public ResponseEntity<ResponseItemDto> createItem(@Valid @RequestBody CreateItemDto requestItemDto,
-                                                      @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ResponseItemDto> createItem(@Valid @RequestBody CreateItemDto requestItemDto) {
         ResponseItemDto responseDto = itemRestService.createItem(requestItemDto);
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
