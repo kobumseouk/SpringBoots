@@ -39,7 +39,7 @@ async function addImageToS3(fileInputElement, album) {
   const upload = new AWS.S3.ManagedUpload({
     params: {
       Bucket: s3BucketName,
-      Key: photoKey,
+      Key: photoKey,z
       Body: file,
     },
   });
@@ -83,3 +83,42 @@ function getImageUrl(imageKey) {
 }
 
 export { addImageToS3, getImageUrl };
+
+
+const fileInput = document.getElementById('fileInput');
+const fileNameSpan = document.getElementById('fileNameSpan');
+
+fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        fileNameSpan.textContent = file.name; // 파일 이름 표시
+    } else {
+        fileNameSpan.textContent = "사진파일 (png, jpg, jpeg)";
+    }
+});
+
+document.getElementById('uploadButton').addEventListener('click', () => {
+    const file = fileInput.files[0];
+    if (!file) {
+        alert("파일을 선택해 주세요.");
+        return;
+    }
+
+    const params = {
+        Bucket: s3BucketName,
+        Key: file.name,
+        Body: file,
+        ContentType: file.type
+    };
+
+    // S3에 파일 업로드
+    s3.upload(params, (err, data) => {
+        if (err) {
+            console.error("업로드 실패:", err);
+            alert("업로드 실패: " + err.message);
+        } else {
+            console.log("업로드 성공:", data);
+            alert("업로드 성공: " + data.Location);
+        }
+    });
+});
