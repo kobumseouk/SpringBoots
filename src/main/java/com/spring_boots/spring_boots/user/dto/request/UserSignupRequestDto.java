@@ -1,11 +1,12 @@
 package com.spring_boots.spring_boots.user.dto.request;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserSignupRequestDto {
 
     private String username;

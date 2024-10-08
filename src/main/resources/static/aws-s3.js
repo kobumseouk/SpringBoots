@@ -1,9 +1,9 @@
 import { randomId } from "./useful-functions.js";
 
 // aws-s3 사이트에서의 설정값들
-const s3BucketName = "elice-shoppingmall";
+const s3BucketName = "project-springboots";
 const bucketRegion = "ap-northeast-2"; // 한국은 항상 ap-northeast-2임.
-const IdentityPoolId = "ap-northeast-2:5e7a5d7d-e6ed-462c-b302-f5663eb5fb0d";
+const IdentityPoolId = "ap-northeast-2:86ef0773-cb9a-49ec-b184-0e87a1d5db0b";
 
 // aws 공식문서 그대로 가져옴
 AWS.config.update({
@@ -85,17 +85,6 @@ function getImageUrl(imageKey) {
 export { addImageToS3, getImageUrl };
 
 
-const fileInput = document.getElementById('fileInput');
-const fileNameSpan = document.getElementById('fileNameSpan');
-
-fileInput.addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        fileNameSpan.textContent = file.name; // 파일 이름 표시
-    } else {
-        fileNameSpan.textContent = "사진파일 (png, jpg, jpeg)";
-    }
-});
 
 document.getElementById('uploadButton').addEventListener('click', () => {
     const file = fileInput.files[0];

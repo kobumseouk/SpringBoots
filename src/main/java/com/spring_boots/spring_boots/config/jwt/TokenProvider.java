@@ -1,6 +1,5 @@
 package com.spring_boots.spring_boots.config.jwt;
 
-import com.spring_boots.spring_boots.config.jwt.JwtProperties;
 import com.spring_boots.spring_boots.user.domain.Users;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;

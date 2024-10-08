@@ -1,6 +1,6 @@
 package com.spring_boots.spring_boots.user.service;
 
-import com.spring_boots.spring_boots.orders.entity.RefreshToken;
+import com.spring_boots.spring_boots.user.domain.RefreshToken;
 import com.spring_boots.spring_boots.user.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
