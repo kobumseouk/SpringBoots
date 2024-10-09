@@ -42,7 +42,7 @@ function addAllEvents() {
 // 페이지 로드 시 실행, 삭제할 카테고리 id를 전역변수로 관리함
 let categoryIdToDelete;
 async function insertCategories() {
-  const categories = await Api.get("/categories/admin");
+  const categories = await Api.get("/admin/categories");
 
   // 총 요약에 활용
   const summary = {
@@ -92,8 +92,7 @@ async function deleteCategoryData(e) {
   e.preventDefault();
 
   try {
-    await Api.delete("/categories", categoryIdToDelete);
-
+    await Api.delete(`/admin/categories/${categoryIdToDelete}`);
     // 삭제 성공
     alert("카테고리가 삭제되었습니다.");
 

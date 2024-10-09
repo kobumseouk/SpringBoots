@@ -12,7 +12,7 @@ const imageInput = document.querySelector("#imageInput");
 const fileNameSpan = document.querySelector("#fileNameSpan");
 const submitButton = document.querySelector("#submitCategoryButton");
 const categoryForm = document.querySelector("#categoryForm");
-
+const formTitle = document.querySelector("#formTitle");
 
 const categoryId = new URLSearchParams(window.location.search).get('id');
 const isEditMode = !!categoryId;
@@ -21,24 +21,23 @@ const isEditMode = !!categoryId;
 async function initializePage() {
   console.log("Initializing page...");
   await loadHeader();
-  addAllElements();
   addAllEvents();
   toggleImageUploadField(); // 초기 상태 설정
   if (isEditMode) {
     await fetchCategoryData();
+    formTitle.textContent = "카테고리 수정하기";
+    submitButton.textContent = "카테고리 수정하기";
+  } else {
+    formTitle.textContent = "카테고리 추가하기";
+    submitButton.textContent = "카테고리 추가하기";
   }
   console.log("Page initialization complete.");
 }
 
-async function addAllElements() {
-  console.log("Adding all elements...");
-  createNavbar();
-  console.log("All elements added.");
-}
 
 function addAllEvents() {
   console.log("Adding all events...");
-  submitButton.addEventListener("click", handleSubmit);
+  categoryForm.addEventListener("submit", handleSubmit);
   imageInput.addEventListener("change", handleImageUpload);
   themeSelectBox.addEventListener("change", handleThemeChange);
   console.log("All events added.");
@@ -171,7 +170,6 @@ async function handleSubmit(e) {
   }
 }
 
-
 function handleImageUpload() {
   const file = imageInput.files[0];
   fileNameSpan.innerText = file ? file.name : "";
@@ -182,4 +180,3 @@ window.addEventListener('DOMContentLoaded', () => {
   console.log("DOM content loaded. Initializing page...");
   initializePage();
 });
-
