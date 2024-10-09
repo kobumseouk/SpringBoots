@@ -177,8 +177,5 @@ function handleImageUpload() {
   fileNameSpan.innerText = file ? file.name : "";
 }
 
-// 페이지 초기화
-window.addEventListener('DOMContentLoaded', () => {
-  console.log("DOM content loaded. Initializing page...");
-  initializePage();
-});
+// 페이지 로드 시 페이지 초기화 실행
+document.addEventListener('DOMContentLoaded', initializePage);
