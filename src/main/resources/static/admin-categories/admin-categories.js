@@ -1,4 +1,3 @@
-import { loadHeader } from "../../common/common-header.js";
 import { addCommas, checkAdmin, createNavbar } from "../../useful-functions.js";
 import * as Api from "../../api.js";
 
