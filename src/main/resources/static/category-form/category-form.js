@@ -21,6 +21,8 @@ const isEditMode = !!categoryId;
 async function initializePage() {
   console.log("Initializing page...");
   await loadHeader();
+  createNavbar();
+  // checkLogin();
   addAllEvents();
   toggleImageUploadField(); // 초기 상태 설정
   if (isEditMode) {

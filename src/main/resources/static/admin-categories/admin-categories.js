@@ -8,6 +8,7 @@ const modal = document.querySelector("#modal");
 const modalBackground = document.querySelector("#modalBackground");
 const deleteCompleteButton = document.querySelector("#deleteCompleteButton");
 const deleteCancelButton = document.querySelector("#deleteCancelButton");
+const addCategoryButton = document.querySelector("#addCategoryButton");
 
 // 페이지 초기화 함수
 async function initializePage() {
@@ -31,7 +32,6 @@ function addAllEvents() {
   deleteCancelButton.addEventListener("click", cancelDelete);
 
   // 카테고리 등록 버튼 이벤트 리스너 추가
-  const addCategoryButton = document.querySelector("#addCategoryButton");
   if (addCategoryButton) {
     addCategoryButton.addEventListener("click", () => {
       window.location.href = "/admin/categories/create";
