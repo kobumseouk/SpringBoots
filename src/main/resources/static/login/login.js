@@ -50,17 +50,17 @@ async function handleSubmit(e) {
     const data = { userRealId, password };
 
     const result = await Api.post("/api/login", data);
-    const { token, isAdmin } = result;
+//    const { accessToken } = result;
 
     // 로그인 성공, 토큰을 세션 스토리지에 저장
-    sessionStorage.setItem("token", token);
+//    sessionStorage.setItem("token", token);
 
     alert(`정상적으로 로그인되었습니다.`);
 
     // 로그인 성공
 
-    // admin(관리자) 일 경우, sessionStorage에 기록함
-    if (isAdmin) {
+    // admin(관리자) 일 경우, sessionStorage 에 기록함
+    if (result.admin) {
       sessionStorage.setItem("admin", "admin");
     }
 

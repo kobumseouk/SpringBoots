@@ -3,7 +3,7 @@ export const randomId = () => {
   return Math.random().toString(36).substring(2, 7);
 };
 
-//원하는 쿠키 가지고오기
+//원하는 쿠키 가지고오기 HttpOnly false 일 경우
 const getCookie = (cookieName) => {
   const name = cookieName + "=";
   const decodedCookie = decodeURIComponent(document.cookie);  // 쿠키 값을 URI 디코딩
