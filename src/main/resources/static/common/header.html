@@ -1,20 +1,3 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="/common/header.css">
-  <title>Shopping Mall</title>
-</head>
-<body>
-<div class="top-bar">
-  <div class="container">
-    <a href="/login" class="button.is-right">로그인/회원가입</a>
-  </div>
-</div>
-
 <nav class="navbar" role="navigation" aria-label="main navigation">
   <div class="container">
     <div class="navbar-brand">
@@ -25,43 +8,42 @@
       </a>
     </div>
 
-    <div class="navbar-top">
-      <div class="navbar-end">
-        <a class="navbar-item" href="#">관리자 페이지</a>
-        <a class="navbar-item" href="#">마이 페이지</a>
-        <a class="navbar-item" href="#">장바구니</a>
-        <a class="navbar-item" href="#">로그아웃</a>
-      </div>
-    </div>
-    <div class="navbar-bottom">
-      <div class="navbar-item">
-        <div class="field has-addons">
-          <div class="control">
-            <input class="input search-input" type="text" placeholder="검색어를 입력하세요">
-          </div>
-          <div class="control">
-            <button class="button search-button" type="submit">
-          <span class="icon search-icon">
-            <i class="fas fa-search"></i>
-          </span>
-            </button>
+    <div class="navbar-end">
+      <div class="right-container">
+        <div class="user-menu-container">
+          <div id="user-menu">
+            <!-- 이 부분은 JavaScript에 의해 동적으로 채워집니다 -->
           </div>
         </div>
-        <a class="navbar-item" href="#">로그아웃</a>
+
+        <div class="search-container">
+          <div class="field has-addons">
+            <div class="control">
+              <input class="input search-input" type="text" placeholder="검색어를 입력하세요">
+            </div>
+            <div class="control">
+              <button class="button search-button" type="submit">
+                <span class="icon search-icon">
+                  <i class="fas fa-search"></i>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </nav>
 
-<nav class="navbar" role="navigation" aria-label="secondary navigation">
+<nav class="secondary-navbar" role="navigation" aria-label="secondary navigation">
   <div class="container">
-    <div id="navbarBottom" class="navbar-menu">
+    <div class="navbar-menu">
       <div class="navbar-start">
         <a class="navbar-item" href="#">공용</a>
         <a class="navbar-item" href="#">여성</a>
         <a class="navbar-item" href="#">남성</a>
         <a class="navbar-item" href="#">액세서리</a>
-        <a class="navbar-item has-text-danger" href="#">SALE</a>
+        <a class="navbar-item sale-item" href="#">SALE</a>
         <a class="navbar-item" href="#">COLLABORATION</a>
         <a class="navbar-item" href="#">HOW TO</a>
       </div>
@@ -74,7 +56,3 @@
     </div>
   </div>
 </nav>
-
-<script src="/common/header.js"></script>
-</body>
-</html>
