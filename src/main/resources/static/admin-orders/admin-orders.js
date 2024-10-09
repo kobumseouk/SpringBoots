@@ -25,7 +25,9 @@ function addAllEvents() {
   modalBackground.addEventListener("click", closeModal);
   modalCloseButton.addEventListener("click", closeModal);
   document.addEventListener("keydown", keyDownCloseModal);
-  deleteCompleteButton.addEventListener("click", deleteOrderData);
+  deleteCompleteButton.addEventListener("click", () => {
+    deleteOrderData(orderIdToDelete); // 모달에서 "네" 클릭 시 주문 삭제 실행
+  });
   deleteCancelButton.addEventListener("click", cancelDelete);
 }
 
@@ -85,7 +87,6 @@ async function insertOrders() {
       const data = { orderStatus: newStatus };
 
       try {
-        // 데이터를 JSON 형태로 전달, params는 비워두고 사용하지 않음
         await Api.patch(`/api/admin/orders/${ordersId}/status`, "", data);
         alert("주문 상태가 성공적으로 업데이트되었습니다.");
       } catch (error) {
@@ -94,12 +95,10 @@ async function insertOrders() {
       }
     });
 
-
-
-    // 주문 취소 이벤트
+    // 주문 취소 버튼 클릭 시 모달 창 열기 및 orderId 설정
     deleteButton.addEventListener("click", () => {
-      orderIdToDelete = ordersId;
-      openModal();
+      orderIdToDelete = ordersId; // 선택한 주문의 ID 저장
+      openModal(); // 모달 창 열기
     });
   }
 
@@ -110,9 +109,9 @@ async function insertOrders() {
 }
 
 // 주문 취소
-async function deleteOrderData() {
+async function deleteOrderData(orderIdToDelete) {
   try {
-    await Api.delete(`/api/admin/orders/${orderIdToDelete}`);
+    await Api.delete(`/api/admin/orders`, orderIdToDelete);
     const deletedItem = document.querySelector(`#order-${orderIdToDelete}`);
     deletedItem.remove();
     alert("주문이 취소되었습니다.");
