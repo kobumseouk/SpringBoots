@@ -1,4 +1,5 @@
-import { addCommas, checkAdmin, createNavbar } from "../../useful-functions.js";
+import { addCommas, checkAdmin } from "../../useful-functions.js";
+import { loadHeader } from "../../common/header.js";
 import * as Api from "../../api.js";
 
 // 요소(element), input 혹은 상수
@@ -12,16 +13,15 @@ const addCategoryButton = document.querySelector("#addCategoryButton");
 
 // 페이지 초기화 함수
 async function initializePage() {
-  await loadHeader();
   // checkAdmin();
-  addAllElements();
+  await addAllElements();
   addAllEvents();
 }
 
 // 요소 삽입 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-function addAllElements() {
-  createNavbar();
-  insertCategories();
+async function addAllElements() {
+  await loadHeader();
+  await insertCategories();
 }
 
 // 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
@@ -42,7 +42,18 @@ function addAllEvents() {
 // 페이지 로드 시 실행, 삭제할 카테고리 id를 전역변수로 관리함
 let categoryIdToDelete;
 async function insertCategories() {
-  const categories = await Api.get("/admin/categories");
+  const response = await Api.get("/api/admin/categories");
+    console.log('API 응답:', response);
+
+    let categories = [];
+    if (Array.isArray(response)) {
+      categories = response;
+    } else if (response && typeof response === 'object' && response.categories) {
+      categories = response.categories;
+    } else {
+      console.error('예상치 못한 API 응답 형식:', response);
+      return;
+    }
 
   // 총 요약에 활용
   const summary = {
@@ -92,7 +103,7 @@ async function deleteCategoryData(e) {
   e.preventDefault();
 
   try {
-    await Api.delete(`/admin/categories/${categoryIdToDelete}`);
+    await Api.delete(`/api/admin/categories/${categoryIdToDelete}`);
     // 삭제 성공
     alert("카테고리가 삭제되었습니다.");
 

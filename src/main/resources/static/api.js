@@ -7,18 +7,23 @@ async function get(endpoint, params = "") {
   const token = sessionStorage.getItem("token");
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-  const res = await fetch(apiUrl, { headers });
+    try {
+        const res = await fetch(apiUrl, { headers });
 
-  // 응답 코드가 4XX 계열일 때 (400, 403 등)
-  if (!res.ok) {
-    const errorContent = await res.json();
-    const { reason } = errorContent;
+        // 응답 코드가 4XX 계열일 때 (400, 403 등)
+        if (!res.ok) {
+            const errorContent = await res.json();
+            const { reason } = errorContent;
+            throw new Error(reason || `HTTP error! status: ${res.status}`);
+        }
 
-    throw new Error(reason);
-  }
-
-  const result = await res.json();
-  return result;
+        const result = await res.json();
+        console.log(`%cGET 응답: `, "color: #a25cd1;", result);  // 응답 로깅 추가
+        return result;
+    } catch (error) {
+        console.error(`%cGET 요청 실패: ${apiUrl}`, "color: #ff0000;", error);
+        throw error;  // 에러를 다시 throw하여 호출자에게 전파
+    }
 }
 
 async function post(endpoint, data) {

@@ -1,6 +1,7 @@
 import { addImageToS3 } from "../../aws-s3.js";
 import * as Api from "../../api.js";
-import { checkLogin, createNavbar } from "../../useful-functions.js";
+import { checkLogin, checkAdmin } from "../../useful-functions.js";
+import { loadHeader } from "../../common/header.js";
 
 // 요소(element), input 혹은 상수
 const titleInput = document.querySelector("#titleInput");
@@ -21,7 +22,6 @@ const isEditMode = !!categoryId;
 async function initializePage() {
   console.log("Initializing page...");
   await loadHeader();
-  createNavbar();
   // checkLogin();
   addAllEvents();
   toggleImageUploadField(); // 초기 상태 설정
