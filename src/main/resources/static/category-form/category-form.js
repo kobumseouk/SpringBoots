@@ -7,55 +7,121 @@ import { checkLogin, createNavbar } from "../../useful-functions.js";
 const titleInput = document.querySelector("#titleInput");
 const descriptionInput = document.querySelector("#descriptionInput");
 const themeSelectBox = document.querySelector("#themeSelectBox");
+const displaySelectBox = document.querySelector("#displaySelectBox");
 const imageUploadField = document.querySelector("#imageUploadField");
 const imageInput = document.querySelector("#imageInput");
 const fileNameSpan = document.querySelector("#fileNameSpan");
 const submitButton = document.querySelector("#submitCategoryButton");
 const categoryForm = document.querySelector("#categoryForm");
 
+
 const categoryId = new URLSearchParams(window.location.search).get('id');
 const isEditMode = !!categoryId;
 
+// 페이지 로드 시 초기 상태 설정
 async function initializePage() {
+  console.log("Initializing page...");
   await loadHeader();
   addAllElements();
   addAllEvents();
+  toggleImageUploadField(); // 초기 상태 설정
   if (isEditMode) {
     await fetchCategoryData();
   }
-  toggleImageUploadField(); // 초기 상태 설정
+  console.log("Page initialization complete.");
 }
 
 async function addAllElements() {
+  console.log("Adding all elements...");
   createNavbar();
+  console.log("All elements added.");
 }
 
 function addAllEvents() {
+  console.log("Adding all events...");
   submitButton.addEventListener("click", handleSubmit);
   imageInput.addEventListener("change", handleImageUpload);
-  themeSelectBox.addEventListener("change", toggleImageUploadField);
+  themeSelectBox.addEventListener("change", handleThemeChange);
+  console.log("All events added.");
 }
 
 function toggleImageUploadField() {
-  if (themeSelectBox.value === "HOW TO") {
-    imageUploadField.style.display = "block";
-  } else {
+  console.log("Toggling image upload field...");
+  console.log("Current theme:", themeSelectBox.value);
+
+  if (themeSelectBox.value !== "HOW TO") {
     imageUploadField.style.display = "none";
     imageInput.value = ""; // 이미지 입력 초기화
     fileNameSpan.innerText = "사진파일 (png, jpg, jpeg)";
+    console.log("Image upload field hidden.");
+  } else {
+    imageUploadField.style.display = "block";
+    console.log("Image upload field shown.");
+    alert("'HOW TO' 테마가 선택되었습니다. 이미지 업로드 필드가 활성화됩니다.");
+  }
+}
+
+async function handleThemeChange() {
+  const selectedTheme = themeSelectBox.value;
+  console.log("Selected theme:", selectedTheme);
+
+  if (selectedTheme) {
+    try {
+      const categories = await Api.get(`/api/categories/themes/${selectedTheme}`);
+      updateDisplayOrderOptions(categories.length);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      alert('카테고리 정보를 불러오는데 실패했습니다.');
+    }
+  } else {
+    // 테마가 선택되지 않았을 때 배치 선택 옵션 초기화
+    updateDisplayOrderOptions(0);
+  }
+
+  toggleImageUploadField();
+}
+
+function updateDisplayOrderOptions(count) {
+  displaySelectBox.innerHTML = '<option value="">배치할 위치를 골라주세요.</option>';
+  for (let i = 1; i <= count + 1; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = `${i}번째`;
+    displaySelectBox.appendChild(option);
   }
 }
 
 async function fetchCategoryData() {
+  console.log("Fetching category data...");
   try {
     const category = await Api.get('/api/admin/categories', categoryId);
+    console.log("Category data received:", category);
+
     titleInput.value = category.categoryName;
     descriptionInput.value = category.categoryContent;
     themeSelectBox.value = category.categoryThema;
-    fileNameSpan.innerText = category.imageUrl ? category.imageUrl.split('/').pop() : '사진파일 (png, jpg, jpeg)';
-    toggleImageUploadField(); // 데이터 로드 후 이미지 필드 상태 업데이트
+
+    console.log("Theme set to:", category.categoryThema);
+
+    // 테마에 맞는 배치 옵션 업데이트
+    const categories = await Api.get(`/api/categories/themes/${category.categoryThema}`);
+    updateDisplayOrderOptions(categories.length);
+    displaySelectBox.value = category.displayOrder;
+
+    if (category.imageUrl) {
+      fileNameSpan.innerText = category.imageUrl.split('/').pop();
+      console.log("Image filename set to:", fileNameSpan.innerText);
+    } else {
+      fileNameSpan.innerText = '사진파일 (png, jpg, jpeg)';
+      console.log("No image URL, reset to default text");
+    }
+
+    console.log("Updating image field state...");
+    toggleImageUploadField();
+
+    console.log("Category data loaded successfully");
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching category data:", err);
     alert('카테고리 정보를 불러오는데 실패했습니다.');
   }
 }
@@ -66,10 +132,11 @@ async function handleSubmit(e) {
   const title = titleInput.value;
   const description = descriptionInput.value;
   const theme = themeSelectBox.value;
+  const displayOrder = displaySelectBox.value;
   const image = imageInput.files[0];
 
-  if (!title || theme === "") {
-    return alert("카테고리 이름과 테마는 필수 입력 항목입니다.");
+  if (!title || !theme || !displayOrder) {
+    return alert("카테고리 이름, 테마, 배치 위치는 필수 입력 항목입니다.");
   }
 
   if (image && image.size > 3e6) {
@@ -77,15 +144,19 @@ async function handleSubmit(e) {
   }
 
   try {
-    let imageKey = null;
+    let imageUrl = null;
     if (image) {
-      imageKey = await addImageToS3(imageInput, "category");
+      const imageKey = await addImageToS3(imageInput, "category");
+      imageUrl = await getImageUrl(imageKey);
     }
 
-    const data = { categoryName: title, categoryContent: description, categoryThema: theme };
-    if (imageKey) {
-      data.imageUrl = imageKey;
-    }
+    const data = {
+      categoryName: title,
+      categoryContent: description,
+      categoryThema: theme,
+      imageUrl: imageUrl,
+      displayOrder: parseInt(displayOrder)
+    };
 
     if (isEditMode) {
       await Api.patch(`/api/admin/categories/${categoryId}`, data);
@@ -101,11 +172,15 @@ async function handleSubmit(e) {
   }
 }
 
+
 function handleImageUpload() {
   const file = imageInput.files[0];
   fileNameSpan.innerText = file ? file.name : "";
 }
 
 // 페이지 초기화
-window.addEventListener('DOMContentLoaded', initializePage);
+window.addEventListener('DOMContentLoaded', () => {
+  console.log("DOM content loaded. Initializing page...");
+  initializePage();
+});
 
