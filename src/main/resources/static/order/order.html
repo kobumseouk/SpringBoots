@@ -6,11 +6,13 @@
   <title>주문 / 결제</title>
   <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/order/order.css"> <!-- 주문 페이지 스타일 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/common/header.css">
 </head>
 <body>
 
 <!-- Include header -->
-<div id="header-placeholder"></div>
+<div id="header-placeholder" class="header-container"></div>
 
 <div class="container my-5">
   <h1 class="title is-3 has-text-centered">주문 / 결제</h1>
@@ -112,5 +114,10 @@
 </div>
 
 <script src="/order/order.js"></script> <!-- 주문 페이지 JavaScript -->
+<script src="/common/header.js" type="module"></script>
+<script type="module">
+  import { loadHeader } from '/common/header.js';
+  document.addEventListener('DOMContentLoaded', loadHeader);
+</script>
 </body>
 </html>

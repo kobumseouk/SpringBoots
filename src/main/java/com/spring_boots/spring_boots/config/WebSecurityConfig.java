@@ -50,27 +50,29 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(toH2Console()).permitAll()  // H2 콘솔에 대한 요청 허용
                         .requestMatchers(
-                                "/api/**", "/login/**"
+                                "/api/**","/login/**","/static/**","/",
+                                "/login-resource/**","api.js","elice-rabbit.png",
+                                "useful-functions.js","elice-rabbit-favicon.png",
+                                "navbar.js"
                         ).permitAll()  // 모든 요청에 대해 요청 허가
-                        // .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
 
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )// 세션 정책을 Stateless로 설정
 
                 // ######### 폼 기반 로그인 설정 #######
-                .formLogin(form -> form
-                        .loginPage("/login")    //로그인 페이지 경로 설정
-                        .defaultSuccessUrl("/home") //로그인 성공페이지
-                        .successHandler(successHandler)
-                        .permitAll()    //로그인페이지에 대한 모든 요청 허용
-                )
-                .logout(logout -> logout
-                        .logoutSuccessUrl("/login") //로그아웃 성공 페이지
-                        .invalidateHttpSession(true)    //세션 무효화
-                        .permitAll()    //로그아웃 요청 접근 허용
-                )
+//                .formLogin(form -> form
+//                        .loginPage("/login")    //로그인 페이지 경로 설정
+//                        .defaultSuccessUrl("/home") //로그인 성공페이지
+//                        .successHandler(successHandler)
+//                        .permitAll()    //로그인페이지에 대한 모든 요청 허용
+//                )
+//                .logout(logout -> logout
+//                        .logoutSuccessUrl("/login") //로그아웃 성공 페이지
+//                        .invalidateHttpSession(true)    //세션 무효화
+//                        .permitAll()    //로그아웃 요청 접근 허용
+//                )
                 //###################
 
                 //###### OAuth2 로그인 설정 ########

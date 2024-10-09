@@ -3,6 +3,21 @@ export const randomId = () => {
   return Math.random().toString(36).substring(2, 7);
 };
 
+//원하는 쿠키 가지고오기 HttpOnly false 일 경우
+const getCookie = (cookieName) => {
+  const name = cookieName + "=";
+  const decodedCookie = decodeURIComponent(document.cookie);  // 쿠키 값을 URI 디코딩
+  const cookieArray = decodedCookie.split(';');  // 쿠키를 세미콜론(;) 기준으로 나눔
+
+  for (let i = 0; i < cookieArray.length; i++) {
+    let cookie = cookieArray[i].trim();  // 공백 제거
+    if (cookie.indexOf(name) === 0) {
+      return cookie.substring(name.length, cookie.length);  // 원하는 쿠키 값 반환
+    }
+  }
+  return null;  // 해당 쿠키가 없을 경우 null 반환
+};
+
 // 이메일 형식인지 확인 (true 혹은 false 반환)
 export const validateEmail = (email) => {
   return String(email)
@@ -33,8 +48,10 @@ export const addCommas = (n) => {
 
 // 로그인 여부(토큰 존재 여부) 확인
 export const checkLogin = () => {
-  const token = sessionStorage.getItem("token");
-  if (!token) {
+  const accessToken = getCookie("accessToken");
+  const refreshToken = getCookie("refreshToken");
+
+  if (!accessToken && !refreshToken) {
     // 현재 페이지의 url 주소 추출하기
     const pathname = window.location.pathname;
     const search = window.location.search;
@@ -49,10 +66,11 @@ export const checkAdmin = async () => {
   // 우선 화면을 가리고 시작함 -> 화면 번쩍거림으로 인해 일단 미적용
   //window.document.body.style.display = 'none';
 
-  const token = sessionStorage.getItem("token");
+  const accessToken = getCookie("accessToken");
+  const refreshToken = getCookie("refreshToken");
 
   // 우선 토큰 존재 여부 확인
-  if (!token) {
+  if (!accessToken && !refreshToken) {
     // 현재 페이지의 url 주소 추출하기
     const pathname = window.location.pathname;
     const search = window.location.search;
@@ -83,9 +101,23 @@ export const checkAdmin = async () => {
 
 // 로그인 상태일 때에는 접근 불가한 페이지로 만듦. (회원가입 페이지 등)
 export const blockIfLogin = () => {
-  const token = sessionStorage.getItem("token");
+  const accessToken = getCookie("accessToken");
+  const refreshToken = getCookie("refreshToken");
 
-  if (token) {
+
+  if(accessToken){
+    console.log("access Token: ",accessToken);
+  }else{
+    console.log("access 실행안됨");
+  }
+
+  if(refreshToken){
+    console.log("refresh Token: ",refreshToken)
+  }else{
+       console.log("access 실행안됨");
+  }
+
+  if (accessToken || refreshToken) {
     alert("로그인 상태에서는 접근할 수 없는 페이지입니다.");
     window.location.replace("/");
   }
@@ -147,4 +179,4 @@ export const randomPick = (items) => {
 };
 
 // 주변 다른 파일 것도 여기서 일괄 export 함
-export { createNavbar } from "./navbar.js";
+export { createNavbar } from "./navbar.js"; // 얘는 또 navbar 랑 연결되어있넹
