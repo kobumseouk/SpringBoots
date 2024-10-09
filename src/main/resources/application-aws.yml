@@ -1,0 +1,9 @@
+aws:
+  s3:
+    bucket:
+      name: project-springboots
+      stack.auto: false
+      region.static: ap-northeast-2
+      credentials:
+        accessKey: AKIAWOOXT2P2HYJJ4352
+        secretAccessKey: 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

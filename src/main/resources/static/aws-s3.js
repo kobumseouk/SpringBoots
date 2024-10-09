@@ -3,7 +3,7 @@ import { randomId } from "./useful-functions.js";
 // aws-s3 사이트에서의 설정값들
 const s3BucketName = "project-springboots";
 const bucketRegion = "ap-northeast-2"; // 한국은 항상 ap-northeast-2임.
-const IdentityPoolId = "ap-northeast-2:86ef0773-cb9a-49ec-b184-0e87a1d5db0b";
+const IdentityPoolId = "ap-northeast-2:23dbe192-a382-459f-aa64-2b9eb2fc68aa";
 
 // aws 공식문서 그대로 가져옴
 AWS.config.update({
