@@ -1,34 +1,69 @@
-.navbar-top, .navbar-main {
+/* 기본 네비게이션 바 스타일 */
+.navbar {
   background-color: black;
-  padding: 0.5rem 1rem;
+  padding: 0.05rem 0.5rem;
+}
+
+.container {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.navbar-top .navbar-end {
-  display: flex;
-  align-items: center;
-}
-
-.navbar-item {
-  color: white !important;
-  font-weight: bold;
-}
-
-.navbar-item:hover {
-  background-color: #333 !important;
-}
-
+/* 로고 스타일 */
 .logo-icon {
   color: #4caf50;
   font-size: 1.5rem;
+}
+
+/* 오른쪽 컨테이너 스타일 */
+.navbar-end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.right-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: -0.55rem;
+}
+
+/* 사용자 메뉴 스타일 */
+.user-menu-container {
+  margin-bottom: 0.3rem;
+}
+
+#user-menu {
+  display: flex;
+}
+
+#user-menu a {
+  color: white;
+  font-size: 0.9rem;
+  margin-left: 1rem;
+  text-decoration: none;
+  background-color: transparent; /* 배경색을 투명하게 설정 */
+  transition: text-decoration 0.3s ease; /* 부드러운 밑줄 효과를 위한 transition */
+}
+
+#user-menu a:hover {
+  text-decoration: underline;
+  background-color: transparent !important; /* hover 시에도 배경색이 변하지 않도록 설정 */
+}
+
+/* 검색 컨테이너 스타일 */
+.search-container {
+  width: 300px;  /* 원하는 너비로 조정 */
+  margin-bottom: 0.15rem;  /* 아래 여백을 줄임 */
 }
 
 .search-input {
   background-color: white;
   border: none;
   color: black;
+  height: 2rem;
 }
 
 .search-input::placeholder {
@@ -38,17 +73,60 @@
 .search-button {
   background-color: white;
   border: none;
+  height: 2rem;
 }
 
 .search-icon {
   color: black;
+  font-size: 0.9rem;
 }
 
-.has-text-danger {
+/* 두 번째 네비게이션 바 스타일 */
+.secondary-navbar {
+  background-color: black;
+  border-top: 1px solid #333;
+  padding-top: 0.05rem;
+}
+
+.secondary-navbar .navbar-menu {
+  display: flex;
+  justify-content: space-between;
+}
+
+.secondary-navbar .navbar-item {
+  color: white !important;
+}
+
+.secondary-navbar .navbar-item:hover,
+.secondary-navbar .navbar-item:focus,
+.secondary-navbar .navbar-item.is-active {
+  background-color: #333 !important;
+  color: white !important;
+}
+
+.secondary-navbar .sale-item {
   color: red !important;
 }
 
-/* NEW-IN, BEST, EVENT 섹션 */
-.navbar-main .navbar-end {
+.secondary-navbar .navbar-end {
   margin-left: auto;
+}
+
+/* 반응형 디자인을 위한 미디어 쿼리 */
+@media screen and (max-width: 1023px) {
+  .navbar-menu {
+    display: none;
+  }
+
+  .navbar-menu.is-active {
+    display: block;
+  }
+
+  .right-container {
+    width: 100%;
+  }
+
+  .search-container {
+    width: 100%;
+  }
 }

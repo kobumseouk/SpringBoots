@@ -6,6 +6,8 @@
   <title>주문 완료</title>
   <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/order-summary/order-summary.css"> <!-- 주문 요약 스타일 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/common/header.css">
 </head>
 <body>
 
@@ -18,3 +20,9 @@
 <script src="/order-summary/order-summary.js"></script> <!-- 주문 요약 JavaScript -->
 </body>
 </html>
+
+<script src="/common/header.js" type="module"></script>
+<script type="module">
+  import { loadHeader } from '/common/header.js';
+  document.addEventListener('DOMContentLoaded', loadHeader);
+</script>

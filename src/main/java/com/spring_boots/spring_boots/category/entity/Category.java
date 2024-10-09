@@ -32,13 +32,13 @@ public class Category extends BaseTimeEntity {
   private String categoryContent;
 
   @Column(name = "display_order", nullable = false)
-  private int displayOrder;
+  private int displayOrder;  // 카테고리의 표시 순서
 
   @Column(name = "image_url")
   private String imageUrl;
 
   @OneToMany(mappedBy = "category")
-  private List<Event> events;
+  private List<Event> events;  // 이 카테고리에 속한 이벤트 목록
 
   // createdAt과 updatedAt은 BaseTimeEntity  상속
 

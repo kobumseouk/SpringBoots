@@ -21,10 +21,11 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/order-list").setViewName("forward:/order-list/order-list.html");
         registry.addViewController("/order").setViewName("forward:/order/order.html");
         registry.addViewController("/order-details").setViewName("forward:/order-details/order-details.html");
+        registry.addViewController("/admin-orders").setViewName("forward:/admin-orders/admin-orders.html");
         // 카테고리 관리 페이지
-        registry.addViewController("/admin/categories").setViewName("forward:/admin-categories/category-management.html");
+        registry.addViewController("/admin/categories").setViewName("forward:/admin-categories/admin-categories.html");
         // 카테고리 생성 페이지
-        registry.addViewController("/admin/categories/create").setViewName("forward:/category-add/category-add.html");
+        registry.addViewController("/admin/categories/create").setViewName("forward:/category-form/category-add.html");
         // 카테고리 수정 페이지
         registry.addViewController("/admin/categories/edit/**").setViewName("forward:/category-form/category-edit.html");
         // 이벤트 목록 페이지
