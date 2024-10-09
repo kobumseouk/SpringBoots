@@ -88,6 +88,7 @@ public class UserService {
         return JwtTokenDto.builder()
                 .accessToken(accessToken.getToken())
                 .refreshToken(refreshToken.getToken())
+                .role(user.getRole())
                 .build();
     }
 
@@ -153,5 +154,9 @@ public class UserService {
 
     public boolean isGrantAdmin(Users authUser) {
         return authUser.getRole().equals(UserRole.ADMIN);
+    }
+
+    public boolean validateToken(String accessToken) {
+        return jwtProvider.validateToken(accessToken);
     }
 }
