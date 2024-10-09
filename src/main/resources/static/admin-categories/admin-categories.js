@@ -63,12 +63,20 @@ async function insertCategories(page = 0, size = 10) {
       return;
     }
 
-    categoriesContainer.innerHTML = ''; // 기존 내용 초기화
+    // 기존 카테고리 목록만 초기화 (컬럼명은 유지)
+    const existingList = categoriesContainer.querySelector('.category-list');
+    if (existingList) {
+      existingList.remove();
+    }
+
+    // 새로운 카테고리 목록 컨테이너 생성
+    const categoryList = document.createElement('div');
+    categoryList.className = 'category-list';
 
     for (const category of categories) {
       const { id, categoryName, categoryThema, displayOrder, createdAt, updatedAt } = category;
 
-      categoriesContainer.insertAdjacentHTML(
+      categoryList.insertAdjacentHTML(
         "beforeend",
         `
           <div class="columns orders-item" id="category-${id}">
@@ -78,24 +86,28 @@ async function insertCategories(page = 0, size = 10) {
             <div class="column is-2">${new Date(createdAt).toLocaleDateString()}</div>
             <div class="column is-2">${new Date(updatedAt).toLocaleDateString()}</div>
             <div class="column is-2">
-              <button class="button is-info" id="editButton-${id}">수정</button>
-              <button class="button is-danger" id="deleteButton-${id}">삭제</button>
+              <button class="button is-info is-small" id="editButton-${id}">수정</button>
+              <button class="button is-danger is-small" id="deleteButton-${id}">삭제</button>
             </div>
           </div>
         `
       );
+    }
 
-      // 수정 버튼 이벤트 리스너
+    // 새로운 카테고리 목록을 컨테이너에 추가
+    categoriesContainer.appendChild(categoryList);
+
+    // 이벤트 리스너 추가
+    categories.forEach(category => {
+      const { id } = category;
       document.querySelector(`#editButton-${id}`).addEventListener("click", () => {
         window.location.href = `/admin/categories/edit?id=${id}`;
       });
-
-      // 삭제 버튼 이벤트 리스너
       document.querySelector(`#deleteButton-${id}`).addEventListener("click", () => {
         categoryIdToDelete = id;
         openModal();
       });
-    }
+    });
 
     // 페이지네이션 UI 생성
     createPagination(currentPage, totalPages);
