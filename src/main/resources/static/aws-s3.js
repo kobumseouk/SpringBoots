@@ -39,7 +39,7 @@ async function addImageToS3(fileInputElement, album) {
   const upload = new AWS.S3.ManagedUpload({
     params: {
       Bucket: s3BucketName,
-      Key: photoKey,z
+      Key: photoKey,
       Body: file,
     },
   });
