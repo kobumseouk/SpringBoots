@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-04T14:56:55+0900",
+    date = "2024-10-08T13:31:44+0900",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.9 (GraalVM Community)"
 )
 @Component
@@ -23,8 +23,15 @@ public class ItemMapperImpl implements ItemMapper {
 
         ResponseItemDto responseItemDto = new ResponseItemDto();
 
-        responseItemDto.setCreatedAt( item.getCreatedAt() );
-        responseItemDto.setUpdatedAt( item.getUpdatedAt() );
+        responseItemDto.setItemId( item.getItemId() );
+        responseItemDto.setItemName( item.getItemName() );
+        responseItemDto.setCategory( item.getCategory() );
+        responseItemDto.setItemPrice( item.getItemPrice() );
+        responseItemDto.setItemDescription( item.getItemDescription() );
+        responseItemDto.setItemMaker( item.getItemMaker() );
+        responseItemDto.setItemColor( item.getItemColor() );
+        responseItemDto.setItemSize( item.getItemSize() );
+        responseItemDto.setImageUrl( item.getImageUrl() );
 
         return responseItemDto;
     }
@@ -36,6 +43,15 @@ public class ItemMapperImpl implements ItemMapper {
         }
 
         Item item = new Item();
+
+        item.setCategory( dto.getCategory() );
+        item.setItemName( dto.getItemName() );
+        item.setItemPrice( dto.getItemPrice() );
+        item.setItemDescription( dto.getItemDescription() );
+        item.setItemMaker( dto.getItemMaker() );
+        item.setItemColor( dto.getItemColor() );
+        item.setImageUrl( dto.getImageUrl() );
+        item.setItemSize( dto.getItemSize() );
 
         return item;
     }
