@@ -25,10 +25,10 @@ INSERT INTO category (
     category_name, category_thema, category_content, display_order, created_at, updated_at, image_url
 ) VALUES
       ('전체보기', '공용', 'All types of shoes', 1, NOW(), NOW(), NULL),
-      ('Shoes', '공용', 'All types of shoes', 2, NOW(), NOW(), NULL),
-      ('Shoes', '여성', 'All types of shoes', 2, NOW(), NOW(), NULL),
+      ('Shoes', '공용', 'All types of shoes', 3, NOW(), NOW(), NULL),
+      ('Shoes', '여성', 'All types of shoes', 3, NOW(), NOW(), NULL),
       ('Shoes', '남성', 'All types of shoes', 3, NOW(), NOW(), NULL),
-      ('24SS SUMMER RECOMEND STYLING', 'HOW TO', 'Styling Guide', 5, NOW(), NOW(), 'https://example.com/summer_styling_guide.jpg');
+      ('24SS SUMMER RECOMEND STYLING', 'HOW TO', 'Styling Guide', 1, NOW(), NOW(), 'https://example.com/summer_styling_guide.jpg');
 
 -- Item 테이블에 테스트 데이터 삽입
 INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)

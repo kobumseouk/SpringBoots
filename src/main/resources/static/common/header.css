@@ -1,29 +1,29 @@
 /* 기본 네비게이션 바 스타일 */
-.navbar {
+.header-container .navbar {
   background-color: black;
-  padding: 0.05rem 0.5rem;
+  padding: 0.7rem 1rem;
 }
 
-.container {
+.header-container .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 /* 로고 스타일 */
-.logo-icon {
+.header-container .logo-icon {
   color: #4caf50;
   font-size: 1.5rem;
 }
 
 /* 오른쪽 컨테이너 스타일 */
-.navbar-end {
+.header-container .navbar-end {
   display: flex;
   justify-content: flex-end;
   align-items: flex-start;
 }
 
-.right-container {
+.header-container .right-container {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -31,15 +31,15 @@
 }
 
 /* 사용자 메뉴 스타일 */
-.user-menu-container {
+.header-container .user-menu-container {
   margin-bottom: 0.3rem;
 }
 
-#user-menu {
+.header-container #user-menu {
   display: flex;
 }
 
-#user-menu a {
+.header-container #user-menu a {
   color: white;
   font-size: 0.9rem;
   margin-left: 1rem;
@@ -48,85 +48,85 @@
   transition: text-decoration 0.3s ease; /* 부드러운 밑줄 효과를 위한 transition */
 }
 
-#user-menu a:hover {
+.header-container #user-menu a:hover {
   text-decoration: underline;
   background-color: transparent !important; /* hover 시에도 배경색이 변하지 않도록 설정 */
 }
 
 /* 검색 컨테이너 스타일 */
-.search-container {
+.header-container .search-container {
   width: 300px;  /* 원하는 너비로 조정 */
   margin-bottom: 0.15rem;  /* 아래 여백을 줄임 */
 }
 
-.search-input {
+.header-container .search-input {
   background-color: white;
   border: none;
   color: black;
   height: 2rem;
 }
 
-.search-input::placeholder {
+.header-container .search-input::placeholder {
   color: #888;
 }
 
-.search-button {
+.header-container .search-button {
   background-color: white;
   border: none;
   height: 2rem;
 }
 
-.search-icon {
+.header-container .search-icon {
   color: black;
   font-size: 0.9rem;
 }
 
 /* 두 번째 네비게이션 바 스타일 */
-.secondary-navbar {
+.header-container .secondary-navbar {
   background-color: black;
   border-top: 1px solid #333;
-  padding-top: 0.05rem;
+  padding-top: 0.15rem;
 }
 
-.secondary-navbar .navbar-menu {
+.header-container .secondary-navbar .navbar-menu {
   display: flex;
   justify-content: space-between;
 }
 
-.secondary-navbar .navbar-item {
+.header-container .secondary-navbar .navbar-item {
   color: white !important;
 }
 
-.secondary-navbar .navbar-item:hover,
-.secondary-navbar .navbar-item:focus,
-.secondary-navbar .navbar-item.is-active {
+.header-container .secondary-navbar .navbar-item:hover,
+.header-container .secondary-navbar .navbar-item:focus,
+.header-container .secondary-navbar .navbar-item.is-active {
   background-color: #333 !important;
   color: white !important;
 }
 
-.secondary-navbar .sale-item {
+.header-container .secondary-navbar .sale-item {
   color: red !important;
 }
 
-.secondary-navbar .navbar-end {
+.header-container .secondary-navbar .navbar-end {
   margin-left: auto;
 }
 
 /* 반응형 디자인을 위한 미디어 쿼리 */
 @media screen and (max-width: 1023px) {
-  .navbar-menu {
+  .header-container .navbar-menu {
     display: none;
   }
 
-  .navbar-menu.is-active {
+  .header-container .navbar-menu.is-active {
     display: block;
   }
 
-  .right-container {
+  .header-container .right-container {
     width: 100%;
   }
 
-  .search-container {
+  .header-container .search-container {
     width: 100%;
   }
 }

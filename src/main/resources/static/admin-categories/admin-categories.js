@@ -1,37 +1,40 @@
-import { addCommas, checkAdmin, createNavbar } from "../../useful-functions.js";
+import { addCommas, checkAdmin } from "../../useful-functions.js";
+import { loadHeader } from "../../common/header.js";
 import * as Api from "../../api.js";
 
 // 요소(element), input 혹은 상수
-const categoriesCount = document.querySelector("#categoriesCount");
+// const categoriesCount = document.querySelector("#categoriesCount");
 const categoriesContainer = document.querySelector("#categoriesContainer");
 const modal = document.querySelector("#modal");
 const modalBackground = document.querySelector("#modalBackground");
+const modalCloseButton = document.querySelector("#modalCloseButton");
 const deleteCompleteButton = document.querySelector("#deleteCompleteButton");
 const deleteCancelButton = document.querySelector("#deleteCancelButton");
+const addCategoryButton = document.querySelector("#addCategoryButton");
 
-// 페이지 초기화 함수
-async function initializePage() {
-  await loadHeader();
-  // checkAdmin();
-  addAllElements();
-  addAllEvents();
+let categoryIdToDelete;
+
+// 초기 설정
+async function initialize() {
+  try {
+      await loadHeader();
+      // checkAdmin();
+      await insertCategories(0);  // 첫 페이지 로드
+      addAllEvents();
+    } catch (error) {
+      console.error('초기화 중 오류 발생:', error);
+    }
 }
 
-// 요소 삽입 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-function addAllElements() {
-  createNavbar();
-  insertCategories();
-}
 
-// 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
+// 이벤트 설정
 function addAllEvents() {
   modalBackground.addEventListener("click", closeModal);
+  modalCloseButton.addEventListener("click", closeModal);
   document.addEventListener("keydown", keyDownCloseModal);
   deleteCompleteButton.addEventListener("click", deleteCategoryData);
   deleteCancelButton.addEventListener("click", cancelDelete);
 
-  // 카테고리 등록 버튼 이벤트 리스너 추가
-  const addCategoryButton = document.querySelector("#addCategoryButton");
   if (addCategoryButton) {
     addCategoryButton.addEventListener("click", () => {
       window.location.href = "/admin/categories/create";
@@ -39,100 +42,153 @@ function addAllEvents() {
   }
 }
 
-// 페이지 로드 시 실행, 삭제할 카테고리 id를 전역변수로 관리함
-let categoryIdToDelete;
-async function insertCategories() {
-  const categories = await Api.get("/categories/admin");
+// 카테고리 데이터를 받아서 테이블에 추가
+async function insertCategories(page = 0, size = 10) {
+  try {
+    const response = await Api.get(`/api/admin/categories?page=${page}&size=${size}`);
+    console.log('API 응답:', response);
 
-  // 총 요약에 활용
-  const summary = {
-    categoriesCount: categories.length,
-  };
+    if (!response || !response.content) {
+      throw new Error('예상치 못한 API 응답 형식');
+    }
 
-  for (const category of categories) {
-    const { id, categoryName, categoryThema, displayOrder, createdAt, updatedAt } = category;
+    const categories = response.content;
+    const totalPages = response.totalPages;
+    const currentPage = response.number;
 
-    categoriesContainer.insertAdjacentHTML(
-      "beforeend",
-      `
-        <div class="columns orders-item" id="category-${id}">
-          <div class="column is-2">${categoryName}</div>
-          <div class="column is-2">${categoryThema}</div>
-          <div class="column is-2">${displayOrder}</div>
-          <div class="column is-2">${new Date(createdAt).toLocaleDateString()}</div>
-          <div class="column is-2">${new Date(updatedAt).toLocaleDateString()}</div>
-          <div class="column is-2">
-            <button class="button is-info" id="editButton-${id}">수정</button>
-            <button class="button is-danger" id="deleteButton-${id}">삭제</button>
+    // categoriesContainer가 존재하는지 확인
+    const categoriesContainer = document.querySelector("#categoriesContainer");
+    if (!categoriesContainer) {
+      console.error('categoriesContainer 요소를 찾을 수 없습니다.');
+      return;
+    }
+
+    // 기존 카테고리 목록만 초기화 (컬럼명은 유지)
+    const existingList = categoriesContainer.querySelector('.category-list');
+    if (existingList) {
+      existingList.remove();
+    }
+
+    // 새로운 카테고리 목록 컨테이너 생성
+    const categoryList = document.createElement('div');
+    categoryList.className = 'category-list';
+
+    for (const category of categories) {
+      const { id, categoryName, categoryThema, displayOrder, createdAt, updatedAt } = category;
+
+      categoryList.insertAdjacentHTML(
+        "beforeend",
+        `
+          <div class="columns orders-item" id="category-${id}">
+            <div class="column is-2">${categoryName}</div>
+            <div class="column is-2">${categoryThema}</div>
+            <div class="column is-2">${displayOrder}번째</div>
+            <div class="column is-2">${new Date(createdAt).toLocaleDateString()}</div>
+            <div class="column is-2">${new Date(updatedAt).toLocaleDateString()}</div>
+            <div class="column is-2">
+              <button class="button is-info is-small" id="editButton-${id}">수정</button>
+              <button class="button is-danger is-small" id="deleteButton-${id}">삭제</button>
+            </div>
           </div>
-        </div>
-      `
-    );
+        `
+      );
+    }
 
-    // 수정 버튼 이벤트 리스너
-    const editButton = document.querySelector(`#editButton-${id}`);
-    editButton.addEventListener("click", () => {
-      window.location.href = `/admin/categories/edit?id=${id}`;
+    // 새로운 카테고리 목록을 컨테이너에 추가
+    categoriesContainer.appendChild(categoryList);
+
+    // 이벤트 리스너 추가
+    categories.forEach(category => {
+      const { id } = category;
+      document.querySelector(`#editButton-${id}`).addEventListener("click", () => {
+        window.location.href = `/admin/categories/edit?id=${id}`;
+      });
+      document.querySelector(`#deleteButton-${id}`).addEventListener("click", () => {
+        categoryIdToDelete = id;
+        openModal();
+      });
     });
 
-    // 삭제 버튼 이벤트 리스너
-    const deleteButton = document.querySelector(`#deleteButton-${id}`);
-    deleteButton.addEventListener("click", () => {
-      categoryIdToDelete = id;
-      openModal();
-    });
+    // 페이지네이션 UI 생성
+    createPagination(currentPage, totalPages);
+
+  } catch (error) {
+    console.error('카테고리 데이터 로딩 실패:', error);
+    alert('카테고리 데이터를 불러오는 데 실패했습니다.');
   }
-
-  // 총 요약에 값 삽입
-  categoriesCount.innerText = addCommas(summary.categoriesCount);
 }
 
-// db에서 카테고리 삭제
-async function deleteCategoryData(e) {
-  e.preventDefault();
-
+// 카테고리 삭제
+async function deleteCategoryData() {
   try {
-    await Api.delete("/categories", categoryIdToDelete);
-
-    // 삭제 성공
-    alert("카테고리가 삭제되었습니다.");
-
-    // 삭제한 아이템 화면에서 지우기
+    await Api.delete(`/api/admin/categories/${categoryIdToDelete}`);
     const deletedItem = document.querySelector(`#category-${categoryIdToDelete}`);
     deletedItem.remove();
-
-    // 전역변수 초기화
-    categoryIdToDelete = "";
-
+    alert("카테고리가 삭제되었습니다.");
     closeModal();
+
+    // 카테고리 수 업데이트
+    const currentCount = parseInt(categoriesCount.innerText.replace(',', ''));
+    categoriesCount.innerText = addCommas(currentCount - 1);
   } catch (err) {
-    alert(`카테고리 삭제 과정에서 오류가 발생하였습니다: ${err}`);
+    console.error(`Error: ${err.message}`);
+    alert(`카테고리 삭제 과정에서 오류가 발생하였습니다: ${err.message}`);
   }
 }
 
-// Modal 창에서 아니오 클릭할 시, 전역 변수를 다시 초기화함.
-function cancelDelete() {
-  categoryIdToDelete = "";
-  closeModal();
+// 페이지네이션 생성 함수
+function createPagination(currentPage, totalPages) {
+  const paginationContainer = document.createElement('nav');
+  paginationContainer.className = 'pagination is-centered';
+  paginationContainer.setAttribute('role', 'navigation');
+  paginationContainer.setAttribute('aria-label', 'pagination');
+
+  const paginationList = document.createElement('ul');
+  paginationList.className = 'pagination-list';
+
+  for (let i = 0; i < totalPages; i++) {
+    const pageItem = document.createElement('li');
+    const pageLink = document.createElement('a');
+    pageLink.className = 'pagination-link';
+    pageLink.setAttribute('aria-label', `Goto page ${i + 1}`);
+    pageLink.textContent = i + 1;
+
+    if (i === currentPage) {
+      pageLink.className += ' is-current';
+      pageLink.setAttribute('aria-current', 'page');
+    } else {
+      pageLink.addEventListener('click', () => insertCategories(i));
+    }
+
+    pageItem.appendChild(pageLink);
+    paginationList.appendChild(pageItem);
+  }
+
+  paginationContainer.appendChild(paginationList);
+  document.querySelector("#categoriesContainer").after(paginationContainer);
 }
 
-// Modal 창 열기
+
+// Modal 창 관련 함수들
 function openModal() {
   modal.classList.add("is-active");
 }
 
-// Modal 창 닫기
 function closeModal() {
   modal.classList.remove("is-active");
 }
 
-// 키보드로 Modal 창 닫기
 function keyDownCloseModal(e) {
-  // Esc 키
   if (e.keyCode === 27) {
     closeModal();
   }
 }
 
-// 페이지 초기화
-window.addEventListener('DOMContentLoaded', initializePage);
+function cancelDelete() {
+  categoryIdToDelete = "";
+  closeModal();
+}
+
+// 페이지 로드 시 실행
+document.addEventListener('DOMContentLoaded', initialize);
+
