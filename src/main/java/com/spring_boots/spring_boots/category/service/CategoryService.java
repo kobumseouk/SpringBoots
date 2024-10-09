@@ -7,6 +7,7 @@ import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,15 @@ public class CategoryService {
   public CategoryResponseDto createCategory(CategoryRequestDto requestDto) {
     Category category = categoryMapper.categoryRequestDtoToCategory(requestDto);
 
-    return categoryMapper.categoryToCategoryResponseDto(categoryRepository.save(category));
+    // 같은 테마의 카테고리들 중 displayOrder가 같거나 큰 카테고리들의 순서를 1씩 증가
+    categoryRepository.incrementDisplayOrderForSubsequentCategories(
+        requestDto.getCategoryThema(),
+        requestDto.getDisplayOrder()
+    );
+
+    Category updatedCategory = categoryRepository.save(category);
+
+    return categoryMapper.categoryToCategoryResponseDto(updatedCategory);
   }
 
 
@@ -34,13 +43,35 @@ public class CategoryService {
   @Transactional
   public CategoryResponseDto updateCategory(Long categoryId, CategoryRequestDto requestDto) {
     Category category = categoryRepository.findById(categoryId)
-        .map(existingCategory -> {
-          categoryMapper.updateCategoryFromDto(requestDto, existingCategory);
-          return categoryRepository.save(existingCategory);
-        })
         .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
 
-    return categoryMapper.categoryToCategoryResponseDto(category);
+    int oldDisplayOrder = category.getDisplayOrder();
+    int newDisplayOrder = requestDto.getDisplayOrder();
+
+    // 배치 순서 조정
+    if (oldDisplayOrder != newDisplayOrder) {
+      if (oldDisplayOrder < newDisplayOrder) {
+        // 카테고리를 뒤로 이동
+        categoryRepository.decrementDisplayOrderForIntermediateCategories(
+            category.getCategoryThema(),
+            oldDisplayOrder + 1,
+            newDisplayOrder
+        );
+      } else {
+        // 카테고리를 앞으로 이동
+        categoryRepository.incrementDisplayOrderForIntermediateCategories(
+            category.getCategoryThema(),
+            newDisplayOrder,
+            oldDisplayOrder - 1
+        );
+      }
+    }
+
+    // 카테고리 정보 업데이트
+    categoryMapper.updateCategoryFromDto(requestDto, category);
+    Category updatedCategory = categoryRepository.save(category);
+
+    return categoryMapper.categoryToCategoryResponseDto(updatedCategory);
   }
 
 
@@ -74,6 +105,11 @@ public class CategoryService {
         .map(categoryMapper::categoryToCategoryDto)
         .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
   }
+
+  // 카테고리 테마에 속한 카테고리 수 측정
+  /*public int getCategoryCountByThema(String thema) {
+    return categoryRepository.countByCategoryThema(thema);
+  }*/
 
 
   // 관리자용 카테고리 목록 페이지네이션 적용하여 조회
