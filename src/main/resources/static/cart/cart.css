@@ -24,7 +24,11 @@
   text-align: right;
 }
 
-
+.size-select {
+  width: 80px;
+  height: 30px;
+  text-align: center;
+}
 
 /*추가끝*/
 
@@ -32,13 +36,12 @@
   border-bottom: #dbdbdb solid 1px;
   margin-bottom: 2rem;
   display: flex;
+  justify-content: center;
 }
 
 .cart-header .title {
   margin-bottom: 0;
   padding: 1rem 0 0 1rem;
-  display: flex;
-  justify-content: center;
 }
 
 .cart-header .subtitle {
