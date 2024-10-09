@@ -103,6 +103,13 @@ export function calculateTotal() {
     }).catch(() => 0); // 오류 발생 시 0 반환
   });
 
+  console.log(promises.length);
+
+  // promises가 비어있으면 0 반환
+  if (promises.length === 0) {
+    return Promise.resolve(0);
+  }
+
   // 모든 Promise가 완료되면 총 가격 계산
   return Promise.all(promises).then(prices => {
     // 가격 합산, 기본값 0
@@ -200,24 +207,24 @@ function renderCartItems() {
         itemCard.innerHTML = `
         <div class="cart-item">
           <div class="card-content">
-            <div class="notification is-light" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="notification is-light"  >
               <input type="checkbox" class="item-checkbox" data-item-id="${item.item_id}" data-item-size="${item.item_size}">
               <div class="buttons" style="margin-left: auto;">
                 <button class="button is-small option-change-btn">옵션/수량변경</button>
                 <button class="button is-small is-danger delete-btn">삭제</button>
               </div>
             </div>
-            <div class="media">
+            <div class="media" style="margin-top: 7px">
               <div class="media-left">
-                <figure class="image is-64x64">
-                  <img src="${productData.image_url}" alt="${productData.item_name}">
+                <figure class="image">
+                  <img src="${productData.image_url}" alt="${productData.item_name}" width="80" height="100">
                 </figure>
               </div>
               <div class="media-content">
                 <p class="title is-5">${productData.item_name}</p>
-                <p class="subtitle is-6">Size: <span class="item-size">${item.item_size}</span> | Color: ${item.item_color}</p>
-                <p class="subsubtitle is-6">수량: <span class="item-quantity">${item.item_quantity}</span></p>
-                <p class="has-text-right">$${productData.item_price}</p>
+                <p class="subtitle is-6 item-size" >사이즈(UK): <span class="item-size">${item.item_size}</span> | Color: ${item.item_color}</p>
+                <p class="subsubtitle is-6 item-quantity">수량: <span class="item-quantity">${item.item_quantity}</span> 개</p>
+                <p class="has-text-right">￦${productData.item_price}</p>
               </div>
             </div>
           </div>
@@ -234,7 +241,6 @@ function renderCartItems() {
           }
         });
 
-        // 옵션/수량변경 버튼 이벤트 리스너 추가
         // 옵션/수량변경 버튼 이벤트 리스너 추가
         const optionChangeBtn = itemCard.querySelector('.option-change-btn');
         optionChangeBtn.addEventListener('click', () => {
@@ -301,7 +307,6 @@ function renderCartItems() {
           const mediaContent = itemCard.querySelector('.media-content');
           mediaContent.appendChild(quantityControl);
         });
-
 
         cartContainer.appendChild(itemCard); // itemCard를 컨테이너에 추가
       }
@@ -393,8 +398,6 @@ document.addEventListener("DOMContentLoaded", async function() {
     const data = await response.text();
     document.getElementById("header-placeholder").innerHTML = data;
 
-    // Load cart items from local storage
-    loadCartSummary();
   } catch (error) {
     console.error("헤더를 로드할 수 없습니다:", error);
   }
@@ -402,7 +405,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 async function getData(item_id) {
   console.log('Received item_id:', item_id); // item_id 값 확인
-  const loc = `http://localhost:8080/api/items/${item_id}`; // URL 생성
+  const loc = `/api/items/${item_id}`; // URL 생성
   console.log('loc:', loc);
 
   try {
