@@ -1,6 +1,7 @@
 package com.spring_boots.spring_boots.user.controller;
 
 
+import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.dto.request.JwtTokenDto;
 import com.spring_boots.spring_boots.user.dto.request.JwtTokenLoginRequest;
 import com.spring_boots.spring_boots.user.dto.response.JwtTokenResponse;
@@ -40,7 +41,7 @@ class TokenApiControllerTest {
         // 테스트를 위한 요청 및 응답 객체 생성
         JwtTokenLoginRequest loginRequest = new JwtTokenLoginRequest("testUser", "testPassword");
 
-        JwtTokenDto jwtTokenDto = new JwtTokenDto("accessToken", "refreshToken");
+        JwtTokenDto jwtTokenDto = new JwtTokenDto("accessToken", "refreshToken", UserRole.USER);
 
         // Mock 동작 설정
         when(userService.login(any(JwtTokenLoginRequest.class))).thenReturn(jwtTokenDto);
@@ -67,7 +68,7 @@ class TokenApiControllerTest {
         // 테스트용 로그인 요청 및 응답 객체 생성
         JwtTokenLoginRequest loginRequest = new JwtTokenLoginRequest("testUser", "testPassword");
 
-        JwtTokenDto jwtTokenDto = new JwtTokenDto("newAccessToken", "newRefreshToken");
+        JwtTokenDto jwtTokenDto = new JwtTokenDto("newAccessToken", "newRefreshToken", UserRole.USER);
 
         // Mock 동작 설정
         when(userService.login(any(JwtTokenLoginRequest.class))).thenReturn(jwtTokenDto);   //로그인하면 jwtToken반환
