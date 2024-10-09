@@ -1,4 +1,4 @@
-import * as Api from './api.js';
+import * as Api from "../../api.js";
 
 // 헤더 로드 함수
 async function loadHeader() {
