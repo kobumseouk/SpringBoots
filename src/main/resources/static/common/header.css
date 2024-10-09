@@ -52,3 +52,7 @@
 .navbar-main .navbar-end {
   margin-left: auto;
 }
+
+body {
+  font-family: 'Oswald', 'Pretendard', 'Notokr Local', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+}
