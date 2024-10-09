@@ -71,6 +71,16 @@ INSERT INTO order_items (
       (3, 2, 102, 7000, 1, '서울특별시 마포구 월드컵북로 396', 'Second User', '010-8765-4321', '부재 시 경비실에 맡겨주세요', NOW(), NOW()),
       (4, 2, 102, 7000, 1, '서울특별시 마포구 월드컵북로 396', 'Second User', '010-8765-4321', '조심히 다뤄주세요', NOW(), NOW());
 
+
+INSERT INTO order_items (
+    order_items_id, orders_id, item_id, orderitems_total_price, orderitems_quantity,
+    shipping_address, recipient_name, recipient_contact, delivery_message,
+    created_at, updated_at
+) VALUES
+      (5, 3, 101, 7000, 1, '경기도 성남시 분당구 대왕판교로 670', '김이박', '010-9876-5432', '경비실에 맡겨주세요', NOW(), NOW()),
+      (6, 3, 102, 14000, 2, '경기도 성남시 분당구 대왕판교로 670', '김이박', '010-9876-5432', '조심히 다뤄주세요', NOW(), NOW());
+
+
 -- Event 테이블에 테스트 데이터 삽입
 INSERT INTO event (
     event_id,  event_title, event_content, thumbnail_image_url,
