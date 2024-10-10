@@ -16,23 +16,29 @@ document.addEventListener("DOMContentLoaded", async function() {
 });
 
 // 로컬 스토리지에서 장바구니 정보 로드 후 결제 정보 출력
-function loadCartSummary() {
+async function loadCartSummary() {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     let itemsHtml = '';
     let totalPrice = 0;
 
-    cart.forEach(item => {
+    for (const item of cart) {
+        // API를 사용하여 item_id로 아이템 정보 가져오기
+        const productData = await getData(item.item_id);
+
+        // 가져온 데이터가 없을 경우 continue
+        if (!productData) continue;
+
         itemsHtml += `
             <div class="box mb-4">
                 <article class="media">
                     <figure class="media-left">
                         <p class="image is-128x128">
-                            <img src="${item.image_url}" alt="${item.item_name}">
+                            <img src="${productData.image_url}" alt="${productData.item_name}">
                         </p>
                     </figure>
                     <div class="media-content">
                         <div class="content">
-                            <p><strong>제품명: </strong>${item.item_name}</p>
+                            <p><strong>제품명: </strong>${productData.item_name}</p>
                             <p><strong>사이즈(mm): </strong>${item.item_size}</p>
                             <p><strong>수량: </strong>${item.item_quantity}개</p>
                         </div>
@@ -40,17 +46,41 @@ function loadCartSummary() {
                 </article>
             </div>
         `;
-        totalPrice += item.item_price * item.item_quantity;
-    });
+        totalPrice += productData.item_price * item.item_quantity;
+    }
 
     const summaryHtml = `
         <p><strong>총 상품 금액: </strong>₩${totalPrice}</p>
-        <p><strong>배송비: </strong>₩3000</p>
-        <p><strong>총 결제 금액: </strong>₩${totalPrice + 3000}</p>
+        <p><strong>배송비: </strong>₩0</p>
+        <p><strong>총 결제 금액: </strong>₩${totalPrice}</p>
     `;
 
     document.getElementById('order-items').innerHTML = itemsHtml;
     document.getElementById('order-summary').innerHTML = summaryHtml;
+}
+
+// API로부터 item_id를 이용해 상품 데이터를 가져오는 함수
+async function getData(item_id) {
+    const loc = `/api/items/${item_id}`;
+
+    try {
+        const res = await fetch(loc); // API 호출
+        if (!res.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const data = await res.json(); // JSON 데이터 파싱
+        const { itemName, itemPrice, imageUrl } = data;
+
+        // 로그 추가: 받아온 상품 정보 확인
+        console.log("상품 정보:", { itemName, itemPrice, imageUrl });
+
+        // 결과 반환
+        return { item_name: itemName, item_price: itemPrice, image_url: imageUrl };
+    } catch (error) {
+        console.error('Failed to fetch data:', error); // 오류 처리
+        return null; // 오류가 발생한 경우 null 반환
+    }
 }
 
 // 주문자 정보와 동일 체크박스 클릭 시 수신자 정보 복사
@@ -80,19 +110,23 @@ async function placeOrder() {
         buyerContact: document.getElementById('buyerContact').value,
         recipientName: document.getElementById('recipientName').value,
         recipientContact: document.getElementById('recipientContact').value,
-        shippingAddress: document.getElementById('shippingAddress').value,
-        additionalAddress: document.getElementById('additionalAddress').value,
+        shippingAddress: document.getElementById("shippingAddress").value + " " + document.getElementById("shippingAddress2").value,
         deliveryMessage: document.getElementById('deliveryMessage').value,
-        items: cart.map(item => ({
-            itemId: item.item_id,
-            itemQuantity: item.item_quantity,
-            itemSize: item.item_size,
-            itemPrice: item.item_price
+        items: await Promise.all(cart.map(async (item) => {
+            const productData = await getData(item.item_id); // 상품 데이터 가져오기
+            return {
+                itemId: item.item_id,
+                itemQuantity: item.item_quantity,
+                itemSize: item.item_size,
+                itemPrice: productData.item_price // 상품 가격 설정
+            };
         }))
     };
 
+    // 로그 추가: 주문 데이터 확인
+    console.log("주문 데이터: ", orderData);
+
     try {
-        // POST 요청으로 주문 데이터 전송
         const response = await fetch('/api/orders', {
             method: 'POST',
             headers: {
@@ -108,9 +142,21 @@ async function placeOrder() {
         const data = await response.json();
         alert("주문이 성공적으로 처리되었습니다!");
         localStorage.removeItem('cart'); // 주문 완료 후 장바구니 비우기
-        window.location.href = "/orders"; // 주문 내역 페이지로 이동
+        const orderId = data.ordersId;
+
+        window.location.href = `/order-summary?orderId=${orderId}`; // 주문 내역 페이지로 이동
+
     } catch (error) {
         console.error("주문 실패:", error);
         alert("주문에 실패했습니다. 다시 시도해 주세요.");
     }
+}
+
+function openDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            // 검색 결과에서 선택된 주소를 가져와서 입력
+            document.getElementById("edit-shipping-address").value = data.address;
+        }
+    }).open();
 }

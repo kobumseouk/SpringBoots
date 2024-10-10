@@ -59,13 +59,13 @@ function renderOrderList(orders) {
     orders.forEach(order => {
         ordersHtml += `
             <tr>
-                <td><a href="/order-details/order-details.html?id=${order.ordersId}">${order.ordersId}</a></td>
+                <td><a href="/order-details?orderId=${order.ordersId}">${order.ordersId}</a></td>
                 <td>${new Date(order.createdAt).toLocaleDateString()}</td>
                 <td>${order.quantity}개</td>
                 <td>₩${order.ordersTotalPrice}</td>
                 <td>${order.orderStatus}</td>
                 <td>
-                    <a class="button is-small is-link" href="/order-details/order-details.html?id=${order.ordersId}">상세 보기</a>
+                    <a class="button is-small is-link" href="/order-details?orderId=${order.ordersId}">상세 보기</a>
                     ${
             order.orderStatus === '주문완료'
                 ? `<button class="button is-small is-danger ml-2" onclick="cancelOrder(${order.ordersId})">주문 취소</button>`

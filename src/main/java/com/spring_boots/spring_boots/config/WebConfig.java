@@ -14,9 +14,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         // /login 으로 요청이 들어오면 login/login.html로 매핑
-        registry.addViewController("/").setViewName("forward:/home/home.html");
-        registry.addViewController("/login").setViewName("forward:/login/login.html");
+        registry.addViewController("/").setViewName("forward:/home/home.html"); //메인페이지
+        registry.addViewController("/login").setViewName("forward:/login/login.html");  //로그인페이지
         //forward 는 서버 내에서 요청을 리다이렉트하지 않고 다른 경로로 넘겨주는 방식, 내부적으로 처리됨.
+        registry.addViewController("/register").setViewName("forward:/register/register.html"); //회원가입 페이지
         registry.addViewController("/order-summary").setViewName("forward:/order-summary/order-summary.html");
         registry.addViewController("/order-list").setViewName("forward:/order-list/order-list.html");
         registry.addViewController("/order").setViewName("forward:/order/order.html");

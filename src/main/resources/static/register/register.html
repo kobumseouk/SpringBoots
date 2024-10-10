@@ -77,12 +77,31 @@
               class="input"
               id="fullNameInput"
               type="text"
-              placeholder="유재석"
+              placeholder="이름을 입력해주세요"
               autocomplete="on"
             />
           </div>
         </div>
-
+        <div class="field">
+          <label class="label" for="userRealId">ID</label>
+          <div class="control">
+            <input
+                    class="input"
+                    id="userRealId"
+                    type="text"
+                    placeholder="ID를 입력해주세요"
+                    autocomplete="on"
+            />
+          </div>
+          <button
+                  class="button is-link mt-2"
+                  type="button"
+                  id="checkDuplicateIdButton"
+          >
+            중복 확인
+          </button>
+          <div id="duplicateIdMessage" class="has-text-success mt-2"></div> <!-- 추가된 메시지 표시 영역 -->
+        </div>
         <div class="field">
           <label class="label" for="emailInput">이메일</label>
           <div class="control">
