@@ -229,7 +229,7 @@ public class OrdersService {
 
     // 관리자 모든 주문 조회
     public List<OrderDto> getAllOrders() {
-        List<Orders> orders = ordersRepository.findAll();
+        List<Orders> orders = ordersRepository.findByIsCanceledFalse();
         return orders.stream().map(this::convertToOrderDto).collect(Collectors.toList());
     }
 
