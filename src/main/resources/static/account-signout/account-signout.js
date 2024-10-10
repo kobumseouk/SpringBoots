@@ -36,17 +36,28 @@ async function deleteUserData(e) {
 
   try {
     // 우선 입력된 비밀번호가 맞는지 확인 (틀리면 에러 발생함)
-    const userToDelete = await Api.post("/users/password-check", data);
+    const userToDelete = await Api.post("/api/users/check-password", data);
     const { id } = userToDelete;
 
     // 삭제 진행
-    await Api.delete("/users", id);
+    const response = await fetch(`/api/users-soft/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        // 쿠키에 저장된 토큰은 자동으로 서버로 전송됨
+      },
+      credentials: 'include' // 쿠키를 포함하여 요청을 보냄
+    });
+
+    if (!response.ok) {
+      throw new Error('서버와의 통신에서 문제가 발생했습니다.');
+    }
 
     // 삭제 성공
     alert("회원 정보가 안전하게 삭제되었습니다.");
 
-    // 토큰 삭제
-    sessionStorage.removeItem("token");
+    // 토큰 쿠키 삭제
+    document.cookie = "token=; Max-Age=0; path=/"; // 토큰 쿠키 삭제
 
     window.location.href = "/";
   } catch (err) {

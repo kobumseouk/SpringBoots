@@ -4,6 +4,7 @@ import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.dto.request.UserPasswordRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
+import com.spring_boots.spring_boots.user.dto.response.UserPasswordResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UserSignupResponseDto;
 import com.spring_boots.spring_boots.user.service.UserService;
@@ -93,7 +94,7 @@ public class UserApiController {
 
         if (userService.isDeleteUser(authUser)) {
             Cookie cookie = new Cookie("refreshToken", null);
-            cookie.setHttpOnly(true);
+//            cookie.setHttpOnly(true);
             cookie.setPath("/");
             cookie.setMaxAge(0); // 쿠키 즉시 만료
             response.addCookie(cookie);
@@ -105,15 +106,16 @@ public class UserApiController {
     }
 
     //회원 탈퇴(soft delete)
-    @DeleteMapping("/users-soft")
+    @DeleteMapping("/users-soft/{id}")
     public ResponseEntity<Void> softDeleteUser(@AuthenticationPrincipal Users user,
+                                               @PathVariable Long id,
                                                HttpServletResponse response) {
         Users authUser = userService.findByEmail(user.getEmail());
         userService.softDeleteUser(authUser);
 
         if (authUser.isDeleted()) {
             Cookie cookie = new Cookie("refreshToken", null);
-            cookie.setHttpOnly(true);
+//            cookie.setHttpOnly(true);
             cookie.setPath("/");
             cookie.setMaxAge(0); // 쿠키 즉시 만료
             response.addCookie(cookie);
@@ -126,15 +128,22 @@ public class UserApiController {
 
     //비밀번호 확인
     @PostMapping("/users/check-password")
-    public ResponseEntity<Void> checkPassword(@AuthenticationPrincipal Users user,
-                                              @RequestBody UserPasswordRequestDto request) {
+    public ResponseEntity<UserPasswordResponseDto> checkPassword(@AuthenticationPrincipal Users user,
+                                                                 @RequestBody UserPasswordRequestDto request) {
         Users authUser = userService.findByEmail(user.getEmail());
 
         if (userService.checkPassword(authUser, request)) {
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    UserPasswordResponseDto
+                            .builder()
+                            .id(authUser.getUserId())
+                            .build());
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                UserPasswordResponseDto
+                        .builder()
+                        .build());
     }
 
     //로그아웃
