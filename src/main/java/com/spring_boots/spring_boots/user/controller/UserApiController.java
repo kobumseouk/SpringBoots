@@ -5,6 +5,7 @@ import com.spring_boots.spring_boots.user.dto.request.UserPasswordRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
+import com.spring_boots.spring_boots.user.dto.response.UserSignupResponseDto;
 import com.spring_boots.spring_boots.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,14 +28,20 @@ public class UserApiController {
 
     //회원가입
     @PostMapping("/signup")
-    public ResponseEntity<Users> signup(@RequestBody UserSignupRequestDto userSignupRequestDto) {
+    public ResponseEntity<UserSignupResponseDto> signup(@RequestBody UserSignupRequestDto userSignupRequestDto) {
 
         if (userSignupRequestDto == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(UserSignupResponseDto.builder()
+                                    .message("잘못된 요청입니다.")
+                                    .build());
         }
 
         Users user = userService.save(userSignupRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(UserSignupResponseDto.builder()
+                        .message("성공적으로 회원가입하셨습니다.")
+                        .build());
     }
 
     //개인 정보 조회
