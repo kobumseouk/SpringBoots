@@ -118,18 +118,20 @@ async function insertCategories(page = 0, size = 10) {
   }
 }
 
-// 카테고리 삭제
+// 카테고리 삭제 + 로그 오류 처리 개선
 async function deleteCategoryData() {
   try {
-    await Api.delete(`/api/admin/categories/${categoryIdToDelete}`);
-    const deletedItem = document.querySelector(`#category-${categoryIdToDelete}`);
-    deletedItem.remove();
-    alert("카테고리가 삭제되었습니다.");
+    const response = await Api.delete(`/api/admin/categories/${categoryIdToDelete}`);
+    if (response.status === 204) {  // No Content
+      const deletedItem = document.querySelector(`#category-${categoryIdToDelete}`);
+      if (deletedItem) {
+        deletedItem.remove();
+      }
+      alert("카테고리가 삭제되었습니다.");
+    } else {
+      throw new Error('카테고리 삭제 실패');
+    }
     closeModal();
-
-    // 카테고리 수 업데이트
-    const currentCount = parseInt(categoriesCount.innerText.replace(',', ''));
-    categoriesCount.innerText = addCommas(currentCount - 1);
   } catch (err) {
     console.error(`Error: ${err.message}`);
     alert(`카테고리 삭제 과정에서 오류가 발생하였습니다: ${err.message}`);
