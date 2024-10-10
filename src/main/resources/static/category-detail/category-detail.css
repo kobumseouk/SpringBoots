@@ -6,6 +6,9 @@
 
 /* 카테고리 정보 스타일 */
 #category-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
     background-color: white;
     padding: 20px;
@@ -16,10 +19,10 @@
 #category-title {
     font-size: 24px;
     color: #333;
-    margin-bottom: 10px;
+    margin-bottom: 0;
 }
 
-#category-description {
+#product-count {
     font-size: 16px;
     color: #666;
 }
@@ -32,29 +35,34 @@
     margin-bottom: 20px;
 }
 
+/* 카테고리 버튼 스타일 */
 #category-buttons button {
     background-color: #4CAF50;
-    border: none;
+    border: 2px solid transparent;
     color: white;
-    padding: 10px 20px;
+    padding: 8px 20px 12px; /* 상단 패딩을 줄이고 하단 패딩을 늘림 */
     text-align: center;
     text-decoration: none;
-    display: inline-block;
+    display: inline-flex; /* inline-block 대신 inline-flex 사용 */
+    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: center; /* 수평 중앙 정렬 */
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
     border-radius: 5px;
     transition: all 0.3s;
+    height: 40px; /* 버튼의 높이를 고정 */
+    line-height: 1; /* 줄 간격을 조정하여 텍스트를 위로 올림 */
 }
 
 #category-buttons button:hover {
-    background-color: #3e8e41;
-    color: black;
+    background-color: #45a049;
 }
 
 #category-buttons button.active {
-    background-color: #367c39;
-    color: black;
+    border-color: #000000;
+    background-color: #4CAF50;
+    color: white;
 }
 
 /* 상품 정렬 옵션 스타일 */
@@ -62,6 +70,7 @@
     display: flex;
     justify-content: flex-end;
     margin-bottom: 20px;
+    gap: 10px;
 }
 
 .sorting-options select {

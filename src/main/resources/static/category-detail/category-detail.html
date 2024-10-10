@@ -40,17 +40,37 @@
   <div id="header-placeholder" class="header-container"></div>
   <div id="content">
     <!-- 카테고리 정보 -->
-    <div id="category-info" class="container">
-      <h1 id="category-title" class="title"></h1>
-      <p id="category-description"></p>
+    <div id="category-info">
+      <div>
+        <h1 id="category-title"></h1>
+        <!--    카테고리 내용-->
+        <p id="category-description"></p>
+      </div>
     </div>
 
-    <!-- 카테고리 블록 버튼 -->
-    <div id="category-buttons" class="container">
-      <!-- 카테고리 버튼들이 여기에 동적으로 추가됩니다 -->
+<!--    카테고리 선택 버튼-->
+    <div id="category-buttons"></div>
+<!--    상품 수 출력-->
+    <p id="product-count"></p>
+
+<!--    정렬 옵션-->
+    <div class="sorting-options">
+      <select id="sort-options">
+        <option value="default">정렬기준</option>
+        <option value="rating">별점</option>
+        <option value="sold">판매량</option>
+        <option value="price-asc">가격 낮은순</option>
+        <option value="price-desc">가격 높은순</option>
+        <option value="newest">최신순</option>
+      </select>
+      <select id="filter-options">
+        <option value="">필터</option>
+      </select>
     </div>
 
+    <!-- 상품 목록을 표시할 컨테이너 추가 -->
+    <div id="product-list">
 
-  </div>
+    </div>
 </body>
 </html>
