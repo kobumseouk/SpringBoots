@@ -4,7 +4,12 @@ import com.spring_boots.spring_boots.category.dto.category.*;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.category.repository.CategoryRepository;
+import com.spring_boots.spring_boots.item.entity.Item;
+import com.spring_boots.spring_boots.item.repository.ItemRepository;
+import com.spring_boots.spring_boots.orders.repository.OrderItemsRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,11 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
   private final CategoryRepository categoryRepository;
+  private final ItemRepository itemRepository;
+  private final OrderItemsRepository orderItemsRepository;
   private final CategoryMapper categoryMapper;
 
 
@@ -78,11 +86,28 @@ public class CategoryService {
   // 카테고리 삭제
   @Transactional
   public void deleteCategory(Long categoryId) {
-    categoryRepository.findById(categoryId)
-        .ifPresentOrElse(
-            categoryRepository::delete,
-            () -> { throw new ResourceNotFoundException("삭제할 카테고리를 찾을 수 없습니다: " + categoryId); }
-        );
+    Category category = categoryRepository.findById(categoryId)
+        .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
+
+    /*// 카테고리와 연관된 모든 아이템의 카테고리를 null로 설정 -> item의 category 필드의 nullable = false 문제
+    itemRepository.findAllByCategoryId(categoryId)
+        .forEach(item -> {
+          item.setCategory(null);
+          itemRepository.save(item);  // 변경사항을 저장
+        });*/
+    // 카테고리에 속한 모든 아이템 조회
+    List<Item> items = itemRepository.findAllByCategoryId(categoryId);
+
+    for (Item item : items) {
+      // 각 아이템과 연관된 주문 아이템 삭제
+      orderItemsRepository.deleteAllByItem_ItemId(item.getItemId());
+
+      // 아이템 삭제
+      itemRepository.delete(item);
+    }
+
+    // 카테고리 삭제
+    categoryRepository.delete(category);
   }
 
 
