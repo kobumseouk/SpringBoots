@@ -3,7 +3,7 @@ import { randomId } from "./useful-functions.js";
 // aws-s3 사이트에서의 설정값들
 const s3BucketName = "project-springboots";
 const bucketRegion = "ap-northeast-2"; // 한국은 항상 ap-northeast-2임.
-const IdentityPoolId = "ap-northeast-2:86ef0773-cb9a-49ec-b184-0e87a1d5db0b";
+const IdentityPoolId = "ap-northeast-2:23dbe192-a382-459f-aa64-2b9eb2fc68aa";
 
 // aws 공식문서 그대로 가져옴
 AWS.config.update({
@@ -84,9 +84,24 @@ function getImageUrl(imageKey) {
 
 export { addImageToS3, getImageUrl };
 
-
+//수정 테스트 해보는 코드
+//const fileInput = document.getElementById("imageInput");
+//const fileNameSpan = document.getElementById("fileNameSpan");
+//
+//fileInput.addEventListener("change", () => {
+//  const file = fileInput.files[0];
+//  fileNameSpan.innerText = file ? file.name : "";
+//});
 
 document.getElementById('uploadButton').addEventListener('click', () => {
+// 수정 테스트해보는 코드
+//try {
+//        const categoryName = "your-album-name"; // 카테고리 이름을 정의합니다.
+//        const imageKey = await addImageToS3(fileInput, categoryName);
+//        alert("업로드 성공: " + imageKey);
+//    } catch (err) {
+//        alert("업로드 실패: " + err.message);
+//    }
     const file = fileInput.files[0];
     if (!file) {
         alert("파일을 선택해 주세요.");
@@ -100,7 +115,7 @@ document.getElementById('uploadButton').addEventListener('click', () => {
         ContentType: file.type
     };
 
-    // S3에 파일 업로드
+     S3에 파일 업로드
     s3.upload(params, (err, data) => {
         if (err) {
             console.error("업로드 실패:", err);

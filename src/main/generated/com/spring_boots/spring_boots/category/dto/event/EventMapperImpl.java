@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-04T14:56:55+0900",
+    date = "2024-10-08T13:31:43+0900",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.9 (GraalVM Community)"
 )
 @Component
@@ -39,19 +39,19 @@ public class EventMapperImpl implements EventMapper {
             return null;
         }
 
-        EventDetailDto eventDetailDto = new EventDetailDto();
+        EventDetailDto.EventDetailDtoBuilder eventDetailDto = EventDetailDto.builder();
 
-        eventDetailDto.setCategoryName( eventCategoryCategoryName( event ) );
-        eventDetailDto.setId( event.getId() );
-        eventDetailDto.setEventTitle( event.getEventTitle() );
-        eventDetailDto.setEventContent( event.getEventContent() );
-        eventDetailDto.setThumbnailImageUrl( event.getThumbnailImageUrl() );
-        eventDetailDto.setContentImageUrl( event.getContentImageUrl() );
-        eventDetailDto.setStartDate( event.getStartDate() );
-        eventDetailDto.setEndDate( event.getEndDate() );
-        eventDetailDto.setIsActive( event.getIsActive() );
+        eventDetailDto.categoryName( eventCategoryCategoryName( event ) );
+        eventDetailDto.id( event.getId() );
+        eventDetailDto.eventTitle( event.getEventTitle() );
+        eventDetailDto.eventContent( event.getEventContent() );
+        eventDetailDto.thumbnailImageUrl( event.getThumbnailImageUrl() );
+        eventDetailDto.contentImageUrl( event.getContentImageUrl() );
+        eventDetailDto.startDate( event.getStartDate() );
+        eventDetailDto.endDate( event.getEndDate() );
+        eventDetailDto.isActive( event.getIsActive() );
 
-        return eventDetailDto;
+        return eventDetailDto.build();
     }
 
     @Override
@@ -60,15 +60,15 @@ public class EventMapperImpl implements EventMapper {
             return null;
         }
 
-        EventDto eventDto = new EventDto();
+        EventDto.EventDtoBuilder eventDto = EventDto.builder();
 
-        eventDto.setId( event.getId() );
-        eventDto.setEventTitle( event.getEventTitle() );
-        eventDto.setThumbnailImageUrl( event.getThumbnailImageUrl() );
-        eventDto.setStartDate( event.getStartDate() );
-        eventDto.setEndDate( event.getEndDate() );
+        eventDto.id( event.getId() );
+        eventDto.eventTitle( event.getEventTitle() );
+        eventDto.thumbnailImageUrl( event.getThumbnailImageUrl() );
+        eventDto.startDate( event.getStartDate() );
+        eventDto.endDate( event.getEndDate() );
 
-        return eventDto;
+        return eventDto.build();
     }
 
     @Override

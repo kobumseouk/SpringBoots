@@ -85,7 +85,7 @@ async function handleSubmit(e) {
       searchKeywords,
     };
 
-    await Api.post("/products", data);
+    await Api.post("/items", data);
 
     alert(`정상적으로 ${title} 제품이 등록되었습니다.`);
 

@@ -1,4 +1,4 @@
-package com.spring_boots.spring_boots.category.dto;
+package com.spring_boots.spring_boots.category.dto.category;
 
 import com.spring_boots.spring_boots.category.entity.Category;
 import javax.annotation.processing.Generated;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-10-04T14:56:55+0900",
+    date = "2024-10-08T13:31:44+0900",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.9 (GraalVM Community)"
 )
 @Component
@@ -18,18 +18,18 @@ public class CategoryMapperImpl implements CategoryMapper {
             return null;
         }
 
-        CategoryResponseDto categoryResponseDto = new CategoryResponseDto();
+        CategoryResponseDto.CategoryResponseDtoBuilder categoryResponseDto = CategoryResponseDto.builder();
 
-        categoryResponseDto.setId( category.getId() );
-        categoryResponseDto.setCategoryName( category.getCategoryName() );
-        categoryResponseDto.setCategoryThema( category.getCategoryThema() );
-        categoryResponseDto.setCategoryContent( category.getCategoryContent() );
-        categoryResponseDto.setImageUrl( category.getImageUrl() );
-        categoryResponseDto.setDisplayOrder( category.getDisplayOrder() );
-        categoryResponseDto.setCreatedAt( category.getCreatedAt() );
-        categoryResponseDto.setUpdatedAt( category.getUpdatedAt() );
+        categoryResponseDto.id( category.getId() );
+        categoryResponseDto.categoryName( category.getCategoryName() );
+        categoryResponseDto.categoryThema( category.getCategoryThema() );
+        categoryResponseDto.categoryContent( category.getCategoryContent() );
+        categoryResponseDto.imageUrl( category.getImageUrl() );
+        categoryResponseDto.displayOrder( category.getDisplayOrder() );
+        categoryResponseDto.createdAt( category.getCreatedAt() );
+        categoryResponseDto.updatedAt( category.getUpdatedAt() );
 
-        return categoryResponseDto;
+        return categoryResponseDto.build();
     }
 
     @Override
@@ -38,15 +38,15 @@ public class CategoryMapperImpl implements CategoryMapper {
             return null;
         }
 
-        CategoryDto categoryDto = new CategoryDto();
+        CategoryDto.CategoryDtoBuilder categoryDto = CategoryDto.builder();
 
-        categoryDto.setId( category.getId() );
-        categoryDto.setCategoryName( category.getCategoryName() );
-        categoryDto.setCategoryContent( category.getCategoryContent() );
-        categoryDto.setImageUrl( category.getImageUrl() );
-        categoryDto.setDisplayOrder( category.getDisplayOrder() );
+        categoryDto.id( category.getId() );
+        categoryDto.categoryName( category.getCategoryName() );
+        categoryDto.categoryContent( category.getCategoryContent() );
+        categoryDto.imageUrl( category.getImageUrl() );
+        categoryDto.displayOrder( category.getDisplayOrder() );
 
-        return categoryDto;
+        return categoryDto.build();
     }
 
     @Override
@@ -55,16 +55,16 @@ public class CategoryMapperImpl implements CategoryMapper {
             return null;
         }
 
-        CategoryAdminDto categoryAdminDto = new CategoryAdminDto();
+        CategoryAdminDto.CategoryAdminDtoBuilder categoryAdminDto = CategoryAdminDto.builder();
 
-        categoryAdminDto.setId( category.getId() );
-        categoryAdminDto.setCategoryName( category.getCategoryName() );
-        categoryAdminDto.setCategoryThema( category.getCategoryThema() );
-        categoryAdminDto.setDisplayOrder( category.getDisplayOrder() );
-        categoryAdminDto.setCreatedAt( category.getCreatedAt() );
-        categoryAdminDto.setUpdatedAt( category.getUpdatedAt() );
+        categoryAdminDto.id( category.getId() );
+        categoryAdminDto.categoryName( category.getCategoryName() );
+        categoryAdminDto.categoryThema( category.getCategoryThema() );
+        categoryAdminDto.displayOrder( category.getDisplayOrder() );
+        categoryAdminDto.createdAt( category.getCreatedAt() );
+        categoryAdminDto.updatedAt( category.getUpdatedAt() );
 
-        return categoryAdminDto;
+        return categoryAdminDto.build();
     }
 
     @Override
