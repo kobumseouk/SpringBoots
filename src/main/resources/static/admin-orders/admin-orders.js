@@ -1,4 +1,5 @@
 import { addCommas, createNavbar } from "../useful-functions.js";
+import { loadHeader } from "../../common/header.js";
 import * as Api from "../api.js";
 
 // 요소 선택
@@ -16,6 +17,7 @@ const deleteCancelButton = document.querySelector("#deleteCancelButton");
 let orderIdToDelete;
 
 // 초기 설정
+loadHeader();
 createNavbar();
 insertOrders();
 addAllEvents();
