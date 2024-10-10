@@ -41,19 +41,19 @@
   <div id="content">
     <!-- 카테고리 정보 -->
     <div id="category-info">
-      <div>
-        <h1 id="category-title"></h1>
-        <!--    카테고리 내용-->
-        <p id="category-description"></p>
-      </div>
+      <!--카테고리 이름-->
+      <h1 id="category-title"></h1>
+      <!--카테고리 내용-->
+      <p id="category-description"></p>
+      <!--카테고리 선택 버튼-->
+      <div id="category-buttons"></div>
     </div>
+  </div>
 
-<!--    카테고리 선택 버튼-->
-    <div id="category-buttons"></div>
-<!--    상품 수 출력-->
+  <div id="product-info-and-options">
+<!--      상품 개수-->
     <p id="product-count"></p>
 
-<!--    정렬 옵션-->
     <div class="sorting-options">
       <select id="sort-options">
         <option value="default">정렬기준</option>
@@ -63,14 +63,17 @@
         <option value="price-desc">가격 높은순</option>
         <option value="newest">최신순</option>
       </select>
+
       <select id="filter-options">
         <option value="">필터</option>
       </select>
     </div>
+  </div>
 
-    <!-- 상품 목록을 표시할 컨테이너 추가 -->
-    <div id="product-list">
+  <!-- 상품 목록을 표시할 컨테이너 추가 -->
+  <div id="product-list">
 
-    </div>
+  </div>
+
 </body>
 </html>
