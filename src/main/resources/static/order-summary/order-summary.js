@@ -100,7 +100,7 @@ function renderOrderSummary(order) {
                 <p><strong>총 결제 금액: </strong>₩${order.ordersTotalPrice + order.deliveryFee}</p>
 
                 <div class="mt-4 has-text-centered">
-                    <button class="button is-dark" onclick="window.location.href = '/order-details/order-details.html?id=${order.ordersId}'">주문내역 바로가기</button>
+                    <button class="button is-dark" onclick="window.location.href = '/order-details?orderId=${order.ordersId}'">주문내역 바로가기</button>
                     <button class="button is-outlined is-dark" onclick="window.location.href = '/shop'">쇼핑 계속하기</button>
                 </div>
             </div>
