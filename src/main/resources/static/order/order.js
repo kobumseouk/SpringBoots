@@ -110,7 +110,7 @@ async function placeOrder() {
         buyerContact: document.getElementById('buyerContact').value,
         recipientName: document.getElementById('recipientName').value,
         recipientContact: document.getElementById('recipientContact').value,
-        shippingAddress: document.getElementById('shippingAddress').value,
+        shippingAddress: document.getElementById("shippingAddress").value + " " + document.getElementById("shippingAddress2").value,
         deliveryMessage: document.getElementById('deliveryMessage').value,
         items: await Promise.all(cart.map(async (item) => {
             const productData = await getData(item.item_id); // 상품 데이터 가져오기
@@ -150,4 +150,13 @@ async function placeOrder() {
         console.error("주문 실패:", error);
         alert("주문에 실패했습니다. 다시 시도해 주세요.");
     }
+}
+
+function openDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            // 검색 결과에서 선택된 주소를 가져와서 입력
+            document.getElementById("edit-shipping-address").value = data.address;
+        }
+    }).open();
 }
