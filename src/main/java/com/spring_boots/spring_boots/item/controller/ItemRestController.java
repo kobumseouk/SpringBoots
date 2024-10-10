@@ -24,20 +24,27 @@ import java.util.Objects;
 public class ItemRestController {
     @Autowired
     private  ItemRestService itemRestService;
+
     private ItemMapper mapper;
-    private S3BucketService s3BucketService
+
+    @Autowired
+    private S3BucketService s3BucketService;
 
     // Item 만들기
     @PostMapping("/admin/items")
     public ResponseEntity<ResponseItemDto> createItem(@Valid @ModelAttribute CreateItemDto requestItemDto,
                                                       @RequestParam("file")MultipartFile file) {
         try {
-            if (Objects.requireNonNull(file.getContentType()).startsWith("image")) {
-                String imageUrl = s3BucketService.up
+            if (file != null && Objects.requireNonNull(file.getContentType()).startsWith("image")) {
+                String imageUrl = s3BucketService.uploadFile(file);
+                requestItemDto.setImageUrl(imageUrl);
             }
+            ResponseItemDto responseDto = itemRestService.createItem(requestItemDto);
+            return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        ResponseItemDto responseDto = itemRestService.createItem(requestItemDto);
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+
     }
 
 
