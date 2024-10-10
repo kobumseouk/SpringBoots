@@ -1,5 +1,7 @@
 package com.spring_boots.spring_boots.orders.service;
 
+import com.spring_boots.spring_boots.item.entity.Item;
+import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.orders.dto.*;
 import com.spring_boots.spring_boots.orders.entity.OrderItems;
 import com.spring_boots.spring_boots.orders.entity.Orders;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrdersService {
     //private static final Logger log = LoggerFactory.getLogger(OrdersService.class);
     private final OrdersRepository ordersRepository;
+
+    private final ItemRepository itemRepository;
     private final OrderItemsRepository orderItemsRepository;
 
     // 사용자 주문 목록 조회
@@ -73,19 +77,63 @@ public class OrdersService {
 
 
 
-    /*
+
     // 사용자 주문 추가
-    public Orders placeOrder(OrderRequestDto request) {
+    @Transactional
+    public Orders placeOrder(OrderRequestDto request, Users currentUser) {
+        System.out.println(request);
+
+        // 주문의 총 수량 및 총 가격 계산
+        int totalQuantity = request.getItems().stream()
+                .mapToInt(OrderRequestDto.OrderItemDto::getItemQuantity)
+                .sum();
+
+        int totalPrice = request.getItems().stream()
+                .mapToInt(item -> item.getItemPrice() * item.getItemQuantity())
+                .sum();
+
+        // Orders 엔티티 생성 및 저장
         Orders order = Orders.builder()
-                .user(null) // 사용자 정보 설정 필요 (예: userId 이용)
-                .quantity(1) // 하드코딩된 값, 나중에 장바구니 정보 반영 필요
-                .ordersTotalPrice(10000) // 하드코딩된 값, 나중에 계산된 총 금액 반영 필요
-                .orderStatus("Pending") // 기본 상태 설정
+                .user(currentUser) // 현재 로그인된 사용자
+                .quantity(totalQuantity)
+                .ordersTotalPrice(totalPrice)
+                .orderStatus("주문완료") // 주문 상태는 기본적으로 '주문완료'
+                .isCanceled(false)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
-        return ordersRepository.save(order);
-    } */
+
+        Orders savedOrder = ordersRepository.save(order);
+
+        // OrderItems 엔티티 생성 및 저장
+        List<OrderItems> orderItemsList = request.getItems().stream()
+                .map(itemDto -> {
+                    Item item = itemRepository.findById(itemDto.getItemId())
+                            .orElseThrow(() -> new IllegalArgumentException("Item not found with id: " + itemDto.getItemId()));
+
+                    return OrderItems.builder()
+                            .orders(savedOrder)
+                            .item(item)
+                            .orderItemsQuantity(itemDto.getItemQuantity())
+                            .orderItemsTotalPrice(itemDto.getItemPrice() * itemDto.getItemQuantity())
+                            .shippingAddress(request.getShippingAddress())
+                            .recipientName(request.getRecipientName())
+                            .recipientContact(request.getRecipientContact())
+                            .deliveryMessage(request.getDeliveryMessage())
+                            .createdAt(LocalDateTime.now())
+                            .updatedAt(LocalDateTime.now())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        // OrderItems 저장
+        orderItemsRepository.saveAll(orderItemsList);
+
+        // OrderItems와 Orders 간의 관계를 설정
+        savedOrder.setOrderItemsList(orderItemsList);
+
+        return savedOrder;
+    }
 
     // 사용자 주문 수정
     @Transactional
