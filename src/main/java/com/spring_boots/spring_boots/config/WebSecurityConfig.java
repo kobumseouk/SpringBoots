@@ -51,7 +51,7 @@ public class WebSecurityConfig {
                         .requestMatchers(toH2Console()).permitAll()  // H2 콘솔에 대한 요청 허용
                         .requestMatchers(
                                 "/api/**","/login/**","/static/**","/home/**",
-                                "/",
+                                "/","/register/**",
                                 "/login-resource/**","api.js","elice-rabbit.png",
                                 "useful-functions.js","elice-rabbit-favicon.png",
                                 "navbar.js", "/common/**"
