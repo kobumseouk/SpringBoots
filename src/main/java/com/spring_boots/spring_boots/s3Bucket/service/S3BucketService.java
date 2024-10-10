@@ -1,8 +1,10 @@
 package com.spring_boots.spring_boots.s3Bucket.service;
 
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.spring_boots.spring_boots.s3Bucket.config.S3Config;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,7 +17,9 @@ import java.time.format.DateTimeFormatter;
 @Service
 @RequiredArgsConstructor
 public class S3BucketService {
-    private final AmazonS3Client amazonS3Client;
+
+    @Autowired
+    private final S3Config s3Config;
 
     @Value("${aws.s3.bucket.name}")
     private String bucketName;
@@ -28,7 +32,7 @@ public class S3BucketService {
         String fileUrl = bucketUrl + fileName;
         ObjectMetadata metadata = createFileMetadata(file);
         try {
-            amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
+            s3Config.amazonS3Client().putObject(bucketName, fileName, file.getInputStream(), metadata);
             return fileUrl;
         } catch (IOException e) {
             throw new IOException(e.getMessage());
@@ -41,7 +45,7 @@ public class S3BucketService {
         String fileUrl = bucketUrl + fileName;
         ObjectMetadata metadata =  createFileMetadata(file);
         try {
-            amazonS3Client.putObject(bucketName, fileName, file.getInputStream(), metadata);
+            s3Config.amazonS3Client().putObject(bucketName, fileName, file.getInputStream(), metadata);
             return fileUrl;
         } catch (IOException e) {
             throw new IOException(e.getMessage());
@@ -66,7 +70,7 @@ public class S3BucketService {
 
     public void deleteFile(String fileName) {
         try {
-            amazonS3Client.deleteObject(bucketName, fileName);
+            s3Config.amazonS3Client().deleteObject(bucketName, fileName);
         } catch (Exception e) {
             throw new RuntimeException("파일 삭제 실패: " + e.getMessage());
         }

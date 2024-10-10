@@ -55,7 +55,7 @@ public class ItemRestService {
         }
         itemDto.setImageUrl(imageUrl); // DTO에 이미지 URL 설정
 
-        Item created = itemMapper.toEntity(itemDto);
+        Item created = itemDto.toEntity();
         Item result = itemRepository.save(created);
         return itemMapper.toResponseDto(result);
     }

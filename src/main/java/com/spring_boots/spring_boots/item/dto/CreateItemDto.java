@@ -1,6 +1,7 @@
 package com.spring_boots.spring_boots.item.dto;
 
 import com.spring_boots.spring_boots.category.entity.Category;
+import com.spring_boots.spring_boots.item.entity.Item;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -35,4 +36,16 @@ public class CreateItemDto {
 
     private String imageUrl;
 
+
+    public Item toEntity() {
+        Item item = new Item();
+        item.setItemName(itemName);
+        item.setCategory(category);
+        item.setItemPrice(itemPrice);
+        item.setItemDescription(itemDescription);
+        item.setItemMaker(itemMaker);
+        item.setItemColor(itemColor);
+        item.setImageUrl(imageUrl);
+        return item;
+    }
 }
