@@ -2,7 +2,7 @@ let currentOrder = null; // 현재 주문 정보를 저장할 전역 변수
 
 function getOrderIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('id');
+    return urlParams.get('orderId');
 }
 
 document.addEventListener("DOMContentLoaded", async function() {
@@ -131,7 +131,7 @@ function closeShippingModal() {
 async function submitShippingUpdate() {
     let updateOrderRequest = {
         recipient_name: document.getElementById("edit-recipient-name").value,
-        shipping_address: document.getElementById("edit-shipping-address").value,
+        shipping_address: document.getElementById("edit-shipping-address").value + " " + document.getElementById("edit-shipping-address2").value,
         recipient_contact: document.getElementById("edit-recipient-contact").value,
     };
 

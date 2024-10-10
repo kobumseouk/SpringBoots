@@ -67,3 +67,9 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// 한글 인코딩 명시적 설정
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+

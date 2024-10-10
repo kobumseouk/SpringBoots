@@ -29,6 +29,7 @@ public class OrdersService {
     private final OrderItemsRepository orderItemsRepository;
 
     // 사용자 주문 목록 조회
+    /*
     public List<OrderDto> getUserOrders(Long userId) {
         List<Orders> orders = ordersRepository.findAll(); // 나중에 userId 필터 적용 필요
         return orders.stream()
@@ -37,7 +38,18 @@ public class OrdersService {
                         !order.getIsCanceled()) // isCanceled가 false인 경우만 필터링
                 .map(this::convertToOrderDto)
                 .collect(Collectors.toList());
+    }*/
+
+    // 사용자 주문 목록 조회
+    public List<OrderDto> getUserOrders(Long userId) {
+        // userId로 필터링된 Orders를 조회
+        List<Orders> orders = ordersRepository.findByUser_UserIdAndIsCanceledFalse(userId);
+
+        return orders.stream()
+                .map(this::convertToOrderDto)
+                .collect(Collectors.toList());
     }
+
 
     // 특정 주문 상세 조회
     public Optional<OrderDetailsDto> getOrderDetails(Long ordersId, Users currentUser) {
@@ -217,7 +229,7 @@ public class OrdersService {
 
     // 관리자 모든 주문 조회
     public List<OrderDto> getAllOrders() {
-        List<Orders> orders = ordersRepository.findAll();
+        List<Orders> orders = ordersRepository.findByIsCanceledFalse();
         return orders.stream().map(this::convertToOrderDto).collect(Collectors.toList());
     }
 
