@@ -2,7 +2,7 @@ let currentOrder = null; // 현재 주문 정보를 저장할 전역 변수
 
 function getOrderIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('id');
+    return urlParams.get('orderId');
 }
 
 document.addEventListener("DOMContentLoaded", async function() {
