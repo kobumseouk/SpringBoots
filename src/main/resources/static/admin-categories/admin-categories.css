@@ -1,3 +1,15 @@
+/* 전체 컨테이너 스타일 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* 섹션 스타일 */
+.section {
+  padding: 2rem 1rem;
+}
+
 /* 헤더 */
 /* 제목과 버튼을 포함하는 컨테이너에 대한 스타일 */
 .account-header {
@@ -15,12 +27,8 @@
 }
 
 /* 카테고리 리스트 */
-.container {
-  margin-bottom: 2rem; /* 컨테이너 아래쪽에 마진 추가 */
-}
-
 .category-container {
-  max-width: 80% !important; /* 전체 너비로 확장 */
+  max-width: 100% !important; /* 전체 너비로 확장 */
   margin: 1rem auto; /* auto를 사용하여 좌우 중앙 정렬 */
   padding: 0 1rem; /* 필요하다면 좌우 패딩 추가 */
 }
@@ -50,8 +58,8 @@
 
 /* 컬럼 정렬 */
 .column {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
