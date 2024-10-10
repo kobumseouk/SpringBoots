@@ -39,7 +39,7 @@ public class ItemRestController {
                 String imageUrl = s3BucketService.uploadFile(file);
                 requestItemDto.setImageUrl(imageUrl);
             }
-            ResponseItemDto responseDto = itemRestService.createItem(requestItemDto);
+            ResponseItemDto responseDto = itemRestService.createItem(requestItemDto, file);
             return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
