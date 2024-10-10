@@ -108,6 +108,14 @@
   color: red !important;
 }
 
+/* SALE 항목 hover 스타일 */
+.header-container .secondary-navbar .sale-item:hover,
+.header-container .secondary-navbar .sale-item:focus,
+.header-container .secondary-navbar .sale-item.is-active {
+  background-color: #333 !important;
+  color: red !important; /* hover 상태에서도 빨간색 유지 */
+}
+
 .header-container .secondary-navbar .navbar-end {
   margin-left: auto;
 }

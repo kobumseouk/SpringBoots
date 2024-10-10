@@ -1,6 +1,5 @@
 import * as Api from "../../api.js";
 
-// 헤더 로드 함수
 async function loadHeader() {
   try {
     const response = await fetch('/common/header.html');
@@ -23,12 +22,17 @@ async function loadHeader() {
       });
     }
 
-    // 카테고리 메뉴 active 상태 관리
+    // 카테고리 메뉴 active 상태 관리 및 URL 리다이렉트
     const menuItems = document.querySelectorAll('.secondary-navbar .navbar-item');
     menuItems.forEach(item => {
       item.addEventListener('click', (e) => {
+        e.preventDefault();
         menuItems.forEach(i => i.classList.remove('is-active'));
         e.target.classList.add('is-active');
+
+        const theme = e.target.textContent.trim();
+        const encodedTheme = encodeURIComponent(theme);
+        window.location.href = `/categories/${encodedTheme}/1`;
       });
     });
 
@@ -104,3 +108,4 @@ async function updateUserMenu() {
 }
 
 export { loadHeader };
+
