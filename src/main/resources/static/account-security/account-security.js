@@ -102,7 +102,7 @@ function toggleTargets(e) {
 // 나중에 사용자가 데이터를 변경했는지 확인하기 위해, 전역 변수로 userData 설정
 let userData;
 async function insertUserData() {
-  userData = await Api.get("/users");
+  userData = await Api.get("/api/users-info");
 
   // 객체 destructuring
   const { fullName, email, address, phoneNumber } = userData;
