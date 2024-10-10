@@ -11,7 +11,7 @@
             sizes="16x16"
             href="/elice-rabbit-favicon.png"
     />
-    <!-- bulma css 관련 -->
+    <!-- bulma css -->
     <link
             rel="stylesheet"
             href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
@@ -23,16 +23,17 @@
             crossorigin="anonymous"
     ></script>
     <!-- 커스텀 css, js -->
+    <link rel="stylesheet" href="/common/sidebar.css"> <!-- 사이드바 CSS 링크 추가 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="/common/header.css">
     <link rel="stylesheet" href="/account-signout/account-signout.css"/>
     <script src="/account-signout/account-signout.js" type="module" defer></script>
     <script src="/common/header.js" type="module"></script>
+    <script src="/common/sidebar.js"></script> <!-- 사이드바 JS 추가 -->
     <script type="module">
         import { loadHeader } from '/common/header.js';
         document.addEventListener('DOMContentLoaded', loadHeader);
     </script>
-
 </head>
 <body>
 <!-- 헤더 -->
@@ -63,9 +64,9 @@
                 <ul id="navbar">
                     <li>
                         <a href="/cart" aria-current="page">
-                  <span class="icon">
-                    <i class="fas fa-cart-shopping"></i>
-                  </span>
+                            <span class="icon">
+                                <i class="fas fa-cart-shopping"></i>
+                            </span>
                             <span>카트</span>
                         </a>
                     </li>
@@ -76,61 +77,75 @@
 </nav>
 
 <!-- 삭제 폼(Form) -->
-<div class="register-user-form-container">
-    <form class="box register-user-form-box" id="registerUserForm">
-        <p class="title is-5 has-text-primary">삭제를 진행합니다.</p>
-
-        <div class="field mb-5">
-            <label class="label" for="passwordInput">현재 비밀번호</label>
-            <div class="control">
-                <input
-                        class="input"
-                        id="passwordInput"
-                        type="password"
-                        autocomplete="off"
-                />
+<section class="section">
+    <div class="container">
+        <div class="columns is-centered">
+            <!-- 사이드바 추가 -->
+            <div id="sidebar-placeholder" class="column is-one-quarter">
+                <!-- 여기에 사이드바 콘텐츠가 로드될 것입니다. -->
             </div>
-        </div>
 
-        <button class="button is-primary is-fullwidth" id="submitButton">
-            회원정보 안전하게 삭제하기
-        </button>
+            <div class="column is-three-quarters">
+                <form class="box register-user-form-box" id="registerUserForm">
+                    <p class="title is-5 has-text-primary">삭제를 진행합니다.</p>
 
-        <!-- 회원정보를 정말 삭제할 지 묻는 Modal 창 -->
-        <div id="modal" class="modal">
-            <div class="modal-background" id="modalBackground"></div>
-            <div class="modal-content">
-                <div class="box">
-                    <p class="mb-3">
-                        회원정보 삭제 시 복구할 수 없습니다. 정말로 삭제하시겠습니까?
-                    </p>
-
-                    <div class="buttons">
-                        <button
-                                class="button mt-5"
-                                id="deleteCompleteButton"
-                                aria-label="close"
-                        >
-                            네
-                        </button>
-                        <button
-                                class="button is-primary mt-5"
-                                id="deleteCancelButton"
-                                aria-label="close"
-                        >
-                            아니오
-                        </button>
+                    <div class="field mb-5">
+                        <label class="label" for="passwordInput">현재 비밀번호</label>
+                        <div class="control">
+                            <input
+                                    class="input"
+                                    id="passwordInput"
+                                    type="password"
+                                    autocomplete="off"
+                            />
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <button
-                    class="modal-close is-large"
-                    id="modalCloseButton"
-                    aria-label="close"
-            ></button>
+                    <button class="button is-primary is-fullwidth" id="submitButton">
+                        회원정보 안전하게 삭제하기
+                    </button>
+
+                    <!-- 회원정보를 정말 삭제할 지 묻는 Modal 창 -->
+                    <div id="modal" class="modal">
+                        <div class="modal-background" id="modalBackground"></div>
+                        <div class="modal-content">
+                            <div class="box">
+                                <p class="mb-3">
+                                    회원정보 삭제 시 복구할 수 없습니다. 정말로 삭제하시겠습니까?
+                                </p>
+
+                                <div class="buttons">
+                                    <button
+                                            class="button mt-5"
+                                            id="deleteCompleteButton"
+                                            aria-label="close"
+                                    >
+                                        네
+                                    </button>
+                                    <button
+                                            class="button is-primary mt-5"
+                                            id="deleteCancelButton"
+                                            aria-label="close"
+                                    >
+                                        아니오
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                                class="modal-close is-large"
+                                id="modalCloseButton"
+                                aria-label="close"
+                        ></button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </form>
-</div>
+    </div>
+</section>
+
+<!-- 사이드바 JS 추가 -->
+<script src="/common/sidebar.js"></script>
 </body>
 </html>
