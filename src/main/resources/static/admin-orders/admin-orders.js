@@ -16,6 +16,14 @@ const deleteCancelButton = document.querySelector("#deleteCancelButton");
 
 let orderIdToDelete;
 
+// summary 변수를 전역에서 접근할 수 있도록 선언
+let summary = {
+  ordersCount: 0,
+  prepareCount: 0,
+  deliveryCount: 0,
+  completeCount: 0,
+};
+
 // 초기 설정
 loadHeader();
 createNavbar();
@@ -37,7 +45,7 @@ function addAllEvents() {
 async function insertOrders() {
   const orders = await Api.get("/api/admin/orders");
 
-  const summary = {
+  summary = { // summary 객체 초기화
     ordersCount: 0,
     prepareCount: 0,
     deliveryCount: 0,
@@ -62,26 +70,27 @@ async function insertOrders() {
     ordersContainer.insertAdjacentHTML(
         "beforeend",
         `
-            <div class="columns orders-item" id="order-${ordersId}">
-              <div class="column is-2">${date}</div>
-              <div class="column is-4 order-summary">${summaryTitle}</div>
-              <div class="column is-2">${addCommas(ordersTotalPrice)}원</div>
-              <div class="column is-2">
-                <select id="statusSelectBox-${ordersId}" class="select">
-                  <option value="주문완료" ${orderStatus === "주문완료" ? "selected" : ""}>주문완료</option>
-                  <option value="상품배송중" ${orderStatus === "상품배송중" ? "selected" : ""}>상품배송중</option>
-                  <option value="배송완료" ${orderStatus === "배송완료" ? "selected" : ""}>배송완료</option>
-                </select>
-              </div>
-              <div class="column is-2">
-                <button class="button is-danger" id="deleteButton-${ordersId}">주문 취소</button>
-              </div>
-            </div>
-            `
+        <div class="columns orders-item" id="order-${ordersId}">
+          <div class="column is-2">${date}</div>
+          <div class="column is-4 order-summary">${summaryTitle}</div>
+          <div class="column is-2">${addCommas(ordersTotalPrice)}원</div>
+          <div class="column is-2">
+            <select id="statusSelectBox-${ordersId}" class="select">
+              <option value="주문완료" ${orderStatus === "주문완료" ? "selected" : ""}>주문완료</option>
+              <option value="상품배송중" ${orderStatus === "상품배송중" ? "selected" : ""}>상품배송중</option>
+              <option value="배송완료" ${orderStatus === "배송완료" ? "selected" : ""}>배송완료</option>
+            </select>
+          </div>
+          <div class="column is-2" id="cancelButtonContainer-${ordersId}">
+            ${orderStatus === "주문완료" ? `<button class="button is-danger" id="deleteButton-${ordersId}">주문 취소</button>` : ""}
+          </div>
+        </div>
+      `
     );
 
     const statusSelectBox = document.querySelector(`#statusSelectBox-${ordersId}`);
     const deleteButton = document.querySelector(`#deleteButton-${ordersId}`);
+    const cancelButtonContainer = document.querySelector(`#cancelButtonContainer-${ordersId}`);
 
     // 상태 변경 이벤트
     statusSelectBox.addEventListener("change", async () => {
@@ -91,6 +100,34 @@ async function insertOrders() {
       try {
         await Api.patch(`/api/admin/orders/${ordersId}/status`, "", data);
         alert("주문 상태가 성공적으로 업데이트되었습니다.");
+
+        // 상태가 '주문완료'일 때 취소 버튼 다시 표시
+        if (newStatus === "주문완료") {
+          cancelButtonContainer.innerHTML = `<button class="button is-danger" id="deleteButton-${ordersId}">주문 취소</button>`;
+          // 새로 추가된 취소 버튼에도 이벤트 리스너 추가
+          const newDeleteButton = document.querySelector(`#deleteButton-${ordersId}`);
+          newDeleteButton.addEventListener("click", () => {
+            orderIdToDelete = ordersId; // 선택한 주문의 ID 저장
+            openModal(); // 모달 창 열기
+          });
+        } else {
+          // 다른 상태일 때 취소 버튼 제거
+          cancelButtonContainer.innerHTML = "";
+        }
+
+        // 상태 변경 후 요약 정보 업데이트
+        if (newStatus === "상품배송중") {
+          summary.prepareCount -= 1;
+          summary.deliveryCount += 1;
+        } else if (newStatus === "배송완료") {
+          summary.deliveryCount -= 1;
+          summary.completeCount += 1;
+        } else if (newStatus === "주문완료") {
+          summary.prepareCount += 1;
+          summary.completeCount -= 1;
+        }
+
+        updateSummaryCounts();
       } catch (error) {
         console.error("상태 변경 중 오류 발생:", error);
         alert("상태 변경 중 오류가 발생했습니다.");
@@ -98,12 +135,20 @@ async function insertOrders() {
     });
 
     // 주문 취소 버튼 클릭 시 모달 창 열기 및 orderId 설정
-    deleteButton.addEventListener("click", () => {
-      orderIdToDelete = ordersId; // 선택한 주문의 ID 저장
-      openModal(); // 모달 창 열기
-    });
+    if (deleteButton) {
+      deleteButton.addEventListener("click", () => {
+        orderIdToDelete = ordersId; // 선택한 주문의 ID 저장
+        openModal(); // 모달 창 열기
+      });
+    }
   }
 
+  // 초기 요약 정보 업데이트
+  updateSummaryCounts();
+}
+
+// 요약 정보 업데이트 함수
+function updateSummaryCounts() {
   ordersCount.innerText = addCommas(summary.ordersCount);
   prepareCount.innerText = addCommas(summary.prepareCount);
   deliveryCount.innerText = addCommas(summary.deliveryCount);
