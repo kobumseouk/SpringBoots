@@ -9,4 +9,5 @@ import java.util.List;
 public interface OrdersRepository extends JpaRepository<Orders, Long> {
     List<Orders> findByUser_UserIdAndIsCanceledFalse(Long userId);
 
+    List<Orders> findByIsCanceledFalse();
 }
