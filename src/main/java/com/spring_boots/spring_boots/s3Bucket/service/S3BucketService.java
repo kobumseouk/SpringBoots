@@ -63,4 +63,12 @@ public class S3BucketService {
         metadata.setContentLength(file.getSize()); // 파일 크기 설정
         return metadata;
     }
+
+    public void deleteFile(String fileName) {
+        try {
+            amazonS3Client.deleteObject(bucketName, fileName);
+        } catch (Exception e) {
+            throw new RuntimeException("파일 삭제 실패: " + e.getMessage());
+        }
+    }
 }

@@ -17,17 +17,17 @@ public class S3BucketController {
     @PostMapping()
     public ResponseEntity<?> uploadfile(@RequestParam("file")MultipartFile file, @RequestParam("path") String path) {
         try {
-            String fileUrl = s3BucketService.upload(file);
+            String fileUrl = s3BucketService.uploadFile(file);
             return new ResponseEntity<>(fileUrl, HttpStatus.OK);
         } catch (IOException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @DeleteMapping("{/filename")
+    @DeleteMapping("{/filename}")
     public ResponseEntity<String> deleteBucket(@PathVariable("filename") String filename) {
         try {
-            s3BucketService.remove(filename);
+            s3BucketService.deleteFile(filename);
             return new ResponseEntity<>("Hello World!", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
