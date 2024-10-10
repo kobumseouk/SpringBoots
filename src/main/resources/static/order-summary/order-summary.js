@@ -1,6 +1,16 @@
 document.addEventListener("DOMContentLoaded", async function() {
     try {
-        // Load header.html into #header-placeholder
+        // URL에서 orderId 파라미터 추출
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId'); // ?orderId= 뒤의 값을 가져옴
+
+        if (!orderId) {
+            // 주문 ID가 없으면 오류 메시지 표시
+            document.getElementById('order-summary-root').innerHTML = `<div class="notification is-danger">주문 ID가 없습니다.</div>`;
+            return;
+        }
+
+        // 헤더 불러오기
         const response = await fetch("/common/header.html");
         if (!response.ok) {
             throw new Error("헤더를 불러오는 중 오류가 발생했습니다.");
@@ -8,15 +18,15 @@ document.addEventListener("DOMContentLoaded", async function() {
         const data = await response.text();
         document.getElementById("header-placeholder").innerHTML = data;
 
-        // Load order summary data and render
-        await loadOrderSummary();
+        // 주문 요약 정보 불러오기
+        await loadOrderSummary(orderId);
     } catch (error) {
         console.error("헤더를 로드할 수 없습니다:", error);
     }
 });
 
-async function loadOrderSummary() {
-    const orderId = 1; // 임시로 사용한 주문 ID. 실제로는 URL 파라미터에서 가져와야 함
+// 주문 요약 정보를 로드하는 함수
+async function loadOrderSummary(orderId) {
     try {
         const response = await fetch(`/api/orders/${orderId}`);
         if (!response.ok) {
@@ -29,6 +39,7 @@ async function loadOrderSummary() {
     }
 }
 
+// 주문 요약 정보를 렌더링하는 함수
 function renderOrderSummary(order) {
     const orderSummaryRoot = document.getElementById('order-summary-root');
 

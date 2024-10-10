@@ -1,6 +1,7 @@
 package com.spring_boots.spring_boots.orders.controller;
 
 import com.spring_boots.spring_boots.orders.dto.*;
+import com.spring_boots.spring_boots.orders.entity.Orders;
 import com.spring_boots.spring_boots.orders.service.OrdersService;
 import com.spring_boots.spring_boots.user.domain.Users;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLOutput;
 import java.util.List;
 
 @RestController
@@ -48,17 +50,18 @@ public class OrdersApiController {
     }
 
     // 사용자 주문 추가
-    /*
     @PostMapping("/api/orders")
-    public ResponseEntity<OrderResponseDto> placeOrder(@RequestBody OrderRequestDto request) {
-        Long userId = 1L; // 임시 데이터로 사용자 ID 지정
-        Orders order = ordersService.placeOrder(request);
+    public ResponseEntity<OrderResponseDto> placeOrder(@RequestBody OrderRequestDto request, @AuthenticationPrincipal Users currentUser) {
+        log.info("주문: {}", request);
+        Orders order = ordersService.placeOrder(request, currentUser);
+        log.info("생성된 주문 ID: {}", order.getOrdersId()); // 주문 ID 확인
+
         OrderResponseDto response = OrderResponseDto.builder()
                 .ordersId(order.getOrdersId())
-                .status("주문이 성공적으로 추가되었습니다.")
+                .status("주문이 성공적으로 처리되었습니다.")
                 .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    } */
+    }
 
     // 사용자 주문 수정
     @PutMapping("/api/orders/{orders_id}")
