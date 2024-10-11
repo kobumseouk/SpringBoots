@@ -31,8 +31,9 @@ async function loadHeader() {
         e.target.classList.add('is-active');
 
         const theme = e.target.textContent.trim();
-        const encodedTheme = encodeURIComponent(theme);
-        window.location.href = `/categories/${encodedTheme}/1`;
+        const englishTheme = translateThemeToEnglish(theme);
+        const url = getUrlForTheme(englishTheme);
+        window.location.href = url;
       });
     });
 
@@ -40,6 +41,41 @@ async function loadHeader() {
     console.error('헤더를 로드하는 중 오류가 발생했습니다:', error);
   }
 }
+
+// 한글 테마를 영어로 변환하는 함수
+function translateThemeToEnglish(koreanTheme) {
+  const themeMap = {
+    '공용': 'common',
+    '여성': 'women',
+    '남성': 'men',
+    '액세서리': 'accessories',
+    'SALE': 'sale',
+    'COLLABORATION': 'collaboration',
+    'HOW TO': 'how-to',
+    'NEW-IN': 'new-in',
+    'BEST': 'best',
+    'EVENT': 'event'
+  };
+
+  return themeMap[koreanTheme];
+}
+
+// 테마에 따른 URL을 반환하는 함수
+function getUrlForTheme(theme) {
+  switch (theme) {
+    case 'how-to':
+      return '/categories/how-to';
+    case 'new-in':
+      return '/categories/new-in';
+    case 'best':
+      return '/categories/best';
+    case 'event':
+      return '/events';
+    default:
+      return `/categories/${theme}/1`;
+  }
+}
+
 
 async function updateUserMenu() {
   const userMenu = document.getElementById('user-menu');
