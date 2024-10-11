@@ -15,8 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -93,7 +92,7 @@ public class OrdersService {
 
     // 사용자 주문 추가
     @Transactional
-    public Orders placeOrder(OrderRequestDto request, Users currentUser) {
+    public Orders createOrder(OrderRequestDto request, Users currentUser) {
         System.out.println(request);
 
         // 주문의 총 수량 및 총 가격 계산
