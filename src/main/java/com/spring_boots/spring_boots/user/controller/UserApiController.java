@@ -161,13 +161,20 @@ public class UserApiController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        Cookie cookie = new Cookie("refreshToken", null);
-        cookie.setHttpOnly(true);
+        //엑세스토큰, 리프레시토큰 삭제
+        deleteCookie("refreshToken",response);
+        deleteCookie("accessToken",response);
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    private void deleteCookie(String token,HttpServletResponse response) {
+
+        Cookie cookie = new Cookie(token, null);
+//        cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0); // 쿠키 즉시 만료
         response.addCookie(cookie);
-
-        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     //아이디 중복확인
