@@ -4,6 +4,7 @@ import com.spring_boots.spring_boots.common.BaseTimeEntity;
 import com.spring_boots.spring_boots.orders.entity.Orders;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
+import com.spring_boots.spring_boots.user.dto.response.UsersInfoResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -101,11 +103,17 @@ public class Users extends BaseTimeEntity implements UserDetails {
     }
 
     public UserResponseDto toResponseDto() {
+        //UsersInfo 를 UsersInfoResponseDto 로 변경
+        List<UsersInfoResponseDto> userInfoDtos = usersInfoList.stream()
+                .map(UsersInfo::toUsersInfoResponseDto)
+                .toList();
+
         return UserResponseDto.builder()
                 .email(email)
                 .username(username)
                 .userRealId(userRealId)
                 .role(role)
+                .userInfoList(userInfoDtos)
                 .build();
     }
 

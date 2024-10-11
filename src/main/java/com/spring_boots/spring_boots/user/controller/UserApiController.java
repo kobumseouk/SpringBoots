@@ -61,24 +61,6 @@ public class UserApiController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
-/*
-// principal이 Users 객체일 때만 캐스팅
-            if (principal instanceof Users) {
-                Users user = (Users) principal;
-                log.info("유저 아이디: {}", user.getUserRealId());
-                log.info("유저 이메일: {}", user.getEmail());
-                UserResponseDto responseDto = user.toResponseDto();
-                return ResponseEntity.status(HttpStatus.OK).body(responseDto);
-            } else if (principal instanceof String) {
-                // principal이 String이면 (JWT 인증 시 보통 username이 담김)
-                String username = (String) principal;
-                log.info("유저 이름(혹은 아이디): {}", username);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            } else {
-                log.warn("알 수 없는 타입의 principal: {}", principal.getClass().getName());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-* */
 
     //회원 정보 수정
     @PutMapping("/users")
