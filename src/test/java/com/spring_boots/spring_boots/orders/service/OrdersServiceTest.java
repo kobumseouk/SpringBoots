@@ -1,6 +1,7 @@
 package com.spring_boots.spring_boots.orders.service;
 
 import com.spring_boots.spring_boots.item.entity.Item;
+import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.orders.dto.*;
 import com.spring_boots.spring_boots.orders.entity.OrderItems;
 import com.spring_boots.spring_boots.orders.entity.Orders;
@@ -28,6 +29,9 @@ class OrdersServiceTest {
 
     @Mock
     private OrderItemsRepository orderItemsRepository;
+
+    @Mock
+    private ItemRepository itemRepository;
 
     @InjectMocks
     private OrdersService ordersService;
@@ -58,6 +62,7 @@ class OrdersServiceTest {
         mockOrder.setOrderStatus("주문완료");
         mockOrder.setDeliveryFee(5000);
         mockOrder.setQuantity(2);
+        mockOrder.setIsCanceled(false);
 
         // Mock 아이템 데이터 생성
         Item mockItem = new Item();
@@ -78,14 +83,15 @@ class OrdersServiceTest {
     @Test
     void getUserOrders() {
         // Mock 데이터 설정
-        when(ordersRepository.findAll()).thenReturn(List.of(new Orders()));
+        when(ordersRepository.findByUser_UserIdAndIsCanceledFalse(1L)).thenReturn(List.of(mockOrder));
 
         // 서비스 호출
         var result = ordersService.getUserOrders(1L);
 
         // Assertions
         assertNotNull(result);
-        verify(ordersRepository, times(1)).findAll();
+        verify(ordersRepository, times(1)).findByUser_UserIdAndIsCanceledFalse(1L);
+
     }
 
     // 특정 주문 상세 조회 테스트
@@ -113,6 +119,58 @@ class OrdersServiceTest {
         verify(ordersRepository, times(1)).findById(anyLong());
         verify(orderItemsRepository, times(1)).findByOrders(any(Orders.class));
     }
+
+    // 사용자 주문 생성 테스트
+    @Test
+    void createOrder() {
+        // 주문 아이템 DTO 생성
+        OrderRequestDto.OrderItemDto orderItemDto = new OrderRequestDto.OrderItemDto();
+        orderItemDto.setItemId(1L);
+        orderItemDto.setItemPrice(10000);
+        orderItemDto.setItemQuantity(2);
+
+        // 주문 요청 DTO 생성
+        OrderRequestDto request = new OrderRequestDto();
+        request.setRecipientName("홍길동");
+        request.setRecipientContact("010-1234-5678");
+        request.setShippingAddress("서울특별시 강남구");
+        request.setDeliveryMessage("빠른 배송 부탁드립니다.");
+        request.setItems(List.of(orderItemDto));
+
+        // Mock Item 객체 생성
+        Item mockItem = new Item();
+        mockItem.setItemName("Test Item");
+        mockItem.setItemSize(42);
+        mockItem.setImageUrl("http://example.com/image.png");
+
+        // Orders 객체 반환 Mock 설정
+        Orders mockOrder = Orders.builder()
+                .ordersId(1L)
+                .user(mockUser)
+                .ordersTotalPrice(20000)
+                .quantity(2)
+                .orderStatus("주문완료")
+                .isCanceled(false)
+                .build();
+
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(mockItem));
+        when(ordersRepository.save(any(Orders.class))).thenReturn(mockOrder);
+
+        // 서비스 호출
+        Orders result = ordersService.createOrder(request, mockUser);
+
+        // Assertions
+        assertNotNull(result);
+        assertEquals(1L, result.getOrdersId());
+        assertEquals("홍길동", result.getOrderItemsList().get(0).getRecipientName());
+        assertEquals("서울특별시 강남구", result.getOrderItemsList().get(0).getShippingAddress());
+        assertEquals(20000, result.getOrdersTotalPrice());
+        assertEquals(2, result.getQuantity());
+
+        verify(ordersRepository, times(1)).save(any(Orders.class));
+        verify(orderItemsRepository, times(1)).saveAll(anyList());
+    }
+
 
 
     // 사용자 주문 수정 테스트
@@ -216,7 +274,7 @@ class OrdersServiceTest {
         mockOrder.setDeliveryFee(5000);
 
         // Repository에서 반환할 Mock 데이터 설정
-        when(ordersRepository.findAll()).thenReturn(List.of(mockOrder));
+        when(ordersRepository.findByIsCanceledFalse()).thenReturn(List.of(mockOrder));
 
         // 서비스 호출
         var result = ordersService.getAllOrders();
@@ -227,7 +285,7 @@ class OrdersServiceTest {
         assertEquals(20000, result.get(0).getOrdersTotalPrice());  // 총 주문 금액이 올바른지 확인
 
         // Repository가 적절히 호출되었는지 검증
-        verify(ordersRepository, times(1)).findAll();
+        verify(ordersRepository, times(1)).findByIsCanceledFalse();
     }
 
 }
