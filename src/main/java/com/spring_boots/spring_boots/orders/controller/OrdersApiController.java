@@ -15,7 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLOutput;
 import java.util.List;
 
 @RestController
@@ -51,9 +50,9 @@ public class OrdersApiController {
 
     // 사용자 주문 추가
     @PostMapping("/api/orders")
-    public ResponseEntity<OrderResponseDto> placeOrder(@RequestBody OrderRequestDto request, @AuthenticationPrincipal Users currentUser) {
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto request, @AuthenticationPrincipal Users currentUser) {
         log.info("주문: {}", request);
-        Orders order = ordersService.placeOrder(request, currentUser);
+        Orders order = ordersService.createOrder(request, currentUser);
         log.info("생성된 주문 ID: {}", order.getOrdersId()); // 주문 ID 확인
 
         OrderResponseDto response = OrderResponseDto.builder()
