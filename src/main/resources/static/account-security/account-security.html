@@ -22,51 +22,24 @@
       src="https://kit.fontawesome.com/9daa42bcef.js"
       crossorigin="anonymous"
     ></script>
+    <link rel="stylesheet" href="/common/sidebar.css"> <!-- 사이드바 CSS 링크 추가 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/common/header.css">
     <!-- Daum 주소 API 사용하기 위한 파일 -->
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <!-- 커스텀 css, js -->
     <link rel="stylesheet" href="/account-security/account-security.css" />
     <script src="/account-security/account-security.js" type="module" defer></script>
-    <script src="../api.js"></script>
+    <script src="/api.js" type="module"></script>
+    <script src="/common/header.js" type="module"></script>
+    <script src="/common/sidebar.js"></script> <!-- 사이드바 JS 추가 -->
+    <script type="module">
+      import { loadHeader } from '/common/header.js';
+      document.addEventListener('DOMContentLoaded', loadHeader);
+    </script>
   </head>
   <body>
-    <!-- 헤더 -->
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="container mt-3">
-        <div class="navbar-brand">
-          <a class="navbar-item" href="/">
-            <img src="/elice-rabbit.png" width="30" height="30" />
-            <span class="has-text-link">Shopping Mall</span>
-          </a>
-
-          <a
-            role="button"
-            class="navbar-burger"
-            aria-label="menu"
-            aria-expanded="false"
-            data-target="navbarBasicExample"
-          >
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
-        </div>
-
-        <div class="navbar-end breadcrumb my-auto" aria-label="breadcrumbs">
-          <ul id="navbar">
-            <li>
-              <a href="/cart" aria-current="page">
-                <span class="icon">
-                  <i class="fas fa-cart-shopping"></i>
-                </span>
-                <span>카트</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
+  <div id="header-placeholder" class="header-container"></div>
     <!-- 회원정보 박스 -->
     <section class="section">
       <div class="container">
@@ -75,7 +48,27 @@
         </div>
         <div class="menu-container">
           <div class="form-container">
+            <div id="sidebar-placeholder" class="column is-one-quarter">
+              <!-- 여기에 사이드바 콘텐츠가 로드될 것입니다. -->
+            </div>
+            <div class="column is-three-quarters">
             <form class="box form-box" id="loginForm">
+              <div class="field">
+                <label class="label" for="userRealIdInput">아이디</label>
+                <div class="control">
+                  <input
+                          class="input"
+                          id="userRealIdInput"
+                          type="text"
+                          autocomplete="off"
+                  />
+                  <!-- 토클 스위치 -->
+                  <label class="switch">
+                    <input type="checkbox" id="userRealIdToggle" />
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
               <div class="field">
                 <label class="label" for="fullNameInput">이름</label>
                 <div class="control">
@@ -251,6 +244,7 @@
               </div>
             </form>
           </div>
+        </div>
         </div>
       </div>
     </section>

@@ -19,8 +19,14 @@ public class UsersInfo extends BaseTimeEntity {
     @Column(name = "user_info_id")
     private Long userInfoId;
 
-    @Column(name = "address",nullable = true)
-    private String address;
+    @Column(name = "address")
+    private String address; //우편번호
+
+    @Column(name = "streetAddress")
+    private String streetAddress; //도로명 주소
+
+    @Column(name = "detailedAddress")
+    private String detailedAddress; //상세 주소
 
     @Column(name = "phone")
     private String phone;

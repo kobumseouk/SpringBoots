@@ -47,14 +47,22 @@ public class UserApiController {
 
     //개인 정보 조회
     @GetMapping("/users-info")
-    public ResponseEntity<UserResponseDto> getUser() {
-        // SecurityContext에서 인증 정보(Authentication)를 가져옴
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<UserResponseDto> getUser(@AuthenticationPrincipal Users user) {
+        try {
+            Users authUser = userService.findById(user.getUserId());
 
-        if (authentication != null && authentication.isAuthenticated()) {
-            Object principal = authentication.getPrincipal();
-
-            // principal이 Users 객체일 때만 캐스팅
+            if (authUser != null) {
+                UserResponseDto responseDto = authUser.toResponseDto();
+                return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+/*
+// principal이 Users 객체일 때만 캐스팅
             if (principal instanceof Users) {
                 Users user = (Users) principal;
                 log.info("유저 아이디: {}", user.getUserRealId());
@@ -70,9 +78,7 @@ public class UserApiController {
                 log.warn("알 수 없는 타입의 principal: {}", principal.getClass().getName());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
             }
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
+* */
 
     //회원 정보 수정
     @PutMapping("/users")
@@ -89,7 +95,7 @@ public class UserApiController {
     @DeleteMapping("/users-hard")
     public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal Users user,
                                            HttpServletResponse response) {
-        Users authUser = userService.findByEmail(user.getEmail());
+        Users authUser = userService.findById(user.getUserId());
         userService.deleteUser(authUser);
 
         if (userService.isDeleteUser(authUser)) {
@@ -110,7 +116,7 @@ public class UserApiController {
     public ResponseEntity<Void> softDeleteUser(@AuthenticationPrincipal Users user,
                                                @PathVariable Long id,
                                                HttpServletResponse response) {
-        Users authUser = userService.findByEmail(user.getEmail());
+        Users authUser = userService.findById(user.getUserId());
         userService.softDeleteUser(authUser);
 
         if (authUser.isDeleted()) {
@@ -130,7 +136,7 @@ public class UserApiController {
     @PostMapping("/users/check-password")
     public ResponseEntity<UserPasswordResponseDto> checkPassword(@AuthenticationPrincipal Users user,
                                                                  @RequestBody UserPasswordRequestDto request) {
-        Users authUser = userService.findByEmail(user.getEmail());
+        Users authUser = userService.findById(user.getUserId());
 
         if (userService.checkPassword(authUser, request)) {
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -150,7 +156,7 @@ public class UserApiController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response,
                                        @AuthenticationPrincipal Users user) {
-        Users authUser = userService.findByEmail(user.getEmail());
+        Users authUser = userService.findById(user.getUserId());
         if (authUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

@@ -3,6 +3,8 @@ import * as Api from "../../api.js";
 
 // 요소(element), input 혹은 상수
 const securityTitle = document.querySelector("#securityTitle");
+const userRealIdInput = document.querySelector("#userRealIdInput");
+const userRealIdToggle = document.querySelector("#userRealIdToggle");
 const fullNameInput = document.querySelector("#fullNameInput");
 const fullNameToggle = document.querySelector("#fullNameToggle");
 const passwordInput = document.querySelector("#passwordInput");
@@ -105,14 +107,14 @@ async function insertUserData() {
   userData = await Api.get("/api/users-info");
 
   // 객체 destructuring
-  const { fullName, email, address, phoneNumber } = userData;
+  const { username, userRealId, email, address, phoneNumber } = userData;
 
   // 서버에서 온 비밀번호는 해쉬 문자열인데, 이를 빈 문자열로 바꿈
   // 나중에 사용자가 비밀번호 변경을 위해 입력했는지 확인하기 위함임.
   userData.password = "";
 
   securityTitle.innerText = `회원정보 관리 (${email})`;
-  fullNameInput.value = fullName;
+  fullNameInput.value = username;
 
   if (address) {
     const { postalCode, address1, address2 } = address;

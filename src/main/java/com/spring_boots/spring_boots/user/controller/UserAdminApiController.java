@@ -38,7 +38,7 @@ public class UserAdminApiController {
     @PatchMapping("/admin/grant")
     public ResponseEntity<String> grantAdmin(@AuthenticationPrincipal Users user,
                                            @RequestBody AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
-        Users authUser = userService.findByEmail(user.getEmail());
+        Users authUser = userService.findById(user.getUserId());
 
         if (authUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증되지 않은 사용자입니다. 로그인해주세요");
