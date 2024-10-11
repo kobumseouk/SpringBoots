@@ -28,6 +28,13 @@ document.addEventListener("DOMContentLoaded", async function() {
 async function loadOrderSummary(orderId) {
     try {
         const response = await fetch(`/api/orders/${orderId}`);
+        // 404 상태일 때
+        if (response.status === 404) {
+            alert("유효하지 않은 주문번호입니다.");
+            // 메인 페이지나 주문 목록 페이지로 이동
+            window.location.href = "/order-list";  // 예: 주문 목록 페이지로 이동
+            return;
+        }
         if (!response.ok) {
             const error = await response.json();
             throw new Error(error.errorMessage || '주문 정보를 가져오는 중 오류가 발생했습니다.');

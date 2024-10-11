@@ -54,6 +54,7 @@ public class OrdersService {
     // 특정 주문 상세 조회
     public Optional<OrderDetailsDto> getOrderDetails(Long ordersId, Users currentUser) {
         return ordersRepository.findById(ordersId)
+                .filter(order -> !order.getIsCanceled())
                 .filter(order -> order.getUser().getUserId().equals(currentUser.getUserId()))  // 사용자 검증 추가
                 .map(order -> {
                     List<OrderItems> orderItemsList = orderItemsRepository.findByOrders(order);
@@ -192,6 +193,7 @@ public class OrdersService {
                 .map(order -> {
                     if (!order.getIsCanceled()) {
                         order.setIsCanceled(true);
+                        order.setOrderStatus("주문취소");
                         order.setUpdatedAt(LocalDateTime.now());
                         ordersRepository.save(order);
                         return new OrderResponseDto(order.getOrdersId(), "주문이 성공적으로 취소되었습니다.");
