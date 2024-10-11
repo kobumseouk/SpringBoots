@@ -152,25 +152,14 @@
                     <span class="file-icon">
                       <i class="fas fa-upload"></i>
                     </span>
-                    <span> 사진 업로드 </span>
-
-                  </span>
-                  <span>
-                    <input
+                    <span> <input
                             type="file"
                             class="form-control"
                             id="fileInput"
                             name="file"
                             accept="image/*"
                             onchange="showPreviewImage(this)"
-                    />
-                    <input
-                            class="file-input"
-                            id="imageInput"
-                            type="file"
-                            name="image-file"
-                            accept="ItemBox/*"
-                    />
+                    />사진 업로드 </span>
 
                   </span>
                 </label>
@@ -179,7 +168,26 @@
               <img id="imagePreview" src="#" alt="미리보기" style="display: none; max-width: 100%; margin-top: 10px;" />
                   </div>
             </div>
+            <script>
+            function showPreviewImage(input) {
+            const file = input.files[0]; // 선택한 파일 가져오기
+            const preview = document.getElementById('imagePreview'); // 미리보기 이미지 요소
 
+            if (file) {
+            const reader = new FileReader(); // FileReader 객체 생성
+
+            reader.onload = function (e) {
+            preview.src = e.target.result; // 파일의 데이터 URL을 미리보기 이미지의 src에 설정
+            preview.style.display = 'block'; // 이미지를 표시
+            };
+
+            reader.readAsDataURL(file); // 파일을 데이터 URL로 읽기
+            } else {
+            preview.src = '#'; // 파일이 없을 경우 초기화
+            preview.style.display = 'none'; // 이미지를 숨김
+            }
+            }
+            </script>
             <div class="field">
               <label class="label" for="inventoryInput">재고 수</label>
               <div class="control">
