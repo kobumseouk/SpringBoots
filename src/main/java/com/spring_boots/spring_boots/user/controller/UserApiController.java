@@ -102,11 +102,8 @@ public class UserApiController {
         userService.softDeleteUser(authUser);
 
         if (authUser.isDeleted()) {
-            Cookie cookie = new Cookie("refreshToken", null);
-//            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            cookie.setMaxAge(0); // 쿠키 즉시 만료
-            response.addCookie(cookie);
+            deleteCookie("refreshToken",response);
+            deleteCookie("accessToken",response);
 
             return ResponseEntity.status(HttpStatus.OK).build();
         }
