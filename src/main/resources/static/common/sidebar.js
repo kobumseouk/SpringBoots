@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <p class="title is-5 mb-3">나의 정보</p>
                 <ul class="section-menu">
                     <li><a href="/">회원정보 수정</a></li>
-                    <li><a href="/">회원탈퇴</a></li>
+                    <li><a href="/account/signout">회원탈퇴</a></li>
                 </ul>
             </li>
         </ul>
