@@ -31,29 +31,12 @@ public class TokenApiController {
     ) {
         // 기존 쿠키 삭제 로직
         if (existingRefreshTokenCookie != null) {
-            Cookie deleteRefreshTokenCookie = new Cookie("refreshToken", null);
-//            deleteRefreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
-//            deleteRefreshTokenCookie.setSecure(true); // HTTPS에서만 전송
-            deleteRefreshTokenCookie.setPath("/"); // 동일한 경로
-            deleteRefreshTokenCookie.setMaxAge(0); // 쿠키 삭제 설정
-
-            response.addCookie(deleteRefreshTokenCookie); // 삭제할 쿠키를 response에 추가
+            deleteTokenCookie(response);
         }
 
         JwtTokenDto jwtTokenResponse = userService.login(request);
 
-        Cookie refreshTokenCookie = new Cookie(
-                "refreshToken",
-                jwtTokenResponse.getRefreshToken()
-        );
-
-//        refreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근할 수 없도록 설정
-//        refreshTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (생산 환경에서 사용)
-        refreshTokenCookie.setPath("/"); // 쿠키의 유효 경로 설정
-        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키의 유효 기간 설정 (예: 7일)
-
-        response.addCookie(refreshTokenCookie);
-        //쿠키의 정보를 response 데이터에 넣는다.
+        getCookie(jwtTokenResponse, response);
 
         return ResponseEntity.ok().body(JwtTokenResponse
                 .builder()
@@ -61,6 +44,48 @@ public class TokenApiController {
                 .refreshToken(jwtTokenResponse.getRefreshToken())
                 .isAdmin(jwtTokenResponse.getRole().equals(UserRole.ADMIN))
                 .build());
+    }
+
+    private void deleteTokenCookie(HttpServletResponse response) {
+        Cookie deleteRefreshTokenCookie = new Cookie("refreshToken", null);
+//            deleteRefreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
+//            deleteRefreshTokenCookie.setSecure(true); // HTTPS에서만 전송
+        deleteRefreshTokenCookie.setPath("/"); // 동일한 경로
+        deleteRefreshTokenCookie.setMaxAge(0); // 쿠키 삭제 설정
+
+        Cookie deleteAccessTokenCookie = new Cookie("accessToken", null);
+//            deleteAccessTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
+//            deleteAccessTokenCookie.setSecure(true); // HTTPS에서만 전송
+        deleteAccessTokenCookie.setPath("/"); // 동일한 경로
+        deleteAccessTokenCookie.setMaxAge(0); // 쿠키 삭제 설정
+
+        response.addCookie(deleteRefreshTokenCookie); // 삭제할 쿠키를 response에 추가
+        response.addCookie(deleteAccessTokenCookie);
+    }
+
+    private void getCookie(JwtTokenDto jwtTokenResponse,HttpServletResponse response) {
+        Cookie refreshTokenCookie = new Cookie(
+                "refreshToken",
+                jwtTokenResponse.getRefreshToken()
+        );
+
+        Cookie accessTokenCookie = new Cookie(
+                "accessToken",
+                jwtTokenResponse.getAccessToken()
+        );
+
+//        refreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근할 수 없도록 설정
+//        refreshTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (생산 환경에서 사용)
+        refreshTokenCookie.setPath("/"); // 쿠키의 유효 경로 설정
+        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키의 유효 기간 설정 (예: 7일)
+
+//        accessTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근할 수 없도록 설정
+//        accessTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (생산 환경에서 사용)
+        accessTokenCookie.setPath("/"); // 쿠키의 유효 경로 설정
+        accessTokenCookie.setMaxAge(15 * 60); // 15분
+
+        response.addCookie(refreshTokenCookie);
+        response.addCookie(accessTokenCookie);
     }
 
     @PostMapping("/refresh-token")
