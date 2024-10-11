@@ -15,7 +15,7 @@ import java.io.IOException;
 public class S3BucketController {
     private final S3BucketService s3BucketService;
     @PostMapping()
-    public ResponseEntity<?> uploadfile(@RequestParam("file")MultipartFile file, @RequestParam("path") String path) {
+    public ResponseEntity<?> uploadfile(@RequestParam("file")MultipartFile file) {
         try {
             String fileUrl = s3BucketService.uploadFile(file);
             return new ResponseEntity<>(fileUrl, HttpStatus.OK);
@@ -24,7 +24,7 @@ public class S3BucketController {
         }
     }
 
-    @DeleteMapping("{/filename}")
+    @DeleteMapping("/{filename}")
     public ResponseEntity<String> deleteBucket(@PathVariable("filename") String filename) {
         try {
             s3BucketService.deleteFile(filename);

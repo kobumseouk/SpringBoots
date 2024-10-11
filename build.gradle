@@ -60,8 +60,9 @@ dependencies {
 
     //S3bucket 사용
     implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
-    implementation 'com.amazonaws:aws-java-sdk-s3'
+    implementation platform('software.amazon.awssdk:bom:2.20.0') // 최신 BOM 버전
+    implementation 'software.amazon.awssdk:s3'
+    implementation 'software.amazon.awssdk:sts'
 }
 
 tasks.named('test') {
