@@ -145,28 +145,39 @@
             </div>
 
             <div class="field is-fullwidth">
-              <label class="label" for="imageInput">제품 사진</label>
+              <label class="label">제품 사진</label>
               <div class="file has-name is-fullwidth">
-                <label class="file-label">
-                  <input
-                    class="file-input"
-                    id="imageInput"
-                    type="file"
-                    name="image-file"
-                    accept="ItemBox/*"
-                  />
+                <label class="file-label" for="fileInput">
                   <span class="file-cta">
                     <span class="file-icon">
                       <i class="fas fa-upload"></i>
                     </span>
-                    <span class="file-label" id="uploadButton"> 사진 업로드 </span>
+                    <span> 사진 업로드 </span>
+
                   </span>
-                  <span class="file-name" id="fileNameSpan">
-                    사진파일 (png, jpg, jpeg)
+                  <span>
+                    <input
+                            type="file"
+                            class="form-control"
+                            id="fileInput"
+                            name="file"
+                            accept="image/*"
+                            onchange="showPreviewImage(this)"
+                    />
+                    <input
+                            class="file-input"
+                            id="imageInput"
+                            type="file"
+                            name="image-file"
+                            accept="ItemBox/*"
+                    />
+
                   </span>
-              <img id="imagePreview" src="#" alt="미리보기" style="display: none; max-width: 100%; margin-top: 10px;" />
                 </label>
               </div>
+              <div>
+              <img id="imagePreview" src="#" alt="미리보기" style="display: none; max-width: 100%; margin-top: 10px;" />
+                  </div>
             </div>
 
             <div class="field">
