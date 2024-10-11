@@ -8,10 +8,10 @@ async function init() {
   const pathParts = path.split('/');
 
   if (pathParts.length >= 4 && pathParts[1] === 'categories') {
-    const encodedThema = pathParts[2];
+    const englishTheme = pathParts[2];
     const categoryId = pathParts[3];
-    const thema = decodeURIComponent(encodedThema);
-    await handleThemaClick(thema, categoryId);
+    const koreanTheme = translateEnglishToKorean(englishTheme);
+    await handleThemeClick(koreanTheme, categoryId);
   } else {
     window.location.href = '/';
   }
@@ -21,10 +21,10 @@ async function init() {
   document.getElementById('filter-options').addEventListener('change', handleFilterChange);
 }
 
-async function handleThemaClick(thema, selectedCategoryId = null) {
+async function handleThemeClick(theme, selectedCategoryId = null) {
   try {
-    const categories = await Api.get(`/api/categories/themas/${encodeURIComponent(thema)}`);
-    displayCategoryButtons(categories);
+    const categories = await Api.get(`/api/categories/themas/${theme}`);
+    displayCategoryButtons(categories, translateKoreanToEnglish(theme));
 
     let categoryToDisplay;
     if (selectedCategoryId) {
@@ -38,14 +38,14 @@ async function handleThemaClick(thema, selectedCategoryId = null) {
 
     await displayCategoryInfo(categoryToDisplay.id);
 
-    const encodedThema = encodeURIComponent(thema);
-    history.pushState(null, '', `/categories/${encodedThema}/${categoryToDisplay.id}`);
+    const englishTheme = translateKoreanToEnglish(theme);
+    history.pushState(null, '', `/categories/${englishTheme}/${categoryToDisplay.id}`);
   } catch (error) {
     console.error('테마 카테고리를 가져오는 데 실패했습니다:', error);
   }
 }
 
-function displayCategoryButtons(categories) {
+function displayCategoryButtons(categories, currentEnglishTheme) {
   const categoryButtons = document.getElementById('category-buttons');
   categoryButtons.innerHTML = '';
 
@@ -55,9 +55,7 @@ function displayCategoryButtons(categories) {
     button.classList.add('button', 'is-primary', 'mr-2', 'mb-2');
     button.addEventListener('click', () => {
       displayCategoryInfo(category.id);
-      const thema = window.location.pathname.split('/')[2];
-      const encodedThema = encodeURIComponent(decodeURIComponent(thema));
-      history.pushState(null, '', `/categories/${encodedThema}/${category.id}`);
+      history.pushState(null, '', `/categories/${currentEnglishTheme}/${category.id}`);
     });
     categoryButtons.appendChild(button);
   });
@@ -111,7 +109,7 @@ async function displayProducts(categoryId, sortOption = 'default', filterOption 
     productList.innerHTML = '';
 
     products.forEach(product => {
-      const productElement = createProductElement(product);
+      const productElement = createProductElement(product);  // 상품 요소 생성 로직 받아옴
       productList.appendChild(productElement);
     });
   } catch (error) {
@@ -136,6 +134,42 @@ function handleFilterChange(event) {
   const categoryId = window.location.pathname.split('/')[3];
   const sortValue = document.getElementById('sort-options').value;
   displayProducts(categoryId, sortValue, filterValue);
+}
+
+// 영어 테마를 한글로 변환하는 함수
+function translateEnglishToKorean(englishTheme) {
+  const themeMap = {
+    'common': '공용',
+    'women': '여성',
+    'men': '남성',
+    'accessories': '액세서리',
+    'sale': 'SALE',
+    'collaboration': 'COLLABORATION',
+    'how-to': 'HOW TO',
+    'new-in': 'NEW-IN',
+    'best': 'BEST',
+    'event': 'EVENT'
+  };
+
+  return themeMap[englishTheme];
+}
+
+// 한글 테마를 영어로 변환하는 함수
+function translateKoreanToEnglish(koreanTheme) {
+  const themeMap = {
+    '공용': 'common',
+    '여성': 'women',
+    '남성': 'men',
+    '액세서리': 'accessories',
+    'SALE': 'sale',
+    'COLLABORATION': 'collaboration',
+    'HOW TO': 'how-to',
+    'NEW-IN': 'new-in',
+    'BEST': 'best',
+    'EVENT': 'event'
+  };
+
+  return themeMap[koreanTheme];
 }
 
 // 페이지 로드 시 초기화 함수 실행
