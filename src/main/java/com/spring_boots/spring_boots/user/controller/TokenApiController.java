@@ -58,6 +58,7 @@ public class TokenApiController {
         return ResponseEntity.ok().body(JwtTokenResponse
                 .builder()
                 .accessToken(jwtTokenResponse.getAccessToken())
+                .refreshToken(jwtTokenResponse.getRefreshToken())
                 .isAdmin(jwtTokenResponse.getRole().equals(UserRole.ADMIN))
                 .build());
     }

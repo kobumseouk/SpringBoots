@@ -8,5 +8,6 @@ import lombok.Getter;
 @Builder
 public class JwtTokenResponse {
     private String accessToken;
+    private String refreshToken;
     private boolean isAdmin;
 }
