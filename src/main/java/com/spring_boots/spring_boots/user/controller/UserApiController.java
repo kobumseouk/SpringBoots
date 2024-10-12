@@ -7,6 +7,7 @@ import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserPasswordResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UserSignupResponseDto;
+import com.spring_boots.spring_boots.user.dto.response.UserUpdateResponseDto;
 import com.spring_boots.spring_boots.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,8 +35,8 @@ public class UserApiController {
         if (userSignupRequestDto == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(UserSignupResponseDto.builder()
-                                    .message("잘못된 요청입니다.")
-                                    .build());
+                            .message("잘못된 요청입니다.")
+                            .build());
         }
 
         Users user = userService.save(userSignupRequestDto);
@@ -62,15 +63,19 @@ public class UserApiController {
         }
     }
 
-    //회원 정보 수정
-    @PutMapping("/users")
-    public ResponseEntity<Users> updateUser(@AuthenticationPrincipal Users user,
-                                            @RequestBody UserUpdateRequestDto request) {
+    //회원 정보 수정(이름, 아이디, 이메일은 변경 불가능)
+    @PatchMapping("/users/{userInfoId}")
+    public ResponseEntity<UserUpdateResponseDto> updateUser(@AuthenticationPrincipal Users user,
+                                                            @PathVariable("userInfoId") Long userInfoId,
+                                                            @RequestBody UserUpdateRequestDto request) {
         Users authUser = userService.findById(user.getUserId());    //인증객체 가져올시 영속성컨텍스트에서 가져와야함
 
-        userService.update(authUser, request);
+        userService.update(authUser, request, userInfoId);
 
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK).body(UserUpdateResponseDto
+                .builder()
+                .message("정상적으로 수정되었습니다.")
+                .build());
     }
 
     //회원 탈퇴(hard delete)
@@ -102,8 +107,8 @@ public class UserApiController {
         userService.softDeleteUser(authUser);
 
         if (authUser.isDeleted()) {
-            deleteCookie("refreshToken",response);
-            deleteCookie("accessToken",response);
+            deleteCookie("refreshToken", response);
+            deleteCookie("accessToken", response);
 
             return ResponseEntity.status(HttpStatus.OK).build();
         }
@@ -141,13 +146,13 @@ public class UserApiController {
         }
 
         //엑세스토큰, 리프레시토큰 삭제
-        deleteCookie("refreshToken",response);
-        deleteCookie("accessToken",response);
+        deleteCookie("refreshToken", response);
+        deleteCookie("accessToken", response);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    private void deleteCookie(String token,HttpServletResponse response) {
+    private void deleteCookie(String token, HttpServletResponse response) {
 
         Cookie cookie = new Cookie(token, null);
 //        cookie.setHttpOnly(true);
