@@ -3,23 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shopping Mall</title>
-  <!-- 아이콘 -->
-  <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/elice-rabbit-favicon.png"
-  />
+  <title>Spring Boots</title>
   <!-- bulma css -->
   <link
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
-  />
-  <!-- 슬라이드 이미지용 css, js -->
-  <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.4/dist/css/bulma-carousel.min.css"
   />
   <script
           defer
@@ -32,21 +20,31 @@
   <link rel="stylesheet" href="/category-detail/category-detail.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"><link rel="stylesheet" href="/common/header.css">
   <script src="/category-detail/category-detail.js" type="module" defer></script>
-  <script src="../login/login.js"></script>
   <script src="/common/header.js" type="module"></script>
 </head>
 <body>
   <!-- 헤더 -->
   <div id="header-placeholder" class="header-container"></div>
-  <div id="content">
-    <!-- 카테고리 정보 -->
-    <div id="category-info">
-      <!--카테고리 이름-->
-      <h1 id="category-title"></h1>
-      <!--카테고리 내용-->
-      <p id="category-description"></p>
-      <!--카테고리 선택 버튼-->
-      <div id="category-buttons"></div>
+  <div id="category-content">
+    <div class="content-wrapper">
+      <!-- 브레드크럼 추가 -->
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li id="second-breadcrumb"><a href="#"></a></li>
+          <li id="third-breadcrumb"><a href="#"></a></li>
+        </ul>
+      </nav>
+
+      <!-- 카테고리 정보 -->
+      <div id="category-info">
+        <!--카테고리 이름-->
+        <h1 id="category-title"></h1>
+        <!--카테고리 내용-->
+        <p id="category-description"></p>
+        <!--카테고리 선택 버튼-->
+        <div id="category-buttons"></div>
+      </div>
     </div>
   </div>
 
@@ -68,12 +66,15 @@
         <option value="">필터</option>
       </select>
     </div>
+
+    <!-- 상품 목록을 표시할 컨테이너 추가 -->
+    <div id="product-list">
+
+    </div>
+
   </div>
 
-  <!-- 상품 목록을 표시할 컨테이너 추가 -->
-  <div id="product-list">
 
-  </div>
 
 </body>
 </html>

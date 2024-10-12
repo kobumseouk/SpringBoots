@@ -1,5 +1,5 @@
-import { loadHeader } from '/common/header.js';
-import * as Api from '/api.js';
+import { loadHeader } from '../common/header.js';
+import * as Api from '../../api.js';
 
 async function init() {
   await loadHeader();
@@ -38,6 +38,9 @@ async function handleThemeClick(theme, selectedCategoryId = null) {
 
     await displayCategoryInfo(categoryToDisplay.id);
 
+    // 브레드크럼 업데이트
+    updateBreadcrumb(theme, categoryToDisplay);
+
     const englishTheme = translateKoreanToEnglish(theme);
     history.pushState(null, '', `/categories/${englishTheme}/${categoryToDisplay.id}`);
   } catch (error) {
@@ -45,6 +48,26 @@ async function handleThemeClick(theme, selectedCategoryId = null) {
   }
 }
 
+// 브레드크럼 업데이트
+function updateBreadcrumb(theme, category) {
+  const secondBreadcrumb = document.getElementById('second-breadcrumb');
+  const thirdBreadcrumb = document.getElementById('third-breadcrumb');
+
+  // 테마 설정
+  secondBreadcrumb.querySelector('a').textContent = theme;
+  secondBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/1`;
+
+  // category 객체가 존재하고 배치 순서가 '1'이 아닌 경우에만 third-breadcrumb 표시
+  if (category && category.displayOrder !== '1') {
+    thirdBreadcrumb.querySelector('a').textContent = category.categoryName;
+    thirdBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/${category.id}`;
+    thirdBreadcrumb.classList.add('is-active')
+  } else {
+    thirdBreadcrumb.style.display = 'none';
+  }
+}
+
+// 카테고리별 버튼 생성
 function displayCategoryButtons(categories, currentEnglishTheme) {
   const categoryButtons = document.getElementById('category-buttons');
   categoryButtons.innerHTML = '';
@@ -67,6 +90,14 @@ async function displayCategoryInfo(categoryId) {
     document.getElementById('category-title').textContent = category.categoryName;
     document.getElementById('category-description').textContent = category.categoryContent;
 
+    // URL에서 테마 정보 추출
+    const pathParts = window.location.pathname.split('/');
+    const englishTheme = pathParts[2];
+    const theme = translateEnglishToKorean(englishTheme);
+
+    // 브레드크럼 업데이트
+    updateBreadcrumb(theme, category);
+
     // 상품 개수 표시 (이 부분은 실제 API 응답에 따라 조정 필요)
     const productCount = category.productCount || 0;
     document.getElementById('product-count').textContent = `${productCount}개의 상품이 있습니다.`;
@@ -84,8 +115,14 @@ async function displayCategoryInfo(categoryId) {
     // 필터 옵션 업데이트
     updateFilterOptions(category.filters || []);
 
-    // 상품 목록 표시
-    await displayProducts(categoryId);
+    // URL 업데이트
+    const currentTheme = translateKoreanToEnglish(theme);
+    if (category.id === '1') {
+      history.pushState(null, '', `/categories/${currentTheme}/1`);
+    } else {
+      history.pushState(null, '', `/categories/${currentTheme}/${category.id}`);
+    }
+
   } catch (error) {
     console.error('카테고리 정보를 가져오는 데 실패했습니다:', error);
   }
@@ -102,20 +139,6 @@ function updateFilterOptions(filters) {
   });
 }
 
-async function displayProducts(categoryId, sortOption = 'default', filterOption = '') {
-  try {
-    const products = await Api.get(`/api/products?categoryId=${categoryId}&sort=${sortOption}&filter=${filterOption}`);
-    const productList = document.getElementById('product-list');
-    productList.innerHTML = '';
-
-    products.forEach(product => {
-      const productElement = createProductElement(product);  // 상품 요소 생성 로직 받아옴
-      productList.appendChild(productElement);
-    });
-  } catch (error) {
-    console.error('상품 목록을 가져오는 데 실패했습니다:', error);
-  }
-}
 
 function createProductElement(product) {
   // 상품 요소 생성 로직
@@ -126,14 +149,16 @@ function handleSortChange(event) {
   const sortValue = event.target.value;
   const categoryId = window.location.pathname.split('/')[3];
   const filterValue = document.getElementById('filter-options').value;
-  displayProducts(categoryId, sortValue, filterValue);
+  // TODO: 정렬 로직
+  console.log('정렬 기준:', sortValue);
 }
 
 function handleFilterChange(event) {
   const filterValue = event.target.value;
   const categoryId = window.location.pathname.split('/')[3];
   const sortValue = document.getElementById('sort-options').value;
-  displayProducts(categoryId, sortValue, filterValue);
+  // TODO: 필터 로직
+  console.log('필터 기준:', sortValue);
 }
 
 // 영어 테마를 한글로 변환하는 함수
