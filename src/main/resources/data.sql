@@ -12,12 +12,12 @@ VALUES ('admin', 'admin', 'admin@example.com', '$2a$10$V1hEUNfKSMDNC2lkh58L0uebt
 INSERT INTO users_info (
     user_id, address, street_address, detailed_address, phone, created_at, updated_at
 ) VALUES
-    (1, '13494', '경기도 성남시 분당구 대왕판교로 670', '1동 1103호', '010-9876-5432', NOW(), NOW());
+    (1, '13494', '경기도 성남시 분당구 대왕판교로 670', '1동 1103호', '01098765432', NOW(), NOW());
 
 INSERT INTO users_info (
     user_id, address, street_address, detailed_address, phone, created_at, updated_at
 ) VALUES
-    (2, '03925', '서울특별시 마포구 월드컵북로 396', '503동 304호', '010-8765-4321', NOW(), NOW());
+    (2, '03925', '서울특별시 마포구 월드컵북로 396', '503동 304호', '01087654321', NOW(), NOW());
 
 
 -- Category 테이블에 테스트 데이터 삽입

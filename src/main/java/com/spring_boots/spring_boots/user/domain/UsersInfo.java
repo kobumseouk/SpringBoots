@@ -1,6 +1,7 @@
 package com.spring_boots.spring_boots.user.domain;
 
 import com.spring_boots.spring_boots.common.BaseTimeEntity;
+import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UsersInfoResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -45,5 +46,13 @@ public class UsersInfo extends BaseTimeEntity {
                 .detailedAddress(detailedAddress)
                 .phone(phone)
                 .build();
+    }
+
+    public void updateUserInfo(UserUpdateRequestDto userUpdateRequestDto) {
+        UsersInfoResponseDto userInfoDto = userUpdateRequestDto.getAddress().get(0);
+        this.address = userInfoDto.getAddress();
+        this.streetAddress = userInfoDto.getStreetAddress();
+        this.detailedAddress = userInfoDto.getDetailedAddress();
+        this.phone = userInfoDto.getPhone();
     }
 }

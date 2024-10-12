@@ -119,9 +119,14 @@ public class Users extends BaseTimeEntity implements UserDetails {
 
     public void updateUser(UserUpdateRequestDto userUpdateRequestDto) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        this.password = encoder.encode(userUpdateRequestDto.getPassword());
+
+        //비밀번호 값이 들어있지않다면 변경 하지않는다.
+        if (userUpdateRequestDto.getUpdatePassword() != null) {
+            this.password = encoder.encode(userUpdateRequestDto.getUpdatePassword());
+        }
         this.email = userUpdateRequestDto.getEmail();
     }
+
     public void updateToAdminRole() {
         role = UserRole.ADMIN;
     }
