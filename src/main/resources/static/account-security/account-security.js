@@ -4,9 +4,11 @@ import * as Api from "../../api.js";
 // 요소(element), input 혹은 상수
 const securityTitle = document.querySelector("#securityTitle");
 const userRealIdInput = document.querySelector("#userRealIdInput");
-const userRealIdToggle = document.querySelector("#userRealIdToggle");
+//const userRealIdToggle = document.querySelector("#userRealIdToggle");
 const fullNameInput = document.querySelector("#fullNameInput");
-const fullNameToggle = document.querySelector("#fullNameToggle");
+//const fullNameToggle = document.querySelector("#fullNameToggle");
+const emailInput = document.querySelector("#userEmailInput");
+const emailToggle = document.querySelector("#userEmailToggle");
 const passwordInput = document.querySelector("#passwordInput");
 const passwordToggle = document.querySelector("#passwordToggle");
 const passwordConfirmInput = document.querySelector("#passwordConfirmInput");
@@ -36,7 +38,8 @@ function addAllElements() {
 
 // 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllEvents() {
-  fullNameToggle.addEventListener("change", toggleTargets);
+//  fullNameToggle.addEventListener("change", toggleTargets);
+  emailToggle.addEventListener("change", toggleTargets);
   passwordToggle.addEventListener("change", toggleTargets);
   addressToggle.addEventListener("change", toggleTargets);
   phoneNumberToggle.addEventListener("change", toggleTargets);
@@ -54,11 +57,12 @@ function toggleTargets(e) {
   const isChecked = e.target.checked;
 
   // 어떤 요소들의 토글인지 확인
-  let targets;
+  let targets = []; // 기본적으로 빈 배열로 초기화
 
-  if (toggleId.includes("fullName")) {
-    targets = [fullNameInput];
+  if (toggleId.includes("email")) {
+    targets = [emailInput];
   }
+
   if (toggleId.includes("password")) {
     targets = [passwordInput, passwordConfirmInput];
   }
@@ -75,30 +79,23 @@ function toggleTargets(e) {
   }
 
   // 여러 개의 타겟이 있을 때, 첫 타겟만 focus 시키기 위한 flag
-  let isFocused;
+  let isFocused = false;
 
   // 토글 진행
   for (const target of targets) {
     if (isChecked) {
       target.removeAttribute("disabled");
 
-      !isFocused && target.focus();
-      isFocused = true;
-
-      continue;
+      if (!isFocused) {
+        target.focus();
+        isFocused = true;
+      }
+    } else {
+      target.setAttribute("disabled", ""); // 비활성화
     }
   }
-
-  // 열림 토글인 경우는 여기서 끝
-  if (isChecked) {
-    return;
-  }
-
-  // 닫힘 토글인 경우임. disabled 처리를 위해 다시 한번 for 루프 씀.
-  for (const target of targets) {
-    target.setAttribute("disabled", "");
-  }
 }
+
 
 // 페이지 로드 시 실행
 // 나중에 사용자가 데이터를 변경했는지 확인하기 위해, 전역 변수로 userData 설정
@@ -107,7 +104,7 @@ async function insertUserData() {
   userData = await Api.get("/api/users-info");
 
   // 객체 destructuring
-  const { username, userRealId, email, address, phoneNumber } = userData;
+  const { username, userRealId, email, userInfoList } = userData;
 
   // 서버에서 온 비밀번호는 해쉬 문자열인데, 이를 빈 문자열로 바꿈
   // 나중에 사용자가 비밀번호 변경을 위해 입력했는지 확인하기 위함임.
@@ -115,21 +112,33 @@ async function insertUserData() {
 
   securityTitle.innerText = `회원정보 관리 (${email})`;
   fullNameInput.value = username;
-
-  if (address) {
-    const { postalCode, address1, address2 } = address;
-
-    postalCodeInput.value = postalCode;
-    address1Input.value = address1;
-    address2Input.value = address2;
-  } else {
-    // 나중에 입력 여부를 확인하기 위해 설정함
-    userData.address = { postalCode: "", address1: "", address2: "" };
+  userRealIdInput.value = userRealId;
+  if(email){
+    emailInput.value = email;
   }
 
-  if (phoneNumber) {
-    phoneNumberInput.value = phoneNumber;
+  // userInfoList 배열에서 address와 phoneNumber 추출
+  if (userInfoList && userInfoList.length > 0) {
+    const { address, streetAddress, detailedAddress, phone } = userInfoList[0]; // 첫 번째 객체에서 정보 추출
+
+    if (address) {
+      const { address, streetAddress, detailedAddress, phone } = userInfoList[0]; // 첫 번째 객체에서 정보 추출
+
+      if (address || streetAddress || detailedAddress) {
+        // 주소 정보 설정
+        postalCodeInput.value = address || ""; // address가 없을 경우 빈 문자열
+        address1Input.value = streetAddress || ""; // streetAddress가 없을 경우 빈 문자열
+        address2Input.value = detailedAddress || ""; // detailedAddress가 없을 경우 빈 문자열
+      } else {
+        // 나중에 입력 여부를 확인하기 위해 설정함
+        userData.address = { address: "", streetAddress: "", detailedAddress: "" };
+      }
+
+      if (phone) {
+        phoneNumberInput.value = phone;
+      }
   }
+}
 
   // 크롬 자동완성 삭제함.
   passwordInput.value = "";
@@ -139,8 +148,11 @@ async function insertUserData() {
 }
 
 function disableForm() {
+  emailInput.setAttribute("disabled", "");
+  emailToggle.checked = false;
+  userRealIdInput.setAttribute("disabled","");
   fullNameInput.setAttribute("disabled", "");
-  fullNameToggle.checked = false;
+//  fullNameToggle.checked = false;
   passwordInput.setAttribute("disabled", "");
   passwordToggle.checked = false;
   passwordConfirmInput.setAttribute("disabled", "");
@@ -194,41 +206,43 @@ function searchAddress(e) {
 async function saveUserData(e) {
   e.preventDefault();
 
-  const fullName = fullNameInput.value;
-  const password = passwordInput.value;
+//  const username = fullNameInput.value;
+  const updatePassword = passwordInput.value;
   const passwordConfirm = passwordConfirmInput.value;
   const postalCode = postalCodeInput.value;
   const address1 = address1Input.value;
   const address2 = address2Input.value;
   const phoneNumber = phoneNumberInput.value;
   const currentPassword = currentPasswordInput.value;
+  const email =emailInput.value;
 
-  const isPasswordLong = password.length >= 4;
-  const isPasswordSame = password === passwordConfirm;
-  const isPostalCodeChanged =
-    postalCode !== (userData.address?.postalCode || "");
+  const isPasswordLong = updatePassword.length >= 4;
+  const isPasswordSame = updatePassword === passwordConfirm;
+  const isPostalCodeChanged = postalCode !== (userData.address?.postalCode || "");
   const isAddress2Changed = address2 !== (userData.address?.address2 || "");
   const isAddressChanged = isPostalCodeChanged || isAddress2Changed;
+  const isEmailChanged = email !== userData.email;
 
   // 비밀번호를 새로 작성한 경우
-  if (password && !isPasswordLong) {
+  if (updatePassword && !isPasswordLong) {
     closeModal();
     return alert("비밀번호는 4글자 이상이어야 합니다.");
   }
-  if (password && !isPasswordSame) {
+  if (updatePassword && !isPasswordSame) {
     closeModal();
     return alert("비밀번호와 비밀번호확인이 일치하지 않습니다.");
   }
 
+  // Prepare the data object with currentPassword
   const data = { currentPassword };
 
   // 초기값과 다를 경우 api 요청에 사용할 data 객체에 넣어줌
-  if (fullName !== userData.fullName) {
-    data.fullName = fullName;
-  }
+//  if (username !== userData.username) {
+//    data.username = username;
+//  }
 
-  if (password !== userData.password) {
-    data.password = password;
+  if (updatePassword !== userData.password) {
+    data.updatePassword = updatePassword;
   }
 
   // 주소를 변경했는데, 덜 입력한 경우
@@ -237,19 +251,16 @@ async function saveUserData(e) {
     return alert("주소를 모두 입력해 주세요.");
   }
 
-  if (isAddressChanged) {
-    data.address = {
-      postalCode,
-      address1,
-      address2,
-    };
-  }
+  data.email = email;
 
-  if (phoneNumber && phoneNumber !== userData.phoneNumber) {
-    data.phoneNumber = phoneNumber;
-  }
+  data.address = [{
+    address: postalCode,
+    streetAddress: address1,
+    detailedAddress: address2,
+    phone: phoneNumber,
+  }];
 
-  // 만약 업데이트할 것이 없다면 (디폴트인 currentPassword만 있어서 1개라면), 종료함
+  // 만약 업데이트할 것이 없다면 종료
   const toUpdate = Object.keys(data);
   if (toUpdate.length === 1) {
     disableForm();
@@ -259,9 +270,9 @@ async function saveUserData(e) {
 
   try {
     const { id } = userData;
-    console.log(data)
+    console.log(data);
     // db에 수정된 정보 저장
-    await Api.patch("/users", id, data);
+    await Api.patch("/api/users",1, data);  //첫번째의 유저 정보를 가지고옴
 
     alert("회원정보가 안전하게 저장되었습니다.");
     disableForm();
