@@ -2,6 +2,7 @@ package com.spring_boots.spring_boots.orders.controller;
 
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
 import com.spring_boots.spring_boots.orders.dto.*;
+import com.spring_boots.spring_boots.orders.entity.Orders;
 import com.spring_boots.spring_boots.orders.service.OrdersService;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
@@ -9,7 +10,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
@@ -37,7 +40,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(OrdersApiController.class)
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = true)
 class OrdersApiControllerTest {
 
     @Autowired
@@ -45,12 +49,6 @@ class OrdersApiControllerTest {
 
     @MockBean
     private OrdersService ordersService;
-
-    @MockBean
-    private JpaMetamodelMappingContext jpaMetamodelMappingContext;  // JPA 관련 모킹
-
-    @MockBean
-    private JwtProviderImpl jwtProviderImpl; // JwtProviderImpl 빈 모킹
 
     private Users mockUser;
 
@@ -66,6 +64,7 @@ class OrdersApiControllerTest {
                 .build();
 
         // SecurityContextHolder에 Mock된 인증 정보를 설정
+        // 관리자 테스트 경우 ROLE_ADMIN으로 변경해야함
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(mockUser, null,
                         List.of(new SimpleGrantedAuthority("ROLE_USER")))
@@ -76,7 +75,17 @@ class OrdersApiControllerTest {
         List<OrderDto.OrderItemDto> mockItems = List.of(mockOrderItem);
         OrderDto mockOrder = new OrderDto(1L, LocalDateTime.now(), 20000, "주문완료", "123 Main St", 5000, 2, mockItems);
 
+        // 주문 생성시 반환되는 Mock 객체 설정
+        Orders createdOrder = Orders.builder()
+                .ordersId(1L)
+                .ordersTotalPrice(30000)
+                .orderStatus("주문완료")
+                .build();
+
+        // OrdersService에 대한 Mock 설정
         Mockito.when(ordersService.getUserOrders(1L)).thenReturn(List.of(mockOrder));
+        Mockito.when(ordersService.createOrder(any(OrderRequestDto.class), any(Users.class)))
+                .thenReturn(createdOrder);  // 주문 생성시 Orders 반환
     }
 
     // 사용자 주문 목록 조회 테스트
@@ -160,6 +169,46 @@ class OrdersApiControllerTest {
                 .andExpect(jsonPath("$.status").value("주문이 성공적으로 수정되었습니다."))
                 .andReturn();
 
+        String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+        String prettyJson = writer.writeValueAsString(mapper.readTree(content));
+
+        System.out.println("정렬된 응답 본문: " + prettyJson);
+    }
+
+    // 사용자 주문 생성 테스트
+    @Test
+    @WithMockUser(username = "user", roles = {"USER"})
+    void createOrder() throws Exception {
+        // OrderRequestDto 생성
+        OrderRequestDto orderRequestDto = new OrderRequestDto();
+        orderRequestDto.setRecipientName("홍길동");
+        orderRequestDto.setRecipientContact("010-1234-5678");
+        orderRequestDto.setShippingAddress("서울특별시 강남구");
+        orderRequestDto.setDeliveryMessage("빠른 배송 부탁드립니다.");
+
+        OrderRequestDto.OrderItemDto orderItemDto1 = new OrderRequestDto.OrderItemDto();
+        orderItemDto1.setItemId(1L);
+        orderItemDto1.setItemPrice(10000);
+        orderItemDto1.setItemQuantity(2);
+        orderRequestDto.setItems(List.of(orderItemDto1));
+
+        // JSON 변환
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestJson = objectMapper.writeValueAsString(orderRequestDto);
+
+        // MockMvc로 API 호출 및 결과 검증
+        MvcResult result = mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson)
+                        .with(csrf()))  // CSRF 토큰 추가
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.ordersId").value(1L))
+                .andExpect(jsonPath("$.status").value("주문이 성공적으로 처리되었습니다."))
+                .andReturn();
+
+        // 응답 본문을 JSON으로 변환하여 출력
         String content = result.getResponse().getContentAsString(StandardCharsets.UTF_8);
         ObjectMapper mapper = new ObjectMapper();
         ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
