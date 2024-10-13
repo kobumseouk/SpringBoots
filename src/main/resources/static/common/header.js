@@ -94,7 +94,7 @@ async function updateUserMenu() {
       }
       menuHTML += `
         <a class="navbar-item" href="/mypage">마이 페이지</a>
-        <a class="navbar-item" href="/cart">장바구니</a>
+        <a class="navbar-item" href="/cart/cart.html">장바구니</a>
         <a class="navbar-item" href="#" id="logout">로그아웃</a> <!-- 로그아웃 링크를 id로 지정 -->
       `;
     } else {
