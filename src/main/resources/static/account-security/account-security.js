@@ -100,8 +100,10 @@ function toggleTargets(e) {
 // 페이지 로드 시 실행
 // 나중에 사용자가 데이터를 변경했는지 확인하기 위해, 전역 변수로 userData 설정
 let userData;
+let userId; //userId 정보 갖고오기(Pathvariable 로 유저정보 엔티티를 가져오기 위해 설정)
 async function insertUserData() {
   userData = await Api.get("/api/users-info");
+  userId= userData.userId;  //userId 정보 추출하기
 
   // 객체 destructuring
   const { username, userRealId, email, userInfoList } = userData;
@@ -272,7 +274,7 @@ async function saveUserData(e) {
     const { id } = userData;
     console.log(data);
     // db에 수정된 정보 저장
-    await Api.patch("/api/users",1, data);  //첫번째의 유저 정보를 가지고옴
+    await Api.patch("/api/users",userId, data);  //첫번째의 유저 정보를 가지고옴
 
     alert("회원정보가 안전하게 저장되었습니다.");
     disableForm();
