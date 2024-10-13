@@ -37,8 +37,6 @@ public class Category extends BaseTimeEntity {
   @Column(name = "image_url")
   private String imageUrl;
 
-  @OneToMany(mappedBy = "category")
-  private List<Event> events;  // 이 카테고리에 속한 이벤트 목록
 
   // createdAt과 updatedAt은 BaseTimeEntity  상속
 
