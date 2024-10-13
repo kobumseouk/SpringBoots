@@ -22,7 +22,7 @@ public class EventDetailDto {
   private LocalDate endDate;
   private Boolean isActive;
 
-  // 독립적으로 사용할 것 같지만 일단은 냅둠
+  // TODO: 독립적 사용의 경우 제거
   private String categoryName;
 
 }
