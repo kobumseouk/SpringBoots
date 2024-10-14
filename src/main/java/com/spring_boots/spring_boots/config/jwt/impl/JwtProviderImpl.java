@@ -145,16 +145,23 @@ public class JwtProviderImpl{
         }
 
         // 리프레시 토큰에서 사용자 정보를 추출
-        Claims claims = extractAllClaims(refreshToken);
-        String userId = claims.getSubject(); // 사용자 ID 또는 고유 식별자
+        Claims claims = extractAllClaims(refreshToken); //리프레시토큰에 있는 모든 정보를 추출
+        String userId = claims.getSubject(); //리프레시토큰에 있는 사용자 ID 또는 고유 식별자
+        String userRealId = claims.get("userRealId", String.class); // 사용자 실제 ID
+        Long accountId = claims.get("accountId", Long.class); // 계정 ID
+        String role = claims.get("role", String.class); // 사용자 역할
 
         // 새로운 액세스 토큰 생성
         return Jwts.builder()
-                .setSubject(userId)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + accessExpires))
-                .signWith(SignatureAlgorithm.HS256, secret)
-                .compact();
+                .setSubject(userId) // 사용자 ID 설정
+                .claim("userRealId", userRealId) // 실제 사용자 ID 설정
+                .claim("accountId", accountId) // 계정 ID 설정
+                .claim("role", role) // 사용자 역할 설정
+                .claim("type", "access_token") // 토큰 타입 설정
+                .setIssuedAt(new Date(System.currentTimeMillis())) // 발급 시간 설정
+                .setExpiration(new Date(System.currentTimeMillis() + accessExpires)) // 만료 시간 설정
+                .signWith(SignatureAlgorithm.HS256, secret) // 서명 알고리즘 및 비밀키 설정
+                .compact(); // JWT 생성
     }
 
     public boolean validateAdminToken(String accessToken) {
