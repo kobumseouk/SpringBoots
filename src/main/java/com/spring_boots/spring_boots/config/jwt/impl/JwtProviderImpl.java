@@ -145,15 +145,41 @@ public class JwtProviderImpl{
         }
 
         // 리프레시 토큰에서 사용자 정보를 추출
-        Claims claims = extractAllClaims(refreshToken);
-        String userId = claims.getSubject(); // 사용자 ID 또는 고유 식별자
+        Claims claims = extractAllClaims(refreshToken); //리프레시토큰에 있는 모든 정보를 추출
+        String userId = claims.getSubject(); //리프레시토큰에 있는 사용자 ID 또는 고유 식별자
+        String userRealId = claims.get("userRealId", String.class); // 사용자 실제 ID
+        Long accountId = claims.get("accountId", Long.class); // 계정 ID
+        String role = claims.get("role", String.class); // 사용자 역할
 
         // 새로운 액세스 토큰 생성
         return Jwts.builder()
-                .setSubject(userId)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + accessExpires))
-                .signWith(SignatureAlgorithm.HS256, secret)
-                .compact();
+                .setSubject(userId) // 사용자 ID 설정
+                .claim("userRealId", userRealId) // 실제 사용자 ID 설정
+                .claim("accountId", accountId) // 계정 ID 설정
+                .claim("role", role) // 사용자 역할 설정
+                .claim("type", "access_token") // 토큰 타입 설정
+                .setIssuedAt(new Date(System.currentTimeMillis())) // 발급 시간 설정
+                .setExpiration(new Date(System.currentTimeMillis() + accessExpires)) // 만료 시간 설정
+                .signWith(SignatureAlgorithm.HS256, secret) // 서명 알고리즘 및 비밀키 설정
+                .compact(); // JWT 생성
+    }
+
+    public boolean validateAdminToken(String accessToken) {
+        try {
+            // JWT에서 Claims(토큰에 포함된 정보) 파싱
+            Claims claims = extractAllClaims(accessToken);
+
+            // Claims에서 사용자 역할 정보 추출 (예: "ROLE_ADMIN"인지 확인)
+            String role = claims.get("role", String.class);
+
+            // 사용자 역할이 관리자("ROLE_ADMIN")이면 true 반환
+            return "ADMIN".equals(role);
+        } catch (SignatureException e) {
+            // 서명이 유효하지 않은 경우 (토큰이 변조되었을 때)
+            throw new RuntimeException("Invalid JWT signature");
+        } catch (Exception e) {
+            // 그 외의 오류 (만료된 토큰 등)
+            throw new RuntimeException("Token validation error: " + e.getMessage());
+        }
     }
 }
