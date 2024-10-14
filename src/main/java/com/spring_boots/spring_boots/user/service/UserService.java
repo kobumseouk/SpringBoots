@@ -5,6 +5,7 @@ import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.domain.UsersInfo;
+import com.spring_boots.spring_boots.user.dto.AdminCodeRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.*;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.repository.UserInfoRepository;
@@ -154,18 +155,8 @@ public class UserService {
     }
 
     @Transactional
-    public boolean grantAdminToken(Users authUser, AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
-        //임의 토큰 만들기
-        String tempToken = bCryptPasswordEncoder.encode("admin");
-        String adminToken = adminGrantTokenRequestDto.getAdminToken();
-        if (bCryptPasswordEncoder.matches(adminToken, tempToken)) {
-            authUser.updateToAdminRole();
-            return true;
-        } else {
-            log.info("잘못된 관리자 토큰");
-            return false;
-        }
-
+    public void grantRole(Users authUser, AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
+        authUser.updateToRole(adminGrantTokenRequestDto);
     }
 
     public boolean isGrantAdmin(Users authUser) {
@@ -178,5 +169,18 @@ public class UserService {
 
     public boolean validateAdminToken(String accessToken) {
         return jwtProvider.validateAdminToken(accessToken);
+    }
+
+    //관리자코드체크
+    public boolean checkAdminCode(AdminCodeRequestDto adminCodeDto) {
+        //임의 토큰 만들기
+        String tempAdminCode = bCryptPasswordEncoder.encode("admin");
+        String adminCode = adminCodeDto.getAdminCode();
+        if (bCryptPasswordEncoder.matches(adminCode, tempAdminCode)) {
+            return true;
+        } else {
+            log.info("잘못된 관리자 토큰");
+            return false;
+        }
     }
 }
