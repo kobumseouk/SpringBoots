@@ -171,4 +171,8 @@ public class UserService {
     public boolean validateToken(String accessToken) {
         return jwtProvider.validateToken(accessToken);
     }
+
+    public boolean validateAdminToken(String accessToken) {
+        return jwtProvider.validateAdminToken(accessToken);
+    }
 }
