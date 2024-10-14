@@ -9,13 +9,16 @@ import com.spring_boots.spring_boots.category.entity.Event;
 import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.category.repository.EventRepository;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
+import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,20 +27,26 @@ import java.util.stream.Collectors;
 public class EventService {
 
   private final EventRepository eventRepository;
-  private final CategoryRepository categoryRepository;
+  private final S3BucketService s3BucketService;
   private final EventMapper eventMapper;
 
 
   // 새로운 이벤트를 생성하는 메서드
   @Transactional
-  public EventDetailDto createEvent(EventRequestDto eventRequestDto) {
-    Event event = eventMapper.eventRequestDtoToEvent(eventRequestDto);
-    // 카테고리 id가 있는 경우 id를 찾아 이벤트에 설정, 없으면 ResourceNotFoundException 발생
-    if (eventRequestDto.getCategoryId() != null) {
-        Category category = categoryRepository.findById(eventRequestDto.getCategoryId())
-            .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + eventRequestDto.getCategoryId()));
-        event.setCategory(category);
+  public EventDetailDto createEvent(EventRequestDto eventRequestDto, MultipartFile thumbnailFile, MultipartFile contentFile) throws IOException {
+    String thumbnailImageUrl = null;
+    String contentImageUrl = null;
+
+    if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+      thumbnailImageUrl = s3BucketService.uploadFile(thumbnailFile);
     }
+    if (contentFile != null && !contentFile.isEmpty()) {
+      contentImageUrl = s3BucketService.uploadFile(contentFile);
+    }
+
+    Event event = eventMapper.eventRequestDtoToEvent(eventRequestDto);
+    event.setThumbnailImageUrl(thumbnailImageUrl);
+    event.setContentImageUrl(contentImageUrl);
     Event savedEvent = eventRepository.save(event);
     return eventMapper.eventToEventDetailDto(savedEvent);
   }
@@ -78,20 +87,27 @@ public class EventService {
 
   // 특정 이벤트를 수정하는 메서드
   @Transactional
-  public EventDetailDto updateEvent(Long eventId, EventRequestDto eventUpdateDto) {
-    // 이벤트를 찾아 수정, 없으면 ResourceNotFoundException 발생
+  public EventDetailDto updateEvent(Long eventId, EventRequestDto eventUpdateDto, MultipartFile thumbnailFile, MultipartFile contentFile) throws IOException {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new ResourceNotFoundException("업데이트할 이벤트를 찾을 수 없습니다: " + eventId));
-    eventMapper.updateEventFromDto(eventUpdateDto, event);
-    // 카테고리 ID가 제공된 경우 카테고리 업데이트
-    if (eventUpdateDto.getCategoryId() != null) {
-      Category category = categoryRepository.findById(eventUpdateDto.getCategoryId())
-          .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + eventUpdateDto.getCategoryId()));
-      event.setCategory(category);
-    } else {
-      event.removeCategory();
+
+    if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+      String newThumbnailImageUrl = s3BucketService.uploadFile(thumbnailFile);
+      if (event.getThumbnailImageUrl() != null) {
+        s3BucketService.deleteFile(event.getThumbnailImageUrl().substring(event.getThumbnailImageUrl().lastIndexOf("/") + 1));
+      }
+      event.setThumbnailImageUrl(newThumbnailImageUrl);
     }
 
+    if (contentFile != null && !contentFile.isEmpty()) {
+      String newContentImageUrl = s3BucketService.uploadFile(contentFile);
+      if (event.getContentImageUrl() != null) {
+        s3BucketService.deleteFile(event.getContentImageUrl().substring(event.getContentImageUrl().lastIndexOf("/") + 1));
+      }
+      event.setContentImageUrl(newContentImageUrl);
+    }
+
+    eventMapper.updateEventFromDto(eventUpdateDto, event);
     Event updatedEvent = eventRepository.save(event);
     return eventMapper.eventToEventDetailDto(updatedEvent);
   }
@@ -102,7 +118,25 @@ public class EventService {
     // 이벤트가 존재하는지 확인 후 삭제, 없으면 ResourceNotFoundException 발생
     Event event = eventRepository.findById(eventId)
             .orElseThrow(() -> new ResourceNotFoundException("삭제할 이벤트를 찾을 수 없습니다: " + eventId));
+
+    // S3에서 썸네일 이미지 삭제
+    if (event.getThumbnailImageUrl() != null) {
+      String thumbnailKey = extractKeyFromUrl(event.getThumbnailImageUrl());
+      s3BucketService.deleteFile(thumbnailKey);
+    }
+
+    // S3에서 컨텐츠 이미지 삭제
+    if (event.getContentImageUrl() != null) {
+      String contentKey = extractKeyFromUrl(event.getContentImageUrl());
+      s3BucketService.deleteFile(contentKey);
+    }
+
     eventRepository.deleteById(eventId);
+  }
+
+  // URL에서 S3 키를 추출
+  private String extractKeyFromUrl(String url) {
+    return url.substring(url.lastIndexOf("/") + 1);
   }
 
 }

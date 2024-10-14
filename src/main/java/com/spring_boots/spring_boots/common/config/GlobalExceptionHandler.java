@@ -3,15 +3,23 @@ package com.spring_boots.spring_boots.common.config;
 import com.spring_boots.spring_boots.common.config.error.BadRequestException;
 import com.spring_boots.spring_boots.common.config.error.ErrorResponseDto;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
-import com.spring_boots.spring_boots.common.config.error.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
@@ -20,10 +28,18 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
   }
 
-  @ExceptionHandler(UnauthorizedException.class)
-  public ResponseEntity<ErrorResponseDto> handleUnauthorizedException(UnauthorizedException ex) {
-    ErrorResponseDto errorResponse = new ErrorResponseDto("권한_없음", ex.getMessage());
+  // 인증 예외 처리
+  @ExceptionHandler(AuthenticationException.class)
+  public ResponseEntity<ErrorResponseDto> handleAuthenticationException(AuthenticationException ex) {
+    ErrorResponseDto errorResponse = new ErrorResponseDto("인증_실패", "인증에 실패했습니다.");
     return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+  }
+
+  // 권한 예외 처리
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(AccessDeniedException ex) {
+    ErrorResponseDto errorResponse = new ErrorResponseDto("접근_거부", "접근 권한이 없습니다.");
+    return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
   }
 
   @ExceptionHandler(BadRequestException.class)
@@ -36,6 +52,32 @@ public class GlobalExceptionHandler {
   public ResponseEntity<ErrorResponseDto> handleGeneralException(Exception ex) {
     log.error("Unexpected error occurred", ex);
     ErrorResponseDto errorResponse = new ErrorResponseDto("서버_오류", "서버에서 오류가 발생했습니다.");
+    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  // 유효성 검사 예외 처리
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponseDto> handleValidationExceptions(
+      MethodArgumentNotValidException ex) {
+    Map<String, String> errors = new HashMap<>();
+    ex.getBindingResult().getAllErrors().forEach((error) -> {
+      String fieldName = ((FieldError) error).getField();
+      String errorMessage = error.getDefaultMessage();
+      errors.put(fieldName, errorMessage);
+    });
+
+    String errorMessage = errors.entrySet().stream()
+        .map(entry -> entry.getKey() + ": " + entry.getValue())
+        .collect(Collectors.joining(", "));
+
+    ErrorResponseDto errorResponse = new ErrorResponseDto("유효성_검사_실패", errorMessage);
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(IOException.class)
+  public ResponseEntity<ErrorResponseDto> handleIOException(IOException ex) {
+    log.error("IOException occurred", ex);
+    ErrorResponseDto errorResponse = new ErrorResponseDto("파일_처리_오류", "파일 처리 중 오류가 발생했습니다.");
     return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 

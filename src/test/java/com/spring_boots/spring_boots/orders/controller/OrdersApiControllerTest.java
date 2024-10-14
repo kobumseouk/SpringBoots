@@ -98,8 +98,8 @@ class OrdersApiControllerTest {
                 .andExpect(jsonPath("$[0].ordersId").value(1L))
                 .andExpect(jsonPath("$[0].ordersTotalPrice").value(20000))
                 .andExpect(jsonPath("$[0].items[0].itemName").value("Test Item"))
-                .andExpect(jsonPath("$[0].items[0].orderitemsQuantity").value(2))
-                .andExpect(jsonPath("$[0].items[0].orderitemsTotalPrice").value(10000))
+                .andExpect(jsonPath("$[0].items[0].orderItemsQuantity").value(2))
+                .andExpect(jsonPath("$[0].items[0].orderItemsTotalPrice").value(10000))
                 .andReturn();
 
         // 응답 본문을 JSON으로 변환하여 예쁘게 출력
@@ -136,8 +136,8 @@ class OrdersApiControllerTest {
                 .andExpect(jsonPath("$.recipientName").value("엘리스"))
                 .andExpect(jsonPath("$.recipientContact").value("010-1234-5678"))
                 .andExpect(jsonPath("$.items[0].itemName").value("Test Item"))
-                .andExpect(jsonPath("$.items[0].orderitemsQuantity").value(2))
-                .andExpect(jsonPath("$.items[0].orderitemsTotalPrice").value(10000))
+                .andExpect(jsonPath("$.items[0].orderItemsQuantity").value(2))
+                .andExpect(jsonPath("$.items[0].orderItemsTotalPrice").value(10000))
                 .andExpect(jsonPath("$.items[0].itemsSize").value(42))
                 .andExpect(jsonPath("$.items[0].itemImage").value("http://example.com/image.png"))
                 .andReturn();

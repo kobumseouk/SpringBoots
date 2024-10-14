@@ -58,13 +58,13 @@ function updateBreadcrumb(theme, category) {
   secondBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/1`;
 
   // category 객체가 존재하고 배치 순서가 '1'이 아닌 경우에만 third-breadcrumb 표시
-  if (category && category.displayOrder !== '1') {
+  if (category?.displayOrder !== '1') {  // 옵셔널체이닝 사용
     thirdBreadcrumb.querySelector('a').textContent = category.categoryName;
     thirdBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/${category.id}`;
     thirdBreadcrumb.classList.add('is-active')
-  } else {
-    thirdBreadcrumb.style.display = 'none';
+    return;
   }
+  thirdBreadcrumb.style.display = 'none';
 }
 
 // 카테고리별 버튼 생성

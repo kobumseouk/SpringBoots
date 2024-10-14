@@ -7,9 +7,12 @@ const adminCount = document.querySelector("#adminCount");
 const usersContainer = document.querySelector("#usersContainer");
 const modal = document.querySelector("#modal");
 const modalBackground = document.querySelector("#modalBackground");
-const modalCloseButton = document.querySelector("#modalCloseButton");
 const deleteCompleteButton = document.querySelector("#deleteCompleteButton");
 const deleteCancelButton = document.querySelector("#deleteCancelButton");
+
+// 모달 닫기 버튼 (각각 다른 모달 닫기 버튼)
+const adminCodeModalCloseButton = document.getElementById('adminCodeModalCloseButton');
+const deleteModalCloseButton = document.getElementById('deleteModalCloseButton');
 
 checkAdmin();
 addAllElements();
@@ -24,7 +27,6 @@ function addAllElements() {
 // 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllEvents() {
   modalBackground.addEventListener("click", closeModal);
-  modalCloseButton.addEventListener("click", closeModal);
   document.addEventListener("keydown", keyDownCloseModal);
   deleteCompleteButton.addEventListener("click", deleteUserData);
   deleteCancelButton.addEventListener("click", cancelDelete);
@@ -46,7 +48,7 @@ async function insertUsers() {
     const date = createdAt;
     const id = userId;
     const fullName = username;
-    const roles =role;
+    const roles = role;
 
     summary.usersCount += 1;
 
@@ -63,17 +65,17 @@ async function insertUsers() {
           <div class="column is-2">${email}</div>
           <div class="column is-2">${fullName}</div>
           <div class="column is-2">
-            <div class="select" >
+            <div class="select">
               <select id="roleSelectBox-${id}">
-                <option 
+                <option
                   class="has-background-link-light has-text-link"
-                  ${roles.includes('ADMIN') === false ? "selected" : ""} 
+                  ${roles.includes('ADMIN') === false ? "selected" : ""}
                   value="USER">
                   일반사용자
                 </option>
-                <option 
+                <option
                   class="has-background-danger-light has-text-danger"
-                  ${roles.includes('ADMIN') === true ? "selected" : ""} 
+                  ${roles.includes('ADMIN') === true ? "selected" : ""}
                   value="ADMIN">
                   관리자
                 </option>
@@ -81,7 +83,7 @@ async function insertUsers() {
             </div>
           </div>
           <div class="column is-2">
-            <button class="button" id="deleteButton-${id}" >회원정보 삭제</button>
+            <button class="button" id="deleteButton-${id}">회원정보 삭제</button>
           </div>
         </div>
       `
@@ -91,27 +93,22 @@ async function insertUsers() {
     const roleSelectBox = document.querySelector(`#roleSelectBox-${id}`);
     const deleteButton = document.querySelector(`#deleteButton-${id}`);
 
-    // 권한관리 박스에, 선택되어 있는 옵션의 배경색 반영
-    const index = roleSelectBox.selectedIndex;
-    roleSelectBox.className = roleSelectBox[index].className;
+    // 권한 변경 시 모달 띄우기
+    roleSelectBox.addEventListener("change", () => {
+      // 선택된 userId와 roleSelectBox를 전역 변수에 할당
+      selectedUserId = id;
+      selectedRoleSelectBox = roleSelectBox;
 
-    // 이벤트 - 권한관리 박스 수정 시 바로 db 반영
-    roleSelectBox.addEventListener("change", async () => {
-      const newRole = roleSelectBox.value;
-      const data = { roles: newRole };
-
-      // 선택한 옵션의 배경색 반영
-      const index = roleSelectBox.selectedIndex;
-      roleSelectBox.className = roleSelectBox[index].className;
-
-      // api 요청
-      await Api.patch("/users", id, data);
-    });
-
-    // 이벤트 - 삭제버튼 클릭 시 Modal 창 띄우고, 동시에, 전역변수에 해당 주문의 id 할당
-    deleteButton.addEventListener("click", () => {
-      userIdToDelete = id;
-      openModal();
+      const selectedOption = selectedRoleSelectBox.options[selectedRoleSelectBox.selectedIndex];
+      if (selectedOption.value === "ADMIN") {
+        selectedRoleSelectBox.classList.add("has-background-danger-light", "has-text-danger");
+        selectedRoleSelectBox.classList.remove("has-background-link-light", "has-text-link");
+      } else {
+        selectedRoleSelectBox.classList.add("has-background-link-light", "has-text-link");
+        selectedRoleSelectBox.classList.remove("has-background-danger-light", "has-text-danger");
+      }
+      // 모달 띄우기
+      adminCodeModal.classList.add("is-active");
     });
   }
 
@@ -120,12 +117,58 @@ async function insertUsers() {
   adminCount.innerText = addCommas(summary.adminCount);
 }
 
+// 모달 요소 선택 (루프 밖에서 한 번만 선택)
+const adminCodeModal = document.getElementById('adminCodeModal');
+const adminCodeInput = document.getElementById('adminCodeInput');
+const adminCodeConfirmButton = document.getElementById('adminCodeConfirmButton');
+const adminCodeCancelButton = document.getElementById('adminCodeCancelButton');
+
+// 현재 선택된 user id를 저장할 변수
+let selectedUserId = null;
+let selectedRoleSelectBox = null;
+
+// adminCodeConfirmButton을 한 번만 등록
+adminCodeConfirmButton.addEventListener("click", async () => {
+  const adminCode = adminCodeInput.value;
+  const response = await Api.post("/api/users/grant", adminCode);
+
+  // 관리자 코드 확인
+  if (response.message === 'success') {
+    const newRole = selectedRoleSelectBox.value;
+    const data = { roles: newRole };
+
+    // 선택한 옵션의 배경색 반영
+    const index = selectedRoleSelectBox.selectedIndex;
+    selectedRoleSelectBox.className = selectedRoleSelectBox[index].className;
+
+    // API 요청 (권한 변경)
+    await Api.patch("/api/admin/grant",selectedUserId, data);
+
+    // 모달 닫기
+    adminCodeModal.classList.remove("is-active");
+  } else {
+    alert("관리자 코드가 올바르지 않습니다.");
+  }
+});
+
+adminCodeCancelButton.addEventListener("click", () => {
+  adminCodeModal.classList.remove("is-active");
+});
+adminCodeModalCloseButton.addEventListener("click", () => {
+  adminCodeModal.classList.remove("is-active");
+});
+
+// 삭제 모달 닫기 버튼 이벤트 리스너
+deleteModalCloseButton.addEventListener("click", () => {
+  modal.classList.remove("is-active");
+});
+
 // db에서 회원정보 삭제
 async function deleteUserData(e) {
   e.preventDefault();
 
   try {
-    await Api.delete("/users", userIdToDelete);
+    await Api.delete(`/api/users/${userIdToDelete}`);
 
     // 삭제 성공
     alert("회원 정보가 삭제되었습니다.");

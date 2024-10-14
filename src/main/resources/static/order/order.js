@@ -13,6 +13,37 @@ document.addEventListener("DOMContentLoaded", async function() {
     } catch (error) {
         console.error("헤더를 로드할 수 없습니다:", error);
     }
+
+    try {
+        // 로그인된 사용자 정보 불러오기
+        const response = await fetch("/api/users-info");
+        if (!response.ok) {
+            throw new Error("사용자 정보를 불러오는 도중 오류가 발생했습니다.");
+        }
+        const userData = await response.json();
+
+        // 사용자 정보로 주문자 정보 자동 채우기
+        document.getElementById('buyerName').value = userData.username;
+        document.getElementById('buyerContact').value = userData.userInfoList[0].phone;
+
+        // 주문자 정보 동일 체크박스 클릭 시 수신자 정보로 복사
+        document.getElementById('sameAsBuyer').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('recipientName').value = userData.username;
+                document.getElementById('recipientContact').value = userData.userInfoList[0].phone;
+                document.getElementById('shippingAddress').value = userData.userInfoList[0].streetAddress;
+                document.getElementById('shippingAddress2').value = userData.userInfoList[0].detailedAddress;
+            } else {
+                document.getElementById('recipientName').value = '';
+                document.getElementById('recipientContact').value = '';
+                document.getElementById('shippingAddress').value = '';
+                document.getElementById('shippingAddress2').value = '';
+            }
+        });
+
+    } catch (error) {
+        console.error("사용자 정보를 로드할 수 없습니다:", error);
+    }
 });
 
 // 로컬 스토리지에서 장바구니 정보 로드 후 결제 정보 출력
@@ -156,7 +187,7 @@ function openDaumPostcode() {
     new daum.Postcode({
         oncomplete: function(data) {
             // 검색 결과에서 선택된 주소를 가져와서 입력
-            document.getElementById("edit-shipping-address").value = data.address;
+            document.getElementById("shippingAddress").value = data.address;
         }
     }).open();
 }

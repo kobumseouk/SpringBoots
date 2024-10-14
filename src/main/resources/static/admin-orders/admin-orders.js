@@ -55,7 +55,7 @@ async function insertOrders() {
   for (const order of orders) {
     const { ordersId, ordersTotalPrice, createdAt, orderStatus, items } = order;
     const date = new Date(createdAt).toLocaleDateString();
-    const summaryTitle = items.map(item => `${item.itemName}/${item.orderitemsQuantity}`).join(", ");
+    const summaryTitle = items.map(item => `${item.itemName}/${item.orderItemsQuantity}`).join(", ");
 
     summary.ordersCount += 1;
 

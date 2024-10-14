@@ -7,6 +7,7 @@ import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.item.entity.Item;
 import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.orders.repository.OrderItemsRepository;
+import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,7 +16,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,13 +30,20 @@ public class CategoryService {
   private final CategoryRepository categoryRepository;
   private final ItemRepository itemRepository;
   private final OrderItemsRepository orderItemsRepository;
+  private final S3BucketService s3BucketService;
   private final CategoryMapper categoryMapper;
 
 
   // 새 카테고리 생성
   @Transactional
-  public CategoryResponseDto createCategory(CategoryRequestDto requestDto) {
+  public CategoryResponseDto createCategory(CategoryRequestDto requestDto, MultipartFile file) throws IOException {
+    String imageUrl = null;
+    if (file != null && !file.isEmpty()) {
+      imageUrl = s3BucketService.uploadFile(file);
+    }
+
     Category category = categoryMapper.categoryRequestDtoToCategory(requestDto);
+    category.setImageUrl(imageUrl);
 
     // 같은 테마의 카테고리들 중 displayOrder가 같거나 큰 카테고리들의 순서를 1씩 증가
     categoryRepository.incrementDisplayOrderForSubsequentCategories(
@@ -41,17 +51,26 @@ public class CategoryService {
         requestDto.getDisplayOrder()
     );
 
-    Category updatedCategory = categoryRepository.save(category);
+    Category savedCategory = categoryRepository.save(category);
 
-    return categoryMapper.categoryToCategoryResponseDto(updatedCategory);
+    return categoryMapper.categoryToCategoryResponseDto(savedCategory);
   }
 
 
   // 카테고리 수정
   @Transactional
-  public CategoryResponseDto updateCategory(Long categoryId, CategoryRequestDto requestDto) {
+  public CategoryResponseDto updateCategory(Long categoryId, CategoryRequestDto requestDto, MultipartFile file) throws IOException {
     Category category = categoryRepository.findById(categoryId)
         .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
+
+    if (file != null && !file.isEmpty()) {
+      String newImageUrl = s3BucketService.uploadFile(file);
+      // 기존 이미지가 있다면 S3에서 삭제
+      if (category.getImageUrl() != null) {
+        s3BucketService.deleteFile(category.getImageUrl().substring(category.getImageUrl().lastIndexOf("/") + 1));
+      }
+      category.setImageUrl(newImageUrl);
+    }
 
     int oldDisplayOrder = category.getDisplayOrder();
     int newDisplayOrder = requestDto.getDisplayOrder();
@@ -85,29 +104,37 @@ public class CategoryService {
 
   // 카테고리 삭제
   @Transactional
-  public void deleteCategory(Long categoryId) {
+  public void deleteCategory(Long categoryId) throws IOException {
     Category category = categoryRepository.findById(categoryId)
         .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
 
-    /*// 카테고리와 연관된 모든 아이템의 카테고리를 null로 설정 -> item의 category 필드의 nullable = false 문제
-    itemRepository.findAllByCategoryId(categoryId)
-        .forEach(item -> {
-          item.setCategory(null);
-          itemRepository.save(item);  // 변경사항을 저장
-        });*/
+    // 카테고리 이미지가 있다면 S3에서 삭제
+    if (category.getImageUrl() != null) {
+      String imageKey = extractKeyFromUrl(category.getImageUrl());
+      s3BucketService.deleteFile(imageKey);
+    }
+
     // 카테고리에 속한 모든 아이템 조회
     List<Item> items = itemRepository.findAllByCategoryId(categoryId);
-
     for (Item item : items) {
+      // 아이템 이미지가 있다면 S3에서 삭제
+      if (item.getImageUrl() != null) {
+        String imageKey = extractKeyFromUrl(item.getImageUrl());
+        s3BucketService.deleteFile(imageKey);
+      }
       // 각 아이템과 연관된 주문 아이템 삭제
       orderItemsRepository.deleteAllByItem_ItemId(item.getItemId());
-
       // 아이템 삭제
       itemRepository.delete(item);
     }
 
     // 카테고리 삭제
     categoryRepository.delete(category);
+  }
+
+  // URL에서 S3 키를 추출
+  private String extractKeyFromUrl(String url) {
+    return url.substring(url.lastIndexOf("/") + 1);
   }
 
 
