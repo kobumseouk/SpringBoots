@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,7 +48,7 @@ public class ItemRestControllerTest {
         // 필드 설정
         ResponseItemDto responseItemDto = new ResponseItemDto();
 
-        when(itemRestService.createItem(any(CreateItemDto.class))).thenReturn(responseItemDto);
+        when(itemRestService.createItem(any(CreateItemDto.class), any(MultipartFile.class))).thenReturn(responseItemDto);
 
         mockMvc.perform(post("/api/admin/items")
                 .contentType(MediaType.APPLICATION_JSON)
