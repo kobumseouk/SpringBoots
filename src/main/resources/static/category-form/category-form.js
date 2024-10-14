@@ -141,16 +141,14 @@ async function handleSubmit(e) {
   }
 
   try {
-    const formData = new FormData();
-
     // JSON 데이터 추가
-    const categoryData = JSON.stringify({
+    const formData = new FormData();
+    formData.append('category', new Blob([JSON.stringify({
       categoryName: title,
       categoryContent: description,
       categoryThema: theme,
       displayOrder: displayOrder
-    });
-    formData.append('category', new Blob([categoryData], {type: 'application/json'}));
+    })], {type: 'application/json'}));
 
     // 이미지 파일 추가
     if (image) {

@@ -45,7 +45,7 @@ public class AdminCategoryApiController {
 
   // 관리자 - 카테고리 정보 수정
   @PreAuthorize("hasRole('ADMIN')")
-  @PutMapping("/{category_id}")
+  @PatchMapping("/{category_id}")
   public ResponseEntity<CategoryResponseDto> updateCategory(
       @PathVariable("category_id") Long categoryId,
       @Valid @RequestPart("category") CategoryRequestDto requestDto,

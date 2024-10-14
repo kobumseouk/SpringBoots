@@ -171,24 +171,34 @@ async function postFormData(endpoint, formData) {
   }
 }
 
-async function patchFormData(endpoint, params = "", formData) {
-  const apiUrl = params ? `${endpoint}/${params}` : endpoint;
+async function patchFormData(endpoint, formData) {
+  const apiUrl = endpoint;
   console.log(`%cPATCH FormData 요청: ${apiUrl}`, "color: #059c4b;");
 
-  const res = await fetch(apiUrl, {
-    method: "PATCH",
-    body: formData,
-    credentials: "include",
-  });
+  try {
+    const res = await fetch(apiUrl, {
+      method: "PATCH",
+      body: formData,
+      credentials: "include",
+    });
 
-  if (!res.ok) {
-    const errorContent = await res.json();
-    const { reason } = errorContent;
-    throw new Error(reason);
+    if (!res.ok) {
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "서버 오류가 발생했습니다.");
+      } else {
+        const errorText = await res.text();
+        console.error("서버 응답:", errorText);
+        throw new Error("서버 오류가 발생했습니다.");
+      }
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Fetch error:", error);
+    throw error;
   }
-
-  const result = await res.json();
-  return result;
 }
 
 
