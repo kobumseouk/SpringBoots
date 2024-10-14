@@ -104,29 +104,47 @@ async function handleSubmit(e) {
 }
 
 // 사용자가 사진을 업로드했을 때, 파일 이름이 화면에 나타나도록 함.
-function handleImageUpload() {
-  const file = imageInput.files[0];
-  if (file) {
-    fileNameSpan.innerText = file.name;
-  } else {
-    fileNameSpan.innerText = "";
-  }
+function showPreviewImage(input) {
+    const fileNameSpan = document.getElementById("fileNameSpan");
+    if (input.files && input.files[0]) {
+        const fileName = input.files[0].name; // 선택된 파일의 이름 가져오기
+        fileNameSpan.textContent = fileName; // 파일 이름을 span에 설정
+    } else {
+        fileNameSpan.textContent = "사진파일 (png, jpg, jpeg)"; // 초기 텍스트로 되돌리기
+    }
 }
 
 // 선택할 수 있는 카테고리 종류를 api로 가져와서, 옵션 태그를 만들어 삽입함.
-async function addOptionsToSelectBox() {
-  const categorys = await Api.get("/categories");
-  categorys.forEach((category) => {
-    // 객체 destructuring
-    const { _id, title, themeClass } = category;
+//async function addOptionsToSelectBox() {
+//  const categorys = await Api.get("/api/categories");
+//  categorys.forEach((category) => {
+//    // 객체 destructuring
+//    const { _id, _name, _thema } = category;
+//
+//    categorySelectBox.insertAdjacentHTML(
+//      "beforeend",
+//      `
+//      <option value=${_id} class="notification ${themeClass}"> ${title} </option>`
+//    );
+//  });
+//}
 
-    categorySelectBox.insertAdjacentHTML(
-      "beforeend",
-      `
-      <option value=${_id} class="notification ${themeClass}"> ${title} </option>`
-    );
-  });
-}
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/api/categories') // 카테고리 데이터를 가져올 API 엔드포인트
+        .then(response => response.json())
+        .then(data => {
+            const selectBox = document.getElementById('categorySelectBox');
+            data.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id; // 카테고리 ID
+                option.textContent = category.name; // 카테고리 이름
+                selectBox.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching categories:', error);
+        });
+});
 
 // 카테고리 선택 시, 선택박스에 해당 카테고리 테마가 반영되게 함.
 function handleCategoryChange() {
