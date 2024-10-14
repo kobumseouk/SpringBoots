@@ -54,7 +54,7 @@ async function loadCartSummary() {
 
     for (const item of cart) {
         // API를 사용하여 item_id로 아이템 정보 가져오기
-        const productData = await getData(item.item_id);
+        const productData = await getData(item.itemId);
 
         // 가져온 데이터가 없을 경우 continue
         if (!productData) continue;
@@ -70,14 +70,14 @@ async function loadCartSummary() {
                     <div class="media-content">
                         <div class="content">
                             <p><strong>제품명: </strong>${productData.item_name}</p>
-                            <p><strong>사이즈(mm): </strong>${item.item_size}</p>
-                            <p><strong>수량: </strong>${item.item_quantity}개</p>
+                            <p><strong>사이즈(mm): </strong>${item.itemSize}</p>
+                            <p><strong>수량: </strong>${item.itemQuantity}개</p>
                         </div>
                     </div>
                 </article>
             </div>
         `;
-        totalPrice += productData.item_price * item.item_quantity;
+        totalPrice += productData.item_price * item.itemQuantity;
     }
 
     const summaryHtml = `
@@ -91,8 +91,8 @@ async function loadCartSummary() {
 }
 
 // API로부터 item_id를 이용해 상품 데이터를 가져오는 함수
-async function getData(item_id) {
-    const loc = `/api/items/${item_id}`;
+async function getData(itemId) {
+    const loc = `/api/items/${itemId}`;
 
     try {
         const res = await fetch(loc); // API 호출
@@ -144,11 +144,11 @@ async function placeOrder() {
         shippingAddress: document.getElementById("shippingAddress").value + " " + document.getElementById("shippingAddress2").value,
         deliveryMessage: document.getElementById('deliveryMessage').value,
         items: await Promise.all(cart.map(async (item) => {
-            const productData = await getData(item.item_id); // 상품 데이터 가져오기
+            const productData = await getData(item.itemId); // 상품 데이터 가져오기
             return {
-                itemId: item.item_id,
-                itemQuantity: item.item_quantity,
-                itemSize: item.item_size,
+                itemId: item.itemId,
+                itemQuantity: item.itemQuantity,
+                itemSize: item.itemSize,
                 itemPrice: productData.item_price // 상품 가격 설정
             };
         }))

@@ -62,7 +62,7 @@ function renderOrderSummary(order) {
                         <div class="content">
                             <p><strong>제품명: </strong>${item.itemName}</p>
                             <p><strong>사이즈(mm): </strong>${item.itemsSize}</p>
-                            <p><strong>수량: </strong>${item.orderitemsQuantity}개</p>
+                            <p><strong>수량: </strong>${item.orderItemsQuantity}개</p>
                         </div>
                     </div>
                 </article>

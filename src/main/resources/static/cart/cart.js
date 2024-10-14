@@ -1,39 +1,39 @@
 // 로컬 스토리지에 저장하는 함수
 
 const itemData = {
-  item_id: 101,
-  item_quantity: 2,
-  item_size: 280,
-  item_color: 'black'
+  itemId: 101,
+  itemQuantity: 2,
+  itemSize: 280,
+  itemColor: 'black'
 };
 
 const itemData1 = {
-  item_id: 102,
-  item_quantity: 5,
-  item_size: 270,
-  item_color: 'white'
+  itemId: 102,
+  itemQuantity: 5,
+  itemSize: 270,
+  itemColor: 'white'
 };
 
 
 
-function addItemToCart(item_id, item_quantity, item_color, item_size) {
+function addItemToCart(itemId, itemQuantity, itemColor, itemSize) {
   // 장바구니에 담긴 아이템을 로컬 스토리지에서 가져오기
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
   // 새로운 아이템 객체 생성
   const newItem = {
-    item_id: item_id,
-    item_quantity: item_quantity, // 수량 필드 유지
-    item_size: item_size, // item_size가 올바른지 확인
-    item_color: item_color, // item_color가 올바른지 확인
+    itemId: itemId,
+    itemQuantity: itemQuantity, // 수량 필드 유지
+    itemSize: itemSize, // itemSize가 올바른지 확인
+    itemColor: itemColor, // itemColor가 올바른지 확인
   };
 
 
   // 장바구니에 아이템 추가 (중복 체크)
-  const existingItem = cart.find(item => item.item_id === item_id && item.item_size === item_size);
+  const existingItem = cart.find(item => item.itemId === itemId && item.itemSize === itemSize);
   if (existingItem) {
     // 이미 존재하는 아이템이면 수량만 증가
-    existingItem.item_quantity += item_quantity;
+    existingItem.itemQuantity += itemQuantity;
   } else {
     // 새로운 아이템이면 추가
     cart.push(newItem);
@@ -43,45 +43,47 @@ function addItemToCart(item_id, item_quantity, item_color, item_size) {
   localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-function deleteItemFromCart(item_id, item_size) {
+function deleteItemFromCart(itemId, itemSize) {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-  // 삭제할 아이템 찾기 (item_id와 item_size로 식별)
-  const existingItem = cart.find(item => item.item_id === item_id && item.item_size === item_size);
+  // 해당 itemId와 itemSize가 아닌 아이템들만 남기기
+  const newCart = cart.filter(item => !(item.itemId === itemId && item.itemSize === itemSize));
 
-  if (existingItem) {
-    cart.splice(existingItem, 1);
-    localStorage.setItem('cart', JSON.stringify(cart));
+  if (newCart.length !== cart.length) {
+    // 업데이트된 장바구니 저장
+    localStorage.setItem('cart', JSON.stringify(newCart));
   } else {
     // 아이템이 존재하지 않으면 404 not found 로그 출력
-    console.log("404 not found in  deleteItemFromCart");
+    console.log("404 not found in deleteItemFromCart");
   }
 }
 
+
 // 장바구니 아이템의 사이즈나 수량을 업데이트하는 함수
-function updateItemSizeOrQuantity(item_id, item_size, new_quantity = null, new_size = null) {
+function updateItemSizeOrQuantity(itemId, itemSize, new_quantity = null, new_size = null) {
   console.log("updateItemSizeOrQuantity function called");
   // 로컬 스토리지에서 장바구니를 가져오기
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
   // 업데이트할 아이템 찾기
-  console.log("Searching for item_id:", item_id, "and item_size:", item_size);
+  console.log("Searching for itemId:", itemId, "and itemSize:", itemSize);
   console.log("Current cart:", cart);
-  const existingItem = cart.find(item => item.item_id === item_id && item.item_size === item_size);
+  const existingItem = cart.find(item => item.itemId === itemId && item.itemSize === itemSize);
 
   if (existingItem) {
     // 새로운 수량이 주어지면 업데이트
     if (new_quantity !== null) {
-      existingItem.item_quantity = new_quantity;
+      existingItem.itemQuantity =parseInt(new_quantity);
     }
 
     // 새로운 사이즈가 주어지면 업데이트
     if (new_size !== null) {
-      existingItem.item_size = new_size;
+      existingItem.itemSize = parseInt(new_size);
     }
 
     // 업데이트된 장바구니를 로컬 스토리지에 저장
     localStorage.setItem('cart', JSON.stringify(cart));
+    location.reload();
   } else {
     // 아이템이 존재하지 않으면 404 not found 로그 출력
     console.log("404 not found in updateItemSizeOrQuantity");
@@ -89,15 +91,15 @@ function updateItemSizeOrQuantity(item_id, item_size, new_quantity = null, new_s
 }
 
 // 선택된 아이템들의 총 가격을 계산하는 함수
-export function calculateTotal() {
+function calculateTotal() {
   const selectedItems = getSelectedItems(); // 선택된 아이템 목록 가져오기
 
   // 선택된 아이템에 대한 가격을 가져오는 Promise 배열 생성
   const promises = selectedItems.map(item => {
-    return getData(item.item_id).then(productData => {
+    return getData(item.itemId).then(productData => {
       if (productData) {
         // 제품 데이터가 있는 경우 가격을 계산
-        return productData.item_price * item.item_quantity;
+        return productData.item_price * item.itemQuantity;
       }
       return 0; // 데이터가 없는 경우 0 반환
     }).catch(() => 0); // 오류 발생 시 0 반환
@@ -132,11 +134,11 @@ function getSelectedItems() {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     console.log(`itemId: ${itemId}, itemSize: ${itemSize}`);
 
-    const item = cart.find(item => item.item_id === itemId && item.item_size === itemSize);
+    const existingItem = cart.find(item => item.itemId === itemId && item.itemSize === itemSize);
 
-    if (item) {
-      selectedItems.push(item); // 선택된 아이템을 배열에 추가
-      console.log(`${item.item_id} has been selected`);
+    if (existingItem) {
+      selectedItems.push(existingItem); // 선택된 아이템을 배열에 추가
+      console.log(`${existingItem.itemId} has been selected`);
     }
   });
 
@@ -166,22 +168,25 @@ function deleteSelectedItems() {
     // 선택된 아이템들을 장바구니에서 제거
     const updatedCart = cart.filter(item => {
       return !selectedItems.some(selectedItem =>
-          selectedItem.item_id === item.item_id && selectedItem.item_size === item.item_size);
+          selectedItem.itemId === item.itemId && selectedItem.itemSize === item.itemSize);
     });
 
     // 로컬 스토리지에 업데이트된 장바구니 저장
     localStorage.setItem('cart', JSON.stringify(updatedCart));
-
-    // 장바구니 아이템 다시 렌더링
-    renderCartItems();
-
     console.log('Selected items have been deleted.');
 
     // 삭제 후 총 가격 다시 계산
+    updateOrderTotal();
     const totalPrice = calculateTotal(updatedCart); // 총 가격 재계산
     document.getElementById('orderTotal').innerText = `￦${totalPrice}`;
+    // 장바구니 아이템 다시 렌더링
+    renderCartItems();
+
   } else {
     console.log('No items selected to delete.'); // 선택된 항목이 없을 때
+    // 장바구니 아이템 다시 렌더링
+    renderCartItems();
+
   }
 }
 
@@ -199,7 +204,7 @@ function renderCartItems() {
 
   // 각 장바구니 아이템에 대해 카드 형태의 HTML 생성
   cart.forEach(item => {
-    getData(item.item_id).then(productData => { // async를 사용하지 않고 Promise로 처리
+    getData(item.itemId).then(productData => { // async를 사용하지 않고 Promise로 처리
       if (productData) {
         const itemCard = document.createElement('div');
         itemCard.classList.add('card', 'cart-item');
@@ -208,7 +213,7 @@ function renderCartItems() {
         <div class="cart-item">
           <div class="card-content">
             <div class="notification is-light"  >
-              <input type="checkbox" class="item-checkbox" data-item-id="${item.item_id}" data-item-size="${item.item_size}">
+              <input type="checkbox" class="item-checkbox" data-item-id="${item.itemId}" data-item-size="${item.itemSize}">
               <div class="buttons" style="margin-left: auto;">
                 <button class="button is-small option-change-btn">옵션/수량변경</button>
                 <button class="button is-small is-danger delete-btn">삭제</button>
@@ -222,8 +227,8 @@ function renderCartItems() {
               </div>
               <div class="media-content">
                 <p class="title is-5">${productData.item_name}</p>
-                <p class="subtitle is-6 item-size" >사이즈(UK): <span class="item-size">${item.item_size}</span> | Color: ${item.item_color}</p>
-                <p class="subsubtitle is-6 item-quantity">수량: <span class="item-quantity">${item.item_quantity}</span> 개</p>
+                <p class="subtitle is-6 item-size" >사이즈(UK): <span class="item-size">${item.itemSize}</span> | Color: ${item.itemColor}</p>
+                <p class="subsubtitle is-6 item-quantity">수량: <span class="item-quantity">${item.itemQuantity}</span> 개</p>
                 <p class="has-text-right">￦${productData.item_price}</p>
               </div>
             </div>
@@ -236,7 +241,7 @@ function renderCartItems() {
         deleteBtn.addEventListener('click', () => {
           const confirmed = confirm('장바구니에서 상품을 삭제하시겠습니까?');
           if (confirmed) {
-            deleteItemFromCart(item.item_id, item.item_size); // 버튼이 눌리면 해당 아이템 삭제
+            deleteItemFromCart(item.itemId, item.itemSize); // 버튼이 눌리면 해당 아이템 삭제
             location.reload(); // 새로고침
           }
         });
@@ -251,13 +256,13 @@ function renderCartItems() {
     <div style="margin-bottom: 10px;">
       <label>수량: </label>
       <button class="button is-small quantity-decrease">-</button>
-      <span class="item-quantity">${item.item_quantity}</span>
+      <span class="item-quantity">${item.itemQuantity}</span>
       <button class="button is-small quantity-increase">+</button>
     </div>
     <div style="margin-bottom: 10px;">
       <label>사이즈: </label>
       <select class="size-select">
-        <option value="${item.item_size}" selected>${item.item_size}</option>
+        <option value="${item.itemSize}" selected>${item.itemSize}</option>
         <option value="230">230</option>
         <option value="240">240</option>
         <option value="250">250</option>
@@ -274,7 +279,7 @@ function renderCartItems() {
           const decreaseBtn = quantityControl.querySelector('.quantity-decrease');
           const increaseBtn = quantityControl.querySelector('.quantity-increase');
           const quantityDisplay = quantityControl.querySelector('.item-quantity');
-          let currentQuantity = item.item_quantity;
+          let currentQuantity = item.itemQuantity;
 
           decreaseBtn.addEventListener('click', () => {
             if (currentQuantity > 1) {
@@ -299,7 +304,7 @@ function renderCartItems() {
           const applyBtn = quantityControl.querySelector('.apply-btn');
           applyBtn.addEventListener('click', () => {
             const selectedSize = sizeSelect.value; // 선택된 사이즈 가져오기
-            updateItemSizeOrQuantity(item.item_id, item.item_size, currentQuantity, selectedSize); // 로컬 스토리지 업데이트
+            updateItemSizeOrQuantity(item.itemId, item.itemSize, currentQuantity, selectedSize); // 로컬 스토리지 업데이트
             location.reload(); // 새로고침
           });
 
@@ -403,9 +408,9 @@ document.addEventListener("DOMContentLoaded", async function() {
   }
 });
 
-async function getData(item_id) {
-  console.log('Received item_id:', item_id); // item_id 값 확인
-  const loc = `/api/items/${item_id}`; // URL 생성
+async function getData(itemId) {
+  console.log('Received itemId:', itemId); // itemId 값 확인
+  const loc = `/api/items/${itemId}`; // URL 생성
   console.log('loc:', loc);
 
   try {
@@ -435,5 +440,5 @@ async function getData(item_id) {
 
 
 // 장바구니에 아이템 추가
-addItemToCart(itemData.item_id, itemData.item_quantity, itemData.item_color, itemData.item_size);
-addItemToCart(itemData1.item_id, itemData1.item_quantity, itemData1.item_color, itemData1.item_size);
+addItemToCart(itemData.itemId, itemData.itemQuantity, itemData.itemColor, itemData.itemSize);
+addItemToCart(itemData1.itemId, itemData1.itemQuantity, itemData1.itemColor, itemData1.itemSize);

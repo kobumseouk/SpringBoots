@@ -110,5 +110,26 @@
         aria-label="close"
       ></button>
     </div>
+  <!-- 관리자 코드 확인용 모달 -->
+  <div id="adminCodeModal" class="modal">
+    <div class="modal-background" id="adminCodeModalBackground"></div>
+    <div class="modal-content">
+      <div class="box">
+        <p class="mb-3">
+          권한을 변경하려면 관리자 코드를 입력하세요.
+        </p>
+        <input type="password" id="adminCodeInput" placeholder="관리자 코드 입력" class="input mb-3" />
+
+        <div class="buttons">
+          <button class="button is-primary" id="adminCodeConfirmButton">
+            확인
+          </button>
+          <button class="button" id="adminCodeCancelButton">취소</button>
+        </div>
+      </div>
+    </div>
+    <button class="modal-close is-large" id="adminCodeModalCloseButton"></button>
+  </div>
+
   </body>
 </html>

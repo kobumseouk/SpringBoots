@@ -93,8 +93,6 @@ public class OrdersService {
     // 사용자 주문 추가
     @Transactional
     public Orders createOrder(OrderRequestDto request, Users currentUser) {
-        System.out.println(request);
-
         // 주문의 총 수량 및 총 가격 계산
         int totalQuantity = request.getItems().stream()
                 .mapToInt(OrderRequestDto.OrderItemDto::getItemQuantity)
@@ -259,36 +257,5 @@ public class OrdersService {
                 orderItemDtos
         );
     }
-
-    /*
-    private OrderDetailsDto convertToOrderDetailsDto(Orders orders) {
-        List<OrderItems> orderItemsList = orderItemsRepository.findByOrders(orders);
-
-        List<OrderDetailsDto.OrderItemDetailsDto> orderItemDetailsDtos = orderItemsList.stream()
-                .map(item -> new OrderDetailsDto.OrderItemDetailsDto(
-                        item.getItem().getItemName(),
-                        item.getOrderItemsQuantity(),
-                        item.getOrderItemsTotalPrice(),
-                        item.getItem().getImageUrl()
-                )).collect(Collectors.toList());
-
-        // OrderItems 리스트에서 기본 정보를 가져오기
-        String shippingAddress = orderItemsList.isEmpty() ? null : orderItemsList.get(0).getShippingAddress();
-        String recipientName = orderItemsList.isEmpty() ? null : orderItemsList.get(0).getRecipientName();
-        String recipientContact = orderItemsList.isEmpty() ? null : orderItemsList.get(0).getRecipientContact();
-
-        return new OrderDetailsDto(
-                orders.getOrdersId(),
-                orders.getCreatedAt(),
-                orders.getOrdersTotalPrice(),
-                orders.getOrderStatus(),
-                shippingAddress,
-                recipientName,
-                recipientContact,
-                orders.getDeliveryFee() != null ? orders.getDeliveryFee() : 0,
-                orders.getQuantity(),
-                orderItemDetailsDtos
-        );
-    }*/
 
 }

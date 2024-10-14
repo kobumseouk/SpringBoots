@@ -3,11 +3,9 @@ package com.spring_boots.spring_boots.item.controller;
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
 import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
-import com.spring_boots.spring_boots.item.mapper.ItemMapper;
 import com.spring_boots.spring_boots.item.service.ItemRestService;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,16 +17,13 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@NoArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class ItemRestController {
-    @Autowired
-    private  ItemRestService itemRestService;
 
-    private ItemMapper mapper;
+    private final ItemRestService itemRestService;
 
-    @Autowired
-    private S3BucketService s3BucketService;
+    private final S3BucketService s3BucketService;
 
     // Item 만들기
     @PostMapping("/admin/items")
