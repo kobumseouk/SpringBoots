@@ -94,9 +94,9 @@
 
             <div class="field">
               <label class="label" for="categorySelectBox">카테고리</label>
+              <label for="themeSelectBox">테마 선택</label>
               <div class="control">
                 <div class="select is-fullwidth">
-                  <label for="themeSelectBox">테마 선택</label>
                   <select id="themeSelectBox" onchange="categoryChang(this)">
                     <option>테마를 선택하세요.</option>
                     <option value="공용">공용</option>
@@ -108,17 +108,20 @@
                   </select>
                 </div>
               </div>
+            </div>
+
+
               <div class="field">
+                <label for="categorySelectBox">카테고리 선택</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                  <label for="categorySelectBox">카테고리 선택</label>
                   <select id="categorySelectBox">
                     <option value="">카테고리를 선택해 주세요.</option>
                   </select>
                   </div>
                 </div>
               </div>
-            </div>
+
 
 
         <script>
