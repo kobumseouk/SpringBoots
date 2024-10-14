@@ -89,19 +89,11 @@ public class CategoryService {
     Category category = categoryRepository.findById(categoryId)
         .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
 
-    /*// 카테고리와 연관된 모든 아이템의 카테고리를 null로 설정 -> item의 category 필드의 nullable = false 문제
-    itemRepository.findAllByCategoryId(categoryId)
-        .forEach(item -> {
-          item.setCategory(null);
-          itemRepository.save(item);  // 변경사항을 저장
-        });*/
     // 카테고리에 속한 모든 아이템 조회
     List<Item> items = itemRepository.findAllByCategoryId(categoryId);
-
     for (Item item : items) {
       // 각 아이템과 연관된 주문 아이템 삭제
       orderItemsRepository.deleteAllByItem_ItemId(item.getItemId());
-
       // 아이템 삭제
       itemRepository.delete(item);
     }

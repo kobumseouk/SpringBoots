@@ -23,7 +23,7 @@ public class CategoryRequestDto {
 
   private String imageUrl;
 
-  @NotNull
+  @NotNull(message = "카테고리의 배치 순서 설정은 필수입니다.")
   private int displayOrder;
 
 }
