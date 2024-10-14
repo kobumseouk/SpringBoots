@@ -4,6 +4,7 @@ import com.spring_boots.spring_boots.category.dto.category.*;
 import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
+import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.*;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -31,12 +35,16 @@ class CategoryServiceTest {
   @Mock
   private CategoryMapper categoryMapper;
 
+  @Mock
+  private S3BucketService s3BucketService;
+
   @InjectMocks
   private CategoryService categoryService;
 
   private Category mockCategory;
   private CategoryDto mockCategoryDto;
   private CategoryAdminDto mockCategoryAdminDto;
+  private MockMultipartFile mockFile;
 
   @BeforeEach
   void setUp() {
@@ -61,6 +69,8 @@ class CategoryServiceTest {
         .categoryThema("Test Thema")
         .displayOrder(1)
         .build();
+
+    mockFile = new MockMultipartFile("file", "test.jpg", "image/jpeg", "test image content".getBytes());
   }
 
   private final Long INVALID_CATEGORY_ID = 99999L;
@@ -68,7 +78,7 @@ class CategoryServiceTest {
 
   @Test
   @DisplayName("카테고리 저장 확인 테스트")
-  void createCategory() {
+  void createCategory() throws IOException {
     // given
     CategoryRequestDto requestDto = CategoryRequestDto.builder()
         .categoryName("Test Category")
@@ -76,10 +86,11 @@ class CategoryServiceTest {
         .displayOrder(1)
         .build();
 
+    when(s3BucketService.uploadFile(any(MultipartFile.class))).thenReturn("http://test-url.com/image.jpg");
     when(categoryRepository.save(any(Category.class))).thenReturn(mockCategory);
 
     // when
-    CategoryResponseDto result = categoryService.createCategory(requestDto);
+    CategoryResponseDto result = categoryService.createCategory(requestDto, mockFile);
 
     // then
     assertNotNull(result);
@@ -87,14 +98,16 @@ class CategoryServiceTest {
     assertEquals("Test Category", result.getCategoryName());
     assertEquals("Test Thema", result.getCategoryThema());
     assertEquals(1, result.getDisplayOrder());
+    assertEquals("http://test-url.com/image.jpg", result.getImageUrl());
 
+    verify(s3BucketService).uploadFile(any(MultipartFile.class));
     verify(categoryRepository).save(any(Category.class));
   }
 
 
   @Test
   @DisplayName("카테고리 업데이트 확인 테스트")
-  void updateCategory() {
+  void updateCategory() throws IOException {
     // given
     Long categoryId = 1L;
     CategoryRequestDto requestDto = CategoryRequestDto.builder()
@@ -103,11 +116,12 @@ class CategoryServiceTest {
         .displayOrder(2)
         .build();
 
+    when(s3BucketService.uploadFile(any(MultipartFile.class))).thenReturn("http://test-url.com/updated-image.jpg");
     when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(mockCategory));
     when(categoryRepository.save(any(Category.class))).thenReturn(mockCategory);
 
     // when
-    CategoryResponseDto result = categoryService.updateCategory(categoryId, requestDto);
+    CategoryResponseDto result = categoryService.updateCategory(categoryId, requestDto, mockFile);
 
     // then
     assertNotNull(result);
@@ -115,8 +129,9 @@ class CategoryServiceTest {
     assertEquals("Updated Category", result.getCategoryName());
     assertEquals("Updated Thema", result.getCategoryThema());
     assertEquals(2, result.getDisplayOrder());
+    assertEquals("http://test-url.com/updated-image.jpg", result.getImageUrl());
 
-
+    verify(s3BucketService).uploadFile(any(MultipartFile.class));
     verify(categoryRepository).findById(categoryId);
     verify(categoryRepository).save(any(Category.class));
 
@@ -124,7 +139,7 @@ class CategoryServiceTest {
 
   @Test
   @DisplayName("존재하지 않는 ID로 카테고리 업데이트 시 예외 발생 확인 테스트")
-  void updateCategory_WithInvalidId_ShouldThrowResourceNotFoundException() {
+  void updateCategory_유효하지않은ID_예외발생() throws IOException {
     // given
     CategoryRequestDto requestDto = CategoryRequestDto.builder()
         .categoryName("Updated Category")
@@ -135,9 +150,9 @@ class CategoryServiceTest {
     when(categoryRepository.findById(INVALID_CATEGORY_ID)).thenReturn(Optional.empty());
 
     // when & then
-    assertThatThrownBy(() -> categoryService.updateCategory(INVALID_CATEGORY_ID, requestDto))
+    assertThatThrownBy(() -> categoryService.updateCategory(INVALID_CATEGORY_ID, requestDto, mockFile))
         .isInstanceOf(ResourceNotFoundException.class)
-        .hasMessageContaining("업데이트할 카테고리를 찾을 수 없습니다: " + INVALID_CATEGORY_ID);
+        .hasMessageContaining("카테고리를 찾을 수 없습니다: " + INVALID_CATEGORY_ID);
 
     verify(categoryRepository).findById(INVALID_CATEGORY_ID);
     verify(categoryRepository, never()).save(any(Category.class));
@@ -145,7 +160,7 @@ class CategoryServiceTest {
 
   @Test
   @DisplayName("카테고리 삭제 확인 테스트")
-  void deleteCategory() {
+  void deleteCategory() throws IOException {
     // given
     Long categoryId = 1L;
     when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(mockCategory));
@@ -155,19 +170,20 @@ class CategoryServiceTest {
 
     // then
     verify(categoryRepository).findById(categoryId);
+    verify(s3BucketService).deleteFile(anyString());
     verify(categoryRepository).delete(mockCategory);
   }
 
   @Test
   @DisplayName("존재하지 않는 ID로 카테고리 삭제 시 예외 발생 확인 테스트")
-  void deleteCategory_WithInvalidId_ShouldThrowResourceNotFoundException() {
+  void deleteCategory_유효하지않은ID_예외발생() {
     // given
     when(categoryRepository.findById(INVALID_CATEGORY_ID)).thenReturn(Optional.empty());
 
     // when & then
     assertThatThrownBy(() -> categoryService.deleteCategory(INVALID_CATEGORY_ID))
         .isInstanceOf(ResourceNotFoundException.class)
-        .hasMessageContaining("삭제할 카테고리를 찾을 수 없습니다: " + INVALID_CATEGORY_ID);
+        .hasMessageContaining("카테고리를 찾을 수 없습니다: " + INVALID_CATEGORY_ID);
 
     verify(categoryRepository).findById(INVALID_CATEGORY_ID);
     verify(categoryRepository, never()).delete(any(Category.class));
@@ -225,7 +241,7 @@ class CategoryServiceTest {
 
   @Test
   @DisplayName("존재하지 않는 ID로 카테고리 상세 조회 시 예외 발생 확인 테스트")
-  void getCategoryDetail_WithInvalidId_ShouldThrowResourceNotFoundException() {
+  void getCategoryDetail_유효하지않은ID_예외발생() {
     // given
     when(categoryRepository.findById(INVALID_CATEGORY_ID)).thenReturn(Optional.empty());
 
@@ -280,7 +296,7 @@ class CategoryServiceTest {
 
   @Test
   @DisplayName("존재하지 않는 ID로 관리자용 개별 카테고리 조회 시 예외 발생 확인 테스트")
-  void getAdminCategory_WithInvalidId_ShouldThrowResourceNotFoundException() {
+  void getAdminCategory_유효하지않은ID_예외발생() {
     // given
     when(categoryRepository.findById(INVALID_CATEGORY_ID)).thenReturn(Optional.empty());
 
