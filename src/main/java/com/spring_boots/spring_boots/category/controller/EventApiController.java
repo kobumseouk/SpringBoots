@@ -14,6 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 @Validated
@@ -27,8 +30,11 @@ public class EventApiController {
 
   // 새로운 이벤트를 생성하는 메서드
   @PostMapping
-  public ResponseEntity<EventDetailDto> createEvent(@Valid @RequestBody EventRequestDto eventRequestDto) {
-    EventDetailDto createdEvent = eventService.createEvent(eventRequestDto);
+  public ResponseEntity<EventDetailDto> createEvent(
+      @Valid @RequestPart("event") EventRequestDto eventRequestDto,
+      @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+      @RequestPart(value = "contentFile", required = false) MultipartFile contentFile) throws IOException {
+    EventDetailDto createdEvent = eventService.createEvent(eventRequestDto, thumbnailFile, contentFile);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
   }
 
@@ -53,8 +59,12 @@ public class EventApiController {
 
   // 특정 이벤트를 수정하는 메서드
   @PutMapping("/{event_id}")
-  public ResponseEntity<EventDetailDto> updateEvent(@PathVariable("event_id") Long eventId, @Valid @RequestBody EventRequestDto eventUpdateDto) {
-    EventDetailDto updatedEvent = eventService.updateEvent(eventId, eventUpdateDto);
+  public ResponseEntity<EventDetailDto> updateEvent(
+      @PathVariable("event_id") Long eventId,
+      @Valid @RequestPart("event") EventRequestDto eventUpdateDto,
+      @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+      @RequestPart(value = "contentFile", required = false) MultipartFile contentFile) throws IOException {
+    EventDetailDto updatedEvent = eventService.updateEvent(eventId, eventUpdateDto, thumbnailFile, contentFile);
     return ResponseEntity.ok(updatedEvent);
   }
 

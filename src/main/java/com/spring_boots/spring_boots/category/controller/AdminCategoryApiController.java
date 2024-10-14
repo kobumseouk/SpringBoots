@@ -20,6 +20,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Slf4j
 @Validated
@@ -33,8 +36,10 @@ public class AdminCategoryApiController {
   // 관리자 - 새 카테고리 추가
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
-  public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CategoryRequestDto requestDto) {
-    CategoryResponseDto responseDto = categoryService.createCategory(requestDto);
+  public ResponseEntity<CategoryResponseDto> createCategory(
+      @Valid @RequestPart("category") CategoryRequestDto requestDto,
+      @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+    CategoryResponseDto responseDto = categoryService.createCategory(requestDto, file);
     return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
   }
 
@@ -43,15 +48,16 @@ public class AdminCategoryApiController {
   @PutMapping("/{category_id}")
   public ResponseEntity<CategoryResponseDto> updateCategory(
       @PathVariable("category_id") Long categoryId,
-      @Valid @RequestBody CategoryRequestDto requestDto) {
-    CategoryResponseDto responseDto = categoryService.updateCategory(categoryId, requestDto);
+      @Valid @RequestPart("category") CategoryRequestDto requestDto,
+      @RequestPart(value = "file", required = false) MultipartFile file) throws IOException {
+    CategoryResponseDto responseDto = categoryService.updateCategory(categoryId, requestDto, file);
     return ResponseEntity.ok(responseDto);
   }
 
   // 관리자 - 카테고리 삭제
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/{category_id}")
-  public ResponseEntity<Void> deleteCategory(@PathVariable("category_id") Long categoryId) {
+  public ResponseEntity<Void> deleteCategory(@PathVariable("category_id") Long categoryId) throws IOException {
     categoryService.deleteCategory(categoryId);
     return ResponseEntity.noContent().build();
   }
