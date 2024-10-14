@@ -10,7 +10,8 @@
 }
 
 .register-product-form-box {
-  width: 40rem;
+  max-width: 40rem;
+  width: 100%;
 }
 
 .register-product-form-box .title {
@@ -26,4 +27,26 @@
 .register-product-form-box select:focus {
   border-color: #00d1b2;
   box-shadow: 0 0 0 0.125em rgba(0, 209, 178, 0.25);
+}
+.field {
+    margin-bottom: 1.5rem; /* 각 필드 간의 간격 조정 */
+}
+
+.control {
+    margin-top: 0.5rem; /* 선택 박스 위쪽 여백 추가 */
+}
+
+.label {
+    margin-bottom: 0.5rem; /* 라벨과 입력 필드 간의 간격 */
+}
+
+html, body {
+    height: 100%; /* 전체 높이를 100%로 설정 */
+    margin: 0; /* 기본 여백 제거 */
+    overflow: auto; /* 스크롤이 필요할 때만 표시 */
+}
+
+.section {
+    min-height: 100vh; /* 최소 높이를 100vh로 설정하여 화면이 가득 차면 스크롤 발생 */
+    padding: 1rem; /* 패딩 추가 */
 }

@@ -1,6 +1,5 @@
 package com.spring_boots.spring_boots.s3Bucket.service;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.spring_boots.spring_boots.s3Bucket.config.S3Config;
 import lombok.RequiredArgsConstructor;
