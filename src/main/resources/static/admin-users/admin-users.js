@@ -33,7 +33,7 @@ function addAllEvents() {
 // 페이지 로드 시 실행, 삭제할 회원 id를 전역변수로 관리함
 let userIdToDelete;
 async function insertUsers() {
-  const users = await Api.get("/users/all");
+  const users = await Api.get("/api/admin/users");
 
   // 총 요약에 활용
   const summary = {
@@ -42,8 +42,11 @@ async function insertUsers() {
   };
 
   for (const user of users) {
-    const { id, email, fullName, roles, createdAt } = user;
+    const { userId, email, username, role, createdAt, userRealId } = user;
     const date = createdAt;
+    const id = userId;
+    const fullName = username;
+    const roles =role;
 
     summary.usersCount += 1;
 
@@ -56,6 +59,7 @@ async function insertUsers() {
       `
         <div class="columns orders-item" id="user-${id}">
           <div class="column is-2">${date}</div>
+          <div class="column is-2">${userRealId}</div>
           <div class="column is-2">${email}</div>
           <div class="column is-2">${fullName}</div>
           <div class="column is-2">

@@ -109,10 +109,12 @@ public class Users extends BaseTimeEntity implements UserDetails {
                 .toList();
 
         return UserResponseDto.builder()
+                .userId(userId)
                 .email(email)
                 .username(username)
                 .userRealId(userRealId)
                 .role(role)
+                .createdAt(getCreatedAt())
                 .userInfoList(userInfoDtos)
                 .build();
     }
