@@ -1,10 +1,8 @@
-import { addCommas, checkAdmin, createNavbar } from "../useful-functions.js";
+import { addCommas, createNavbar } from "../useful-functions.js";
+import { loadHeader } from "../../common/header.js";
 import * as Api from "../api.js";
-// import {
-//   title
-// } from "../../../../../../../../Library/Application Support/JetBrains/IntelliJIdea2023.3/javascript/extLibs/http_sdk.amazonaws.com_js_aws-sdk-2.410.0";
 
-// 요소(element), input 혹은 상수
+// 요소 선택
 const ordersCount = document.querySelector("#ordersCount");
 const prepareCount = document.querySelector("#prepareCount");
 const deliveryCount = document.querySelector("#deliveryCount");
@@ -16,31 +14,38 @@ const modalCloseButton = document.querySelector("#modalCloseButton");
 const deleteCompleteButton = document.querySelector("#deleteCompleteButton");
 const deleteCancelButton = document.querySelector("#deleteCancelButton");
 
-checkAdmin();
-addAllElements();
+let orderIdToDelete;
+
+// summary 변수를 전역에서 접근할 수 있도록 선언
+let summary = {
+  ordersCount: 0,
+  prepareCount: 0,
+  deliveryCount: 0,
+  completeCount: 0,
+};
+
+// 초기 설정
+loadHeader();
+createNavbar();
+insertOrders();
 addAllEvents();
 
-// 요소 삽입 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-function addAllElements() {
-  createNavbar();
-  insertOrders();
-}
-
-// 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
+// 이벤트 설정
 function addAllEvents() {
   modalBackground.addEventListener("click", closeModal);
   modalCloseButton.addEventListener("click", closeModal);
   document.addEventListener("keydown", keyDownCloseModal);
-  deleteCompleteButton.addEventListener("click", deleteOrderData);
+  deleteCompleteButton.addEventListener("click", () => {
+    deleteOrderData(orderIdToDelete); // 모달에서 "네" 클릭 시 주문 삭제 실행
+  });
   deleteCancelButton.addEventListener("click", cancelDelete);
 }
 
-// 페이지 로드 시 실행, 삭제할 주문 id를 전역변수로 관리함
-let orderIdToDelete;
+// 주문 데이터를 받아서 테이블에 추가
 async function insertOrders() {
-  const orders = await Api.get("/orders");
+  const orders = await Api.get("/api/admin/orders");
 
-  const summary = {
+  summary = { // summary 객체 초기화
     ordersCount: 0,
     prepareCount: 0,
     deliveryCount: 0,
@@ -48,137 +53,141 @@ async function insertOrders() {
   };
 
   for (const order of orders) {
-    const { id, totalPrice, createdAt, summaryTitle, status } = order;
-    console.log(summaryTitle)
-    console.log(status)
-    const date = createdAt;
+    const { ordersId, ordersTotalPrice, createdAt, orderStatus, items } = order;
+    const date = new Date(createdAt).toLocaleDateString();
+    const summaryTitle = items.map(item => `${item.itemName}/${item.orderitemsQuantity}`).join(", ");
 
     summary.ordersCount += 1;
 
-    if (status === "상품 준비중") {
+    if (orderStatus === "주문완료") {
       summary.prepareCount += 1;
-    } else if (status === "상품 배송중") {
+    } else if (orderStatus === "상품배송중") {
       summary.deliveryCount += 1;
-    } else if (status === "배송완료") {
+    } else if (orderStatus === "배송완료") {
       summary.completeCount += 1;
     }
 
     ordersContainer.insertAdjacentHTML(
-      "beforeend",
-      `
-        <div class="columns orders-item" id="order-${id}">
+        "beforeend",
+        `
+        <div class="columns orders-item" id="order-${ordersId}">
           <div class="column is-2">${date}</div>
           <div class="column is-4 order-summary">${summaryTitle}</div>
-          <div class="column is-2">${addCommas(totalPrice)}</div>
+          <div class="column is-2">${addCommas(ordersTotalPrice)}원</div>
           <div class="column is-2">
-            <div class="select" >
-              <select id="statusSelectBox-${id}">
-                <option 
-                  class="has-background-danger-light has-text-danger"
-                  ${status === "상품 준비중" ? "selected" : ""} 
-                  value="상품 준비중">
-                  상품 준비중
-                </option>
-                <option 
-                  class="has-background-primary-light has-text-primary"
-                  ${status === "상품 배송중" ? "selected" : ""} 
-                  value="상품 배송중">
-                  상품 배송중
-                </option>
-                <option 
-                  class="has-background-grey-light"
-                  ${status === "배송완료" ? "selected" : ""} 
-                  value="배송완료">
-                  배송완료
-                </option>
-              </select>
-            </div>
+            <select id="statusSelectBox-${ordersId}" class="select">
+              <option value="주문완료" ${orderStatus === "주문완료" ? "selected" : ""}>주문완료</option>
+              <option value="상품배송중" ${orderStatus === "상품배송중" ? "selected" : ""}>상품배송중</option>
+              <option value="배송완료" ${orderStatus === "배송완료" ? "selected" : ""}>배송완료</option>
+            </select>
           </div>
-          <div class="column is-2">
-            <button class="button" id="deleteButton-${id}" >주문 취소</button>
+          <div class="column is-2" id="cancelButtonContainer-${ordersId}">
+            ${orderStatus === "주문완료" ? `<button class="button is-danger" id="deleteButton-${ordersId}">주문 취소</button>` : ""}
           </div>
         </div>
       `
     );
 
-    // 요소 선택
-    const statusSelectBox = document.querySelector(`#statusSelectBox-${id}`);
-    const deleteButton = document.querySelector(`#deleteButton-${id}`);
+    const statusSelectBox = document.querySelector(`#statusSelectBox-${ordersId}`);
+    const deleteButton = document.querySelector(`#deleteButton-${ordersId}`);
+    const cancelButtonContainer = document.querySelector(`#cancelButtonContainer-${ordersId}`);
 
-    // 상태관리 박스에, 선택되어 있는 옵션의 배경색 반영
-    const index = statusSelectBox.selectedIndex;
-    statusSelectBox.className = statusSelectBox[index].className;
-
-    // 이벤트 - 상태관리 박스 수정 시 바로 db 반영
+    // 상태 변경 이벤트
     statusSelectBox.addEventListener("change", async () => {
       const newStatus = statusSelectBox.value;
-      const data = { status: newStatus };
+      const data = { orderStatus: newStatus };
 
-      // 선택한 옵션의 배경색 반영
-      const index = statusSelectBox.selectedIndex;
-      statusSelectBox.className = statusSelectBox[index].className;
+      try {
+        await Api.patch(`/api/admin/orders/${ordersId}/status`, "", data);
+        alert("주문 상태가 성공적으로 업데이트되었습니다.");
 
-      // api 요청
-      await Api.patch("/orders", id, data);
+        // 상태가 '주문완료'일 때 취소 버튼 다시 표시
+        if (newStatus === "주문완료") {
+          cancelButtonContainer.innerHTML = `<button class="button is-danger" id="deleteButton-${ordersId}">주문 취소</button>`;
+          // 새로 추가된 취소 버튼에도 이벤트 리스너 추가
+          const newDeleteButton = document.querySelector(`#deleteButton-${ordersId}`);
+          newDeleteButton.addEventListener("click", () => {
+            orderIdToDelete = ordersId; // 선택한 주문의 ID 저장
+            openModal(); // 모달 창 열기
+          });
+        } else {
+          // 다른 상태일 때 취소 버튼 제거
+          cancelButtonContainer.innerHTML = "";
+        }
+
+        // 상태 변경 후 요약 정보 업데이트
+        if (newStatus === "상품배송중") {
+          summary.prepareCount -= 1;
+          summary.deliveryCount += 1;
+        } else if (newStatus === "배송완료") {
+          summary.deliveryCount -= 1;
+          summary.completeCount += 1;
+        } else if (newStatus === "주문완료") {
+          summary.prepareCount += 1;
+          summary.completeCount -= 1;
+        }
+
+        updateSummaryCounts();
+      } catch (error) {
+        console.error("상태 변경 중 오류 발생:", error);
+        alert("상태 변경 중 오류가 발생했습니다.");
+      }
     });
 
-    // 이벤트 - 삭제버튼 클릭 시 Modal 창 띄우고, 동시에, 전역변수에 해당 주문의 id 할당
-    deleteButton.addEventListener("click", () => {
-      orderIdToDelete = id;
-      openModal();
-    });
+    // 주문 취소 버튼 클릭 시 모달 창 열기 및 orderId 설정
+    if (deleteButton) {
+      deleteButton.addEventListener("click", () => {
+        orderIdToDelete = ordersId; // 선택한 주문의 ID 저장
+        openModal(); // 모달 창 열기
+      });
+    }
   }
 
-  // 총 요약 값 삽입
+  // 초기 요약 정보 업데이트
+  updateSummaryCounts();
+}
+
+// 요약 정보 업데이트 함수
+function updateSummaryCounts() {
   ordersCount.innerText = addCommas(summary.ordersCount);
   prepareCount.innerText = addCommas(summary.prepareCount);
   deliveryCount.innerText = addCommas(summary.deliveryCount);
   completeCount.innerText = addCommas(summary.completeCount);
 }
 
-// db에서 주문정보 삭제
-async function deleteOrderData(e) {
-  e.preventDefault();
-
+// 주문 취소
+async function deleteOrderData(orderIdToDelete) {
   try {
-    await Api.delete("/orders", orderIdToDelete);
-
-    // 삭제 성공
-    alert("주문 정보가 삭제되었습니다.");
-
-    // 삭제한 아이템 화면에서 지우기
+    await Api.delete(`/api/admin/orders`, orderIdToDelete);
     const deletedItem = document.querySelector(`#order-${orderIdToDelete}`);
     deletedItem.remove();
-
-    // 전역변수 초기화
-    orderIdToDelete = "";
-
+    alert("주문이 취소되었습니다.");
     closeModal();
   } catch (err) {
-    alert(`주문정보 삭제 과정에서 오류가 발생하였습니다: ${err}`);
+    console.error(`Error: ${err.message}`);
+    alert(`오류가 발생했습니다: ${err.message}`);
   }
 }
 
-// Modal 창에서 아니오 클릭할 시, 전역 변수를 다시 초기화함.
-function cancelDelete() {
-  orderIdToDelete = "";
-  closeModal();
-}
-
-// Modal 창 열기
+// 모달 창 열기
 function openModal() {
   modal.classList.add("is-active");
 }
 
-// Modal 창 닫기
+// 모달 창 닫기
 function closeModal() {
   modal.classList.remove("is-active");
 }
 
-// 키보드로 Modal 창 닫기
+// 키보드로 모달 닫기
 function keyDownCloseModal(e) {
-  // Esc 키
   if (e.keyCode === 27) {
     closeModal();
   }
+}
+
+// 취소 버튼 클릭 시, 모달 창 닫기
+function cancelDelete() {
+  orderIdToDelete = "";
+  closeModal();
 }

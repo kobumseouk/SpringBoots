@@ -1,0 +1,65 @@
+/* 전체 컨테이너 스타일 */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* 섹션 스타일 */
+.section {
+  padding: 2rem 1rem;
+}
+
+/* 헤더 */
+/* 제목과 버튼을 포함하는 컨테이너에 대한 스타일 */
+.account-header {
+  max-width: 100%;
+  padding: 0 1rem; /* 좌우 패딩 추가 */
+  margin-bottom: 1rem;
+}
+
+.account-header .level {
+  align-items: center;
+}
+
+.account-header .subtitle {
+  margin-bottom: 0;
+}
+
+/* 카테고리 리스트 */
+.category-container {
+  max-width: 100% !important; /* 전체 너비로 확장 */
+  margin: 1rem auto; /* auto를 사용하여 좌우 중앙 정렬 */
+  padding: 0 1rem; /* 필요하다면 좌우 패딩 추가 */
+}
+
+.categories-top {
+  border-bottom: #aaa 1px solid;
+  padding: 1rem 0;
+  background-color: #f5f5f5;
+  margin-top: 1rem; /* 상단 여백 추가 */
+}
+
+/* 필요하다면 개별 항목에 대한 스타일도 조정 */
+.category-item {
+  padding: 0.5rem 0;
+  margin-bottom: 0.5rem; /* 항목 사이 간격 추가 */
+}
+
+.category-item:not(:last-child) {
+  border-bottom: 1px solid #ddd;
+}
+
+/* 버튼 스타일 */
+.button.is-small {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* 컬럼 정렬 */
+.column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}

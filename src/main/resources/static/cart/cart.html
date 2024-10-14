@@ -1,132 +1,104 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Shopping Mall</title>
-    <!-- 아이콘 -->
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="/elice-rabbit-favicon.png"
-    />
-    <!-- bulma css 관련 -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
-    />
-    <!-- 폰트 어썸: 아이콘 -->
-    <script
-      defer
-      src="https://kit.fontawesome.com/9daa42bcef.js"
-      crossorigin="anonymous"
-    ></script>
-    <!-- AWS S3 사용하기 위한 파일 -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>
-    <!-- 커스텀 css, js -->
-    <link rel="stylesheet" href="/cart/cart.css" />
-    <script src="/cart/cart.js" type="module" defer></script>
-  </head>
-  <body>
-    <!-- 헤더 -->
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="container mt-3">
-        <div class="navbar-brand">
-          <a class="navbar-item" href="/">
-            <img src="/elice-rabbit.png" width="30" height="30" />
-            <span class="has-text-link">Shopping Mall</span>
-          </a>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shopping Mall</title>
+  <!-- 아이콘 -->
+  <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/elice-rabbit-favicon.png"
+  />
+  <!-- bulma css 관련 -->
+  <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+  />
+  <!-- 폰트 어썸: 아이콘 -->
+  <script
+          defer
+          src="https://kit.fontawesome.com/9daa42bcef.js"
+          crossorigin="anonymous"
+  ></script>
+  <!-- AWS S3 사용하기 위한 파일 -->
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>
+  <!-- 커스텀 css, js -->
+  <link rel="stylesheet" href="cart.css" />
 
-          <a
-            role="button"
-            class="navbar-burger"
-            aria-label="menu"
-            aria-expanded="false"
-            data-target="navbarBasicExample"
-          >
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
-        </div>
+</head>
+<body>
 
-        <div class="navbar-end breadcrumb my-auto" aria-label="breadcrumbs">
-          <ul id="navbar">
-            <li>
-              <a href="/cart" aria-current="page">
-                <span class="icon">
-                  <i class="fas fa-cart-shopping"></i>
-                </span>
-                <span>카트</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+<!-- 로그인/회원가입 버튼이 포함된 상단 div -->
+
+<!-- 헤더 -->
+  <div id="header-placeholder"></div>
 
     <!-- 장바구니 -->
     <section class="section">
       <div class="container">
         <div class="cart-header">
           <div class="title">
-            <p class="is-size-2">장바구니</p>
+            <p class="is-size-2" style="font-size:30px !important;">장바구니</p>
           </div>
-          <div class="subtitle">
-            <p class="is-size-6">
-              &gt; &nbsp; 주문결제 &nbsp; &gt; &nbsp;주문완료
-            </p>
-          </div>
+
         </div>
 
         <div class="tile is-ancestor">
           <div class="tile is-8 is-parent cart-products">
-            <!-- 장바구니에 담긴 상품 모음 -->
-            <div class="box cart-products-container" id="cartProductsContainer">
-              <div class="cart-products-header">
+            <div class="cart-products-header">
+              <div class="field">
                 <label class="checkbox">
                   <input type="checkbox" id="allSelectCheckbox" />
-                  <p class="help">전체선택</p>
-                </label>
-                <label class="seperator">
-                  <p class="help help-seperator">&nbsp;&nbsp;|&nbsp;&nbsp;</p>
-                </label>
-                <label class="delete-part" id="partialDeleteLabel">
-                  <p class="help">선택삭제</p>
+                  <span class="help">전체선택</span>
                 </label>
               </div>
+
+
+
+              <div class="delete-part">
+                <!-- 선택 삭제 버튼 -->
+                <button class="selectbtn" id="deleteSelectedButton">선택삭제</button>
+              </div>
+            </div>
+
+
+            <!-- 장바구니에 담긴 상품 모음 -->
+            <div class="box cart-products-container" id="cartProductsContainer">
 
               <!-- 장바구니에 담긴 상품들의 html 요소(카드 형태)가 주입되는 곳 -->
             </div>
           </div>
 
           <!-- 선택한 상품 총 요약 -->
-          <div class="tile is-parent tile-order-summary">
+          <div class="tile is-parent tile-order-summary" style="margin-top:90px">
             <div class="box order-summary">
               <div class="header">
-                <p>결제정보</p>
+                <p style="font-size:20px; font-weight: 700">주문 예정 금액</p>
               </div>
               <div class="order-info">
                 <div class="info">
-                  <p>상품수</p>
-                  <p id="productsCount"></p>
-                </div>
-                <div class="info">
-                  <p>상품금액</p>
+                  <p>총 상품금액</p>
                   <p id="productsTotal"></p>
                 </div>
                 <div class="info">
-                  <p>배송비</p>
-                  <p id="deliveryFee"></p>
+                  <p>총 배송비</p>
+                  <p id="deliveryTotal"></p>
                 </div>
-              </div>
-              <div class="total">
-                <p class="total-label">총 결제금액</p>
-                <p class="total-price" id="orderTotal"></p>
-              </div>
+                <div class="info">
+                  <p>총 할인</p>
+                  <p id="discountTotal" style="color:red"></p>
+                </div>
+                <div class="total">
+                  <p> 결제금액 </p>
+                  <p class="total-price" id="orderTotal" style="font-weight: 600"></p>
+                </div>
+                </div>
               <div class="purchase">
-                <button class="button is-info" id="purchaseButton">
+                <button class="button is-info" id="purchaseButton" onClick="location.href='../order/order.html'">
                   구매하기
                 </button>
               </div>
@@ -135,5 +107,7 @@
         </div>
       </div>
     </section>
+<script src="/cart/cart.js" type="module" ></script>
+<script src="/cart/main.js" type="module" ></script>
   </body>
 </html>

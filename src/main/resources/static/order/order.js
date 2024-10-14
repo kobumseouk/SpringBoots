@@ -1,274 +1,162 @@
-import * as Api from "../api.js";
-import {
-  checkLogin,
-  addCommas,
-  convertToNumber,
-  navigate,
-  randomPick,
-  createNavbar,
-} from "../useful-functions.js";
-import { deleteFromDb, getFromDb, putToDb } from "../indexed-db.js";
-
-// 요소(element), input 혹은 상수
-const subtitleCart = document.querySelector("#subtitleCart");
-const receiverNameInput = document.querySelector("#receiverName");
-const receiverPhoneNumberInput = document.querySelector("#receiverPhoneNumber");
-const postalCodeInput = document.querySelector("#postalCode");
-const searchAddressButton = document.querySelector("#searchAddressButton");
-const address1Input = document.querySelector("#address1");
-const address2Input = document.querySelector("#address2");
-const requestSelectBox = document.querySelector("#requestSelectBox");
-const customRequestContainer = document.querySelector(
-  "#customRequestContainer"
-);
-const customRequestInput = document.querySelector("#customRequest");
-const productsTitleElem = document.querySelector("#productsTitle");
-const productsTotalElem = document.querySelector("#productsTotal");
-const deliveryFeeElem = document.querySelector("#deliveryFee");
-const orderTotalElem = document.querySelector("#orderTotal");
-const checkoutButton = document.querySelector("#checkoutButton");
-
-const requestOption = {
-  1: "직접 수령하겠습니다.",
-  2: "배송 전 연락바랍니다.",
-  3: "부재 시 경비실에 맡겨주세요.",
-  4: "부재 시 문 앞에 놓아주세요.",
-  5: "부재 시 택배함에 넣어주세요.",
-  6: "직접 입력",
-};
-
-checkLogin();
-addAllElements();
-addAllEvents();
-
-// html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-function addAllElements() {
-  createNavbar();
-  insertOrderSummary();
-  insertUserData();
-}
-
-// addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-function addAllEvents() {
-  subtitleCart.addEventListener("click", navigate("/cart"));
-  searchAddressButton.addEventListener("click", searchAddress);
-  requestSelectBox.addEventListener("change", handleRequestChange);
-  checkoutButton.addEventListener("click", doCheckout);
-}
-
-// Daum 주소 API (사용 설명 https://postcode.map.daum.net/guide)
-function searchAddress() {
-  new daum.Postcode({
-    oncomplete: function (data) {
-      let addr = "";
-      let extraAddr = "";
-
-      if (data.userSelectedType === "R") {
-        addr = data.roadAddress;
-      } else {
-        addr = data.jibunAddress;
-      }
-
-      if (data.userSelectedType === "R") {
-        if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
-          extraAddr += data.bname;
+document.addEventListener("DOMContentLoaded", async function() {
+    try {
+        // Load header.html into #header-placeholder
+        const response = await fetch("/common/header.html");
+        if (!response.ok) {
+            throw new Error("헤더를 불러오는 중 오류가 발생했습니다.");
         }
-        if (data.buildingName !== "" && data.apartment === "Y") {
-          extraAddr +=
-            extraAddr !== "" ? ", " + data.buildingName : data.buildingName;
-        }
-        if (extraAddr !== "") {
-          extraAddr = " (" + extraAddr + ")";
-        }
-      } else {
-      }
+        const data = await response.text();
+        document.getElementById("header-placeholder").innerHTML = data;
 
-      postalCodeInput.value = data.zonecode;
-      address1Input.value = `${addr} ${extraAddr}`;
-      address2Input.placeholder = "상세 주소를 입력해 주세요.";
-      address2Input.focus();
-    },
-  }).open();
-}
+        // Load cart items from local storage
+        loadCartSummary();
+    } catch (error) {
+        console.error("헤더를 로드할 수 없습니다:", error);
+    }
+});
 
-// 페이지 로드 시 실행되며, 결제정보 카드에 값을 삽입함.
-async function insertOrderSummary() {
-  const { ids, selectedIds, productsTotal } = await getFromDb(
-    "order",
-    "summary"
-  );
+// 로컬 스토리지에서 장바구니 정보 로드 후 결제 정보 출력
+async function loadCartSummary() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let itemsHtml = '';
+    let totalPrice = 0;
 
-  // 구매할 아이템이 없다면 다른 페이지로 이동시킴
-  const hasItemInCart = ids.length !== 0;
-  const hasItemToCheckout = selectedIds.length !== 0;
+    for (const item of cart) {
+        // API를 사용하여 item_id로 아이템 정보 가져오기
+        const productData = await getData(item.item_id);
 
-  if (!hasItemInCart) {
-    const categorys = await Api.get("/api/categorylist");
-    const categoryTitle = randomPick(categorys).title;
+        // 가져온 데이터가 없을 경우 continue
+        if (!productData) continue;
 
-    alert(`구매할 제품이 없습니다. 제품을 선택해 주세요.`);
-
-    return window.location.replace(`/product/list?category=${categoryTitle}`);
-  }
-
-  if (!hasItemToCheckout) {
-    alert("구매할 제품이 없습니다. 장바구니에서 선택해 주세요.");
-
-    return window.location.replace("/cart");
-  }
-
-  // 화면에 보일 상품명
-  let productsTitle = "";
-
-  for (const id of selectedIds) {
-    const { title, quantity } = await getFromDb("cart", id);
-    // 첫 제품이 아니라면, 다음 줄에 출력되도록 \n을 추가함
-    if (productsTitle) {
-      productsTitle += "\n";
+        itemsHtml += `
+            <div class="box mb-4">
+                <article class="media">
+                    <figure class="media-left">
+                        <p class="image is-128x128">
+                            <img src="${productData.image_url}" alt="${productData.item_name}">
+                        </p>
+                    </figure>
+                    <div class="media-content">
+                        <div class="content">
+                            <p><strong>제품명: </strong>${productData.item_name}</p>
+                            <p><strong>사이즈(mm): </strong>${item.item_size}</p>
+                            <p><strong>수량: </strong>${item.item_quantity}개</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        `;
+        totalPrice += productData.item_price * item.item_quantity;
     }
 
-    productsTitle += `${title} / ${quantity}개`;
-  }
+    const summaryHtml = `
+        <p><strong>총 상품 금액: </strong>₩${totalPrice}</p>
+        <p><strong>배송비: </strong>₩0</p>
+        <p><strong>총 결제 금액: </strong>₩${totalPrice}</p>
+    `;
 
-  productsTitleElem.innerText = productsTitle;
-  productsTotalElem.innerText = `${addCommas(productsTotal)}원`;
-
-  if (hasItemToCheckout) {
-    deliveryFeeElem.innerText = `3,000원`;
-    orderTotalElem.innerText = `${addCommas(productsTotal + 3000)}원`;
-  } else {
-    deliveryFeeElem.innerText = `0원`;
-    orderTotalElem.innerText = `0원`;
-  }
-
-  receiverNameInput.focus();
+    document.getElementById('order-items').innerHTML = itemsHtml;
+    document.getElementById('order-summary').innerHTML = summaryHtml;
 }
 
-async function insertUserData() {
-  const userData = await Api.get("/user");
-  const { fullName, phoneNumber, address } = userData;
+// API로부터 item_id를 이용해 상품 데이터를 가져오는 함수
+async function getData(item_id) {
+    const loc = `/api/items/${item_id}`;
 
-  // 만약 db에 데이터 값이 있었다면, 배송지정보에 삽입
-  if (fullName) {
-    receiverNameInput.value = fullName;
-  }
+    try {
+        const res = await fetch(loc); // API 호출
+        if (!res.ok) {
+            throw new Error('Network response was not ok');
+        }
 
-  if (phoneNumber) {
-    receiverPhoneNumberInput.value = phoneNumber;
-  }
+        const data = await res.json(); // JSON 데이터 파싱
+        const { itemName, itemPrice, imageUrl } = data;
 
-  if (address) {
-    postalCode.value = address.postalCode;
-    address1Input.value = address.address1;
-    address2Input.value = address.address2;
-  }
-}
+        // 로그 추가: 받아온 상품 정보 확인
+        console.log("상품 정보:", { itemName, itemPrice, imageUrl });
 
-// "직접 입력" 선택 시 input칸 보이게 함
-// default값(배송 시 요청사항을 선택해 주세여) 이외를 선택 시 글자가 진해지도록 함
-function handleRequestChange(e) {
-  const type = e.target.value;
-
-  if (type === "6") {
-    customRequestContainer.style.display = "flex";
-    customRequestInput.focus();
-  } else {
-    customRequestContainer.style.display = "none";
-  }
-
-  if (type === "0") {
-    requestSelectBox.style.color = "rgba(0, 0, 0, 0.3)";
-  } else {
-    requestSelectBox.style.color = "rgba(0, 0, 0, 1)";
-  }
-}
-
-// 결제 진행
-async function doCheckout() {
-  const receiverName = receiverNameInput.value;
-  const receiverPhoneNumber = receiverPhoneNumberInput.value;
-  const postalCode = postalCodeInput.value;
-  const address1 = address1Input.value;
-  const address2 = address2Input.value;
-  const requestType = requestSelectBox.value;
-  const customRequest = customRequestInput.value;
-  const summaryTitle = productsTitleElem.innerText;
-  const totalPrice = convertToNumber(orderTotalElem.innerText);
-  const { selectedIds } = await getFromDb("order", "summary");
-
-  if (!receiverName || !receiverPhoneNumber || !postalCode || !address2) {
-    return alert("배송지 정보를 모두 입력해 주세요.");
-  }
-
-  // 요청사항의 종류에 따라 request 문구가 달라짐
-  let request;
-  if (requestType === "0") {
-    request = "요청사항 없음.";
-  } else if (requestType === "6") {
-    if (!customRequest) {
-      return alert("요청사항을 작성해 주세요.");
+        // 결과 반환
+        return { item_name: itemName, item_price: itemPrice, image_url: imageUrl };
+    } catch (error) {
+        console.error('Failed to fetch data:', error); // 오류 처리
+        return null; // 오류가 발생한 경우 null 반환
     }
-    request = customRequest;
-  } else {
-    request = requestOption[requestType];
-  }
+}
 
-  const address = {
-    postalCode,
-    address1,
-    address2,
-    receiverName,
-    receiverPhoneNumber,
-  };
+// 주문자 정보와 동일 체크박스 클릭 시 수신자 정보 복사
+function copyBuyerInfo() {
+    const buyerName = document.getElementById('buyerName').value;
+    const buyerContact = document.getElementById('buyerContact').value;
 
-  try {
-    // 전체 주문을 등록함
-    const orderData = await Api.post("/api/order", {
-      summaryTitle,
-      totalPrice,
-      address,
-      request,
-    });
+    if (document.getElementById('sameAsBuyer').checked) {
+        document.getElementById('recipientName').value = buyerName;
+        document.getElementById('recipientContact').value = buyerContact;
+    } else {
+        document.getElementById('recipientName').value = '';
+        document.getElementById('recipientContact').value = '';
+    }
+}
 
-    const orderId = orderData._id;
-
-    // 제품별로 주문아이템을 등록함
-    for (const productId of selectedIds) {
-      const { quantity, price } = await getFromDb("cart", productId);
-      const totalPrice = quantity * price;
-
-      await Api.post("/api/orderitem", {
-        orderId,
-        productId,
-        quantity,
-        totalPrice,
-      });
-
-      // indexedDB에서 해당 제품 관련 데이터를 제거함
-      await deleteFromDb("cart", productId);
-      await putToDb("order", "summary", (data) => {
-        data.ids = data.ids.filter((id) => id !== productId);
-        data.selectedIds = data.selectedIds.filter((id) => id !== productId);
-        data.productsCount -= 1;
-        data.productsTotal -= totalPrice;
-      });
+// 주문하기 버튼을 눌렀을 때 폼 데이터와 장바구니 데이터로 주문 요청
+async function placeOrder() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    if (cart.length === 0) {
+        alert("장바구니가 비어있습니다.");
+        return;
     }
 
-    // 입력된 배송지정보를 유저db에 등록함
-    const data = {
-      phoneNumber: receiverPhoneNumber,
-      address: {
-        postalCode,
-        address1,
-        address2,
-      },
+    const orderData = {
+        buyerName: document.getElementById('buyerName').value,
+        buyerContact: document.getElementById('buyerContact').value,
+        recipientName: document.getElementById('recipientName').value,
+        recipientContact: document.getElementById('recipientContact').value,
+        shippingAddress: document.getElementById("shippingAddress").value + " " + document.getElementById("shippingAddress2").value,
+        deliveryMessage: document.getElementById('deliveryMessage').value,
+        items: await Promise.all(cart.map(async (item) => {
+            const productData = await getData(item.item_id); // 상품 데이터 가져오기
+            return {
+                itemId: item.item_id,
+                itemQuantity: item.item_quantity,
+                itemSize: item.item_size,
+                itemPrice: productData.item_price // 상품 가격 설정
+            };
+        }))
     };
-    await Api.post("/api/user/deliveryinfo", data);
 
-    alert("결제 및 주문이 정상적으로 완료되었습니다.\n감사합니다.");
-    window.location.href = "/order/complete";
-  } catch (err) {
-    console.log(err);
-    alert(`결제 중 문제가 발생하였습니다: ${err.message}`);
-  }
+    // 로그 추가: 주문 데이터 확인
+    console.log("주문 데이터: ", orderData);
+
+    try {
+        const response = await fetch('/api/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orderData)
+        });
+
+        if (!response.ok) {
+            throw new Error('주문 처리 중 오류가 발생했습니다.');
+        }
+
+        const data = await response.json();
+        alert("주문이 성공적으로 처리되었습니다!");
+        localStorage.removeItem('cart'); // 주문 완료 후 장바구니 비우기
+        const orderId = data.ordersId;
+
+        window.location.href = `/order-summary?orderId=${orderId}`; // 주문 내역 페이지로 이동
+
+    } catch (error) {
+        console.error("주문 실패:", error);
+        alert("주문에 실패했습니다. 다시 시도해 주세요.");
+    }
+}
+
+function openDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            // 검색 결과에서 선택된 주소를 가져와서 입력
+            document.getElementById("edit-shipping-address").value = data.address;
+        }
+    }).open();
 }

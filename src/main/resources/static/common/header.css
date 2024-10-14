@@ -1,0 +1,140 @@
+/* 기본 네비게이션 바 스타일 */
+.header-container .navbar {
+  background-color: black;
+  padding: 0.7rem 1rem;
+}
+
+.header-container .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 로고 스타일 */
+.header-container .logo-icon {
+  color: #4caf50;
+  font-size: 1.5rem;
+}
+
+/* 오른쪽 컨테이너 스타일 */
+.header-container .navbar-end {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.header-container .right-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-bottom: -0.55rem;
+}
+
+/* 사용자 메뉴 스타일 */
+.header-container .user-menu-container {
+  margin-bottom: 0.3rem;
+}
+
+.header-container #user-menu {
+  display: flex;
+}
+
+.header-container #user-menu a {
+  color: white;
+  font-size: 0.9rem;
+  margin-left: 1rem;
+  text-decoration: none;
+  background-color: transparent; /* 배경색을 투명하게 설정 */
+  transition: text-decoration 0.3s ease; /* 부드러운 밑줄 효과를 위한 transition */
+}
+
+.header-container #user-menu a:hover {
+  text-decoration: underline;
+  background-color: transparent !important; /* hover 시에도 배경색이 변하지 않도록 설정 */
+}
+
+/* 검색 컨테이너 스타일 */
+.header-container .search-container {
+  width: 300px;  /* 원하는 너비로 조정 */
+  margin-bottom: 0.15rem;  /* 아래 여백을 줄임 */
+}
+
+.header-container .search-input {
+  background-color: white;
+  border: none;
+  color: black;
+  height: 2rem;
+}
+
+.header-container .search-input::placeholder {
+  color: #888;
+}
+
+.header-container .search-button {
+  background-color: white;
+  border: none;
+  height: 2rem;
+}
+
+.header-container .search-icon {
+  color: black;
+  font-size: 0.9rem;
+}
+
+/* 두 번째 네비게이션 바 스타일 */
+.header-container .secondary-navbar {
+  background-color: black;
+  border-top: 1px solid #333;
+  padding-top: 0.15rem;
+}
+
+.header-container .secondary-navbar .navbar-menu {
+  display: flex;
+  justify-content: space-between;
+}
+
+.header-container .secondary-navbar .navbar-item {
+  color: white !important;
+}
+
+.header-container .secondary-navbar .navbar-item:hover,
+.header-container .secondary-navbar .navbar-item:focus,
+.header-container .secondary-navbar .navbar-item.is-active {
+  background-color: #333 !important;
+  color: white !important;
+}
+
+.header-container .secondary-navbar .sale-item {
+  color: red !important;
+}
+
+/* SALE 항목 hover 스타일 */
+.header-container .secondary-navbar .sale-item:hover,
+.header-container .secondary-navbar .sale-item:focus,
+.header-container .secondary-navbar .sale-item.is-active {
+  background-color: #333 !important;
+  color: red !important; /* hover 상태에서도 빨간색 유지 */
+}
+
+.header-container .secondary-navbar .navbar-end {
+  margin-left: auto;
+}
+
+/* 반응형 디자인을 위한 미디어 쿼리 */
+@media screen and (max-width: 1023px) {
+  .header-container .navbar-menu {
+    display: none;
+  }
+
+  .header-container .navbar-menu.is-active {
+    display: block;
+  }
+
+  .header-container .right-container {
+    width: 100%;
+  }
+
+  .header-container .search-container {
+    width: 100%;
+  }
+}

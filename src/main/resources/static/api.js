@@ -4,10 +4,15 @@ async function get(endpoint, params = "") {
   console.log(`%cGET 요청: ${apiUrl} `, "color: #a25cd1;");
 
   // 토큰이 있으면 Authorization 헤더를 포함, 없으면 포함하지 않음
-  const token = sessionStorage.getItem("token");
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+//  const token = sessionStorage.getItem("token");
+//  const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
-  const res = await fetch(apiUrl, { headers });
+  //쿠키
+  const res = await fetch(apiUrl, {
+    credentials: "include", // 쿠키 포함
+  });
+
+//  const res = await fetch(apiUrl, { headers });
 
   // 응답 코드가 4XX 계열일 때 (400, 403 등)
   if (!res.ok) {
@@ -28,20 +33,26 @@ async function post(endpoint, data) {
   console.log(`%cPOST 요청 데이터: ${bodyData}`, "color: #296aba;");
 
   // 토큰이 있으면 Authorization 헤더를 포함, 없으면 포함하지 않음
-  const token = sessionStorage.getItem("token");
-  const headers = {
-    "Content-Type": "application/json",
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
+//  const token = sessionStorage.getItem("token");
+//  const headers = {
+//    "Content-Type": "application/json",
+//    ...(token && { Authorization: `Bearer ${token}` }),
+//  };
+
+   //쿠키
+   const headers = {
+     "Content-Type": "application/json",
+   };
 
   const res = await fetch(apiUrl, {
     method: "POST",
     headers,
     body: bodyData,
+    credentials: "include",
   });
 
   // 응답 코드가 4XX 계열일 때 (400, 403 등)
-  if (!res.ok) {
+  if (!res.ok && !res.created) {
     const errorContent = await res.json();
     const { reason } = errorContent;
 
@@ -62,13 +73,22 @@ async function patch(endpoint, params = "", data) {
   console.log(`%cPATCH 요청: ${apiUrl}`, "color: #059c4b;");
   console.log(`%cPATCH 요청 데이터: ${bodyData}`, "color: #059c4b;");
 
+//  const res = await fetch(apiUrl, {
+//    method: "PATCH",
+//    headers: {
+//      "Content-Type": "application/json",
+//      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+//    },
+//    body: bodyData,
+//  });
+
   const res = await fetch(apiUrl, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
     },
     body: bodyData,
+    credentials: "include", // 쿠키 포함
   });
 
   // 응답 코드가 4XX 계열일 때 (400, 403 등)
@@ -87,33 +107,47 @@ async function patch(endpoint, params = "", data) {
 // 아래 함수명에 관해, delete 단어는 자바스크립트의 reserved 단어이기에,
 // 여기서는 우선 delete 대신 del로 쓰고 아래 export 시에 delete로 alias 함.
 async function del(endpoint, params = "", data = {}) {
-  const apiUrl = `${endpoint}/${params}`;
+  const apiUrl = params ? `${endpoint}/${params}` : endpoint;
+  // 끝에 있는 슬래시 제거
+  const trimmedUrl = apiUrl.replace(/\/$/, '');
   const bodyData = JSON.stringify(data);
 
-  console.log(`DELETE 요청 ${apiUrl}`, "color: #059c4b;");
+  console.log(`DELETE 요청 ${trimmedUrl}`, "color: #059c4b;");
   console.log(`DELETE 요청 데이터: ${bodyData}`, "color: #059c4b;");
 
-  const res = await fetch(apiUrl, {
+//  const res = await fetch(apiUrl, {
+//    method: "DELETE",
+//    headers: {
+//      "Content-Type": "application/json",
+//      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+//    },
+//    body: bodyData,
+//  });
+
+  const res = await fetch(trimmedUrl, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
     },
     body: bodyData,
+    credentials: "include", // 쿠키 포함
   });
 
   // 응답 코드가 4XX 계열일 때 (400, 403 등)
   if (!res.ok) {
     const errorContent = await res.json();
-    const { reason } = errorContent;
+    throw new Error(`HTTP error! status: ${res.status}, message: ${errorContent.reason || res.statusText}`);
+  }
 
-    throw new Error(reason);
+  if (res.status === 204) {  // No Content
+    return { status: res.status };
   }
 
   const result = await res.json();
 
   return result;
 }
+
 
 // 아래처럼 export하면, import * as Api 로 할 시 Api.get, Api.post 등으로 쓸 수 있음.
 export { get, post, patch, del as delete };

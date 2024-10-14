@@ -1,0 +1,11 @@
+.container {
+    margin-top: 0px;
+}
+
+.has-background-dark {
+    padding: 20px;
+}
+
+.button.is-dark {
+    margin: 10px;
+}

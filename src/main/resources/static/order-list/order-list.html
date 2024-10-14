@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 목록</title>
+    <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/common/sidebar.css"> <!-- 사이드바 CSS 링크 추가 -->
+    <link rel="stylesheet" href="/order-list/order-list.css"> <!-- 주문 목록 스타일 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/common/header.css">
+</head>
+<body>
+
+<!-- Include header -->
+<div id="header-placeholder" class="header-container"></div>
+
+<!-- Main container -->
+<div class="container mt-5">
+    <div class="columns">
+        <!-- Include sidebar -->
+        <div id="sidebar-placeholder" class="column is-one-quarter"></div>
+
+        <!-- Order List Root Element -->
+        <div id="order-list-root" class="column"></div>
+    </div>
+</div>
+
+<script src="/common/sidebar.js"></script> <!-- 사이드바 JS 링크 추가 -->
+<script src="/order-list/order-list.js"></script> <!-- 주문 목록 JavaScript -->
+</body>
+</html>
+
+<script src="/common/header.js" type="module"></script>
+<script type="module">
+    import { loadHeader } from '/common/header.js';
+    document.addEventListener('DOMContentLoaded', loadHeader);
+</script>

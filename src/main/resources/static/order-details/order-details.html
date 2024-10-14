@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주문 배송 상세</title>
+  <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/common/sidebar.css"> <!-- 사이드바 CSS 링크 추가 -->
+  <link rel="stylesheet" href="/order-details/order-details.css"> <!-- 주문 배송 상세 스타일 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/common/header.css">
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script> <!-- Daum 주소찾기 API 추가 -->
+</head>
+<body>
+
+<!-- Include header -->
+<div id="header-placeholder" class="header-container"></div>
+
+<!-- Main container -->
+<div class="container mt-5">
+  <div class="columns">
+    <!-- Include sidebar -->
+    <div id="sidebar-placeholder" class="column is-one-quarter"></div>
+
+    <!-- Order Summary Root Element -->
+    <div id="order-summary-root" class="column"></div>
+  </div>
+</div>
+
+<!-- 배송지 변경 모달 -->
+<div id="edit-shipping-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">배송지 변경</p>
+      <button class="delete" aria-label="close" onclick="closeShippingModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      <form id="edit-shipping-form">
+        <div class="field">
+          <label class="label">받는 분</label>
+          <div class="control">
+            <input class="input" type="text" id="edit-recipient-name" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">주소</label>
+          <div class="control" style="display: flex; align-items: center;">
+            <input class="input" type="text" id="edit-shipping-address" required style="flex-grow: 1; margin-right: 10px;">
+            <button type="button" class="button is-small is-info" onclick="openDaumPostcode()">주소찾기</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">나머지 주소</label>
+          <div class="control">
+            <input class="input" type="text" id="edit-shipping-address2" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">전화번호</label>
+          <div class="control">
+            <input class="input" type="tel" id="edit-recipient-contact" required>
+          </div>
+        </div>
+      </form>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success" onclick="submitShippingUpdate()">수정</button>
+      <button class="button" onclick="closeShippingModal()">취소</button>
+    </footer>
+  </div>
+</div>
+
+<!-- 사이드바 JS 링크 추가 -->
+<script src="/common/sidebar.js"></script>
+<!-- 주문 배송 상세 JavaScript 추가 -->
+<script src="/order-details/order-details.js"></script>
+
+<script src="/common/header.js" type="module"></script>
+<script type="module">
+  import { loadHeader } from '/common/header.js';
+  document.addEventListener('DOMContentLoaded', loadHeader);
+</script>
+</body>
+</html>

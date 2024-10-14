@@ -1,3 +1,80 @@
+
+/*// 네비게이션 바 생성 함수
+export const createNavbar = () => {
+  const pathname = window.location.pathname;
+  const isLogin = sessionStorage.getItem("token") ? true : false;
+  const isAdmin = sessionStorage.getItem("admin") ? true : false;
+
+  // 동적 네비게이션 바 아이템 생성
+  const dynamicNavbar = createDynamicNavItems(pathname, isLogin, isAdmin);
+  document.querySelector('#dynamic-navbar').innerHTML = dynamicNavbar;
+
+  // 카테고리 메뉴 생성
+  const categoryMenu = createCategoryMenu();
+  document.querySelector('#dynamic-category-menu').innerHTML = categoryMenu;
+
+  // 로그아웃 이벤트 리스너 추가
+  addLogoutEventListener();
+};
+
+// 동적 네비게이션 아이템 생성 함수
+const createDynamicNavItems = (pathname, isLogin, isAdmin) => {
+  let items = '';
+
+  // 로그인 상태에 따른 아이템 추가
+  if (isLogin) {
+    items += `
+      <a href="/account" class="navbar-item">마이 페이지</a>
+      <a href="/cart" class="navbar-item">장바구니</a>
+      <a href="#" id="logout" class="navbar-item">로그아웃</a>
+    `;
+    if (isAdmin) {
+      items = `<a href="/admin" class="navbar-item">관리자 페이지</a>` + items;
+    }
+  } else {
+    items += `
+      <a href="/login" class="navbar-item">로그인</a>
+      <a href="/register" class="navbar-item">회원가입</a>
+    `;
+  }
+
+  return items;
+};
+
+// 카테고리 메뉴 생성 함수
+const createCategoryMenu = () => {
+  return `
+    <div class="navbar-start">
+      <a href="#" class="navbar-item">공용</a>
+      <a href="#" class="navbar-item">여성</a>
+      <a href="#" class="navbar-item">남성</a>
+      <a href="#" class="navbar-item">액세서리</a>
+      <a href="#" class="navbar-item has-text-danger">SALE</a>
+      <a href="#" class="navbar-item">COLLABORATION</a>
+      <a href="#" class="navbar-item">HOW TO</a>
+    </div>
+    <div class="navbar-end">
+      <a href="#" class="navbar-item">NEW-IN</a>
+      <a href="#" class="navbar-item">BEST</a>
+      <a href="#" class="navbar-item">EVENT</a>
+    </div>
+  `;
+};
+
+// 로그아웃 이벤트 리스너 추가 함수
+const addLogoutEventListener = () => {
+  const logoutElem = document.querySelector('#logout');
+  if (logoutElem) {
+    logoutElem.addEventListener('click', () => {
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('admin');
+      window.location.href = '/';
+    });
+  }
+};*/
+
+
+// 기존의 네비게이션 바
 export const createNavbar = () => {
   const pathname = window.location.pathname;
 
