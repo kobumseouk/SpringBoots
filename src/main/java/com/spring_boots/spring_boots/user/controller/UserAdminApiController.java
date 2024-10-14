@@ -1,14 +1,17 @@
 package com.spring_boots.spring_boots.user.controller;
 
 import com.spring_boots.spring_boots.user.domain.Users;
+import com.spring_boots.spring_boots.user.dto.AdminCodeRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.AdminGrantTokenRequestDto;
+import com.spring_boots.spring_boots.user.dto.response.AdminCodeResponseDto;
+import com.spring_boots.spring_boots.user.dto.response.AdminGrantTokenResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UserCheckAdminResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,20 +39,20 @@ public class UserAdminApiController {
     }
 
     //관리자 부여
-    @PatchMapping("/admin/grant")
-    public ResponseEntity<String> grantAdmin(@AuthenticationPrincipal Users user,
-                                             @RequestBody AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
-        Users authUser = userService.findById(user.getUserId());
+    @PatchMapping("/admin/grant/{userId}")
+    public ResponseEntity<AdminGrantTokenResponseDto> grantAdmin(@PathVariable("userId") Long userId,
+                                                                 @RequestBody AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
+        Users authUser = userService.findById(userId);
 
         if (authUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증되지 않은 사용자입니다. 로그인해주세요");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(AdminGrantTokenResponseDto.builder()
+                    .message("인증되지 않은 사용자입니다. 로그인해주세요")
+                    .build());
         }
-
-        if (userService.grantAdminToken(authUser, adminGrantTokenRequestDto) && userService.isGrantAdmin(authUser)) {
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 토큰입니다.");
-        }
+        userService.grantRole(authUser, adminGrantTokenRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(AdminGrantTokenResponseDto.builder()
+                .message("권한부여 성공!")
+                .build());
     }
 
     @GetMapping("/users/admin-check")
@@ -80,6 +83,22 @@ public class UserAdminApiController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(UserCheckAdminResponseDto.builder()
                             .message("유효하지않은 토큰")
+                            .build());
+        }
+    }
+
+    //관리자 코드 체크
+    @PostMapping("/users/grant")
+    public ResponseEntity<AdminCodeResponseDto> checkAdminCode(@RequestBody AdminCodeRequestDto adminCodeDto) {
+        if (userService.checkAdminCode(adminCodeDto)) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(AdminCodeResponseDto.builder()
+                            .message("success")
+                            .build());
+        } else {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(AdminCodeResponseDto.builder()
+                            .message("fail")
                             .build());
         }
     }

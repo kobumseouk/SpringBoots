@@ -2,6 +2,7 @@ package com.spring_boots.spring_boots.user.domain;
 
 import com.spring_boots.spring_boots.common.BaseTimeEntity;
 import com.spring_boots.spring_boots.orders.entity.Orders;
+import com.spring_boots.spring_boots.user.dto.request.AdminGrantTokenRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UsersInfoResponseDto;
@@ -129,7 +130,7 @@ public class Users extends BaseTimeEntity implements UserDetails {
         this.email = userUpdateRequestDto.getEmail();
     }
 
-    public void updateToAdminRole() {
-        role = UserRole.ADMIN;
+    public void updateToRole(AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
+        this.role = adminGrantTokenRequestDto.getRoles();
     }
 }
