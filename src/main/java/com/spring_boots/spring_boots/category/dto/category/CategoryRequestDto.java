@@ -21,8 +21,6 @@ public class CategoryRequestDto {
 
   private String categoryContent;
 
-  private String imageUrl;
-
   @NotNull(message = "카테고리의 배치 순서 설정은 필수입니다.")
   private int displayOrder;
 
