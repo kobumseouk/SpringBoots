@@ -4,8 +4,10 @@ import com.spring_boots.spring_boots.config.jwt.impl.AuthTokenImpl;
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
+import com.spring_boots.spring_boots.user.domain.UsersInfo;
 import com.spring_boots.spring_boots.user.dto.request.*;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
+import com.spring_boots.spring_boots.user.repository.UserInfoRepository;
 import com.spring_boots.spring_boots.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtProviderImpl jwtProvider;
+    private final UserInfoRepository userInfoRepository;
 
     public Users save(UserSignupRequestDto dto) {
         if (userRepository.existsByUserRealId(dto.getUserRealId())) {
@@ -70,7 +73,7 @@ public class UserService {
         Map<String, Object> claims = Map.of(
                 "accountId", user.getUserId(),  //JWT 클래임에 accountId
                 "role", user.getRole(),  //JWT 클래임에 role
-                "userRealId",user.getUserRealId()   //JWT 클래임에 실제 ID 추가
+                "userRealId", user.getUserRealId()   //JWT 클래임에 실제 ID 추가
         );
 
         AuthTokenImpl accessToken = jwtProvider.createAccessToken(
@@ -101,7 +104,16 @@ public class UserService {
     }
 
     @Transactional
-    public void update(Users user, UserUpdateRequestDto userUpdateRequestDto) {
+    public void update(Users user, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
+        if (!bCryptPasswordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+
+        UsersInfo usersInfo = userInfoRepository.findById(userInfoId).orElse(null);
+        if (usersInfo != null) {
+            usersInfo.updateUserInfo(userUpdateRequestDto);
+        }
+
         user.updateUser(userUpdateRequestDto);
     }
 
@@ -158,5 +170,9 @@ public class UserService {
 
     public boolean validateToken(String accessToken) {
         return jwtProvider.validateToken(accessToken);
+    }
+
+    public boolean validateAdminToken(String accessToken) {
+        return jwtProvider.validateAdminToken(accessToken);
     }
 }

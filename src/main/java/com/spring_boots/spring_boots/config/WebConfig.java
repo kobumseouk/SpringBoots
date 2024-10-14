@@ -20,10 +20,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/register").setViewName("forward:/register/register.html"); //회원가입 페이지
         registry.addViewController("/mypage").setViewName("forward:/account/account.html");   //마이페이지
         registry.addViewController("/account/signout").setViewName("forward:/account-signout/account-signout.html"); //회원 탈퇴 페이지
+        registry.addViewController("/account/security").setViewName("forward:/account-security/account-security.html"); //회원 정보
         registry.addViewController("/order-summary").setViewName("forward:/order-summary/order-summary.html");
         registry.addViewController("/order-list").setViewName("forward:/order-list/order-list.html");
         registry.addViewController("/order").setViewName("forward:/order/order.html");
         registry.addViewController("/order-details").setViewName("forward:/order-details/order-details.html");
+        registry.addViewController("/admin").setViewName("forward:/admin/admin.html");
+        registry.addViewController("/admin/users").setViewName("forward:/admin-users/admin-users.html");
         registry.addViewController("/admin-orders").setViewName("forward:/admin-orders/admin-orders.html");
         // 카테고리 관리 페이지
         registry.addViewController("/admin/categories").setViewName("forward:/admin-categories/admin-categories.html");
