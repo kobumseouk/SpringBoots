@@ -63,39 +63,44 @@ export const checkLogin = () => {
 
 // 관리자 여부 확인
 export const checkAdmin = async () => {
-  // 우선 화면을 가리고 시작함 -> 화면 번쩍거림으로 인해 일단 미적용
-  //window.document.body.style.display = 'none';
-
+  // 쿠키에서 accessToken을 가져오기
   const accessToken = getCookie("accessToken");
   const refreshToken = getCookie("refreshToken");
 
-  // 우선 토큰 존재 여부 확인
+  // 토큰 존재 여부 확인
   if (!accessToken && !refreshToken) {
-    // 현재 페이지의 url 주소 추출하기
     const pathname = window.location.pathname;
     const search = window.location.search;
-
-    // 로그인 후 다시 지금 페이지로 자동으로 돌아가도록 하기 위한 준비작업임.
     window.location.replace(`/login?previouspage=${pathname + search}`);
+    return;
   }
 
-  // 관리자 토큰 여부 확인
-  const res = await fetch("/users/admin-check", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  // 쿠키에 토큰을 저장하는 로직 (이미 저장되어 있다면 불필요)
+//  document.cookie = `accessToken=${accessToken}; path=/; Secure; HttpOnly; SameSite=Strict`;
 
-  const { result } = await res.json();
+  // 쿠키가 포함된 상태로 요청 보내기 (쿠키는 자동으로 포함됨)
+  try {
+    const res = await fetch("/api/users/admin-check", {
+      credentials: 'include', // 쿠키를 자동으로 포함하게 하는 옵션
+    });
 
-  if (result === "success") {
-    window.document.body.style.display = "block";
+    if (!res.ok) {
+      throw new Error("서버 응답 오류");
+    }
 
-    return;
-  } else {
-    alert("관리자 전용 페이지입니다.");
+    const { message } = await res.json();
 
-    window.location.replace("/");
+    if (message === "관리자 인증 성공") {
+      window.document.body.style.display = "block";
+      return;
+    } else {
+      alert("관리자 전용 페이지입니다.");
+      window.location.replace("/");
+    }
+  } catch (error) {
+    console.error("관리자 체크 중 오류 발생:", error);
+    alert("관리자 확인 중 문제가 발생했습니다. 다시 시도해주세요.");
+    window.location.replace("/login");
   }
 };
 
