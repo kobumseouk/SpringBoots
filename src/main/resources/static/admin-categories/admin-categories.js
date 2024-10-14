@@ -75,13 +75,14 @@ async function insertCategories(page = 0, size = 10) {
 
     for (const category of categories) {
       const { id, categoryName, categoryThema, displayOrder, createdAt, updatedAt } = category;
+      const koreanThema = translateEnglishToKorean(categoryThema);
 
       categoryList.insertAdjacentHTML(
         "beforeend",
         `
           <div class="columns orders-item" id="category-${id}">
             <div class="column is-2">${categoryName}</div>
-            <div class="column is-2">${categoryThema}</div>
+            <div class="column is-2">${koreanThema}</div>
             <div class="column is-2">${displayOrder}번째</div>
             <div class="column is-2">${new Date(createdAt).toLocaleDateString()}</div>
             <div class="column is-2">${new Date(updatedAt).toLocaleDateString()}</div>
@@ -170,6 +171,22 @@ function createPagination(currentPage, totalPages) {
   document.querySelector("#categoriesContainer").after(paginationContainer);
 }
 
+function translateEnglishToKorean(englishTheme) {
+  const themeMap = {
+    'common': '공용',
+    'women': '여성',
+    'men': '남성',
+    'accessories': '액세서리',
+    'sale': 'SALE',
+    'collaboration': 'COLLABORATION',
+    'how-to': 'HOW TO',
+    'new-in': 'NEW-IN',
+    'best': 'BEST',
+    'event': 'EVENT'
+  };
+
+  return themeMap[englishTheme];
+}
 
 // Modal 창 관련 함수들
 function openModal() {

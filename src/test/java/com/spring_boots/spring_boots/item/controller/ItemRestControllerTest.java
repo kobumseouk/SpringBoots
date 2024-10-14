@@ -47,7 +47,7 @@ public class ItemRestControllerTest {
         // 필드 설정
         ResponseItemDto responseItemDto = new ResponseItemDto();
 
-        when(itemRestService.createItem(any(CreateItemDto.class))).thenReturn(responseItemDto);
+        // when(itemRestService.createItem(any(CreateItemDto.class))).thenReturn(responseItemDto);
 
         mockMvc.perform(post("/api/admin/items")
                 .contentType(MediaType.APPLICATION_JSON)

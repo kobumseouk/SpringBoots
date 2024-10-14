@@ -24,14 +24,14 @@ INSERT INTO users_info (
 INSERT INTO category (
     category_name, category_thema, category_content, display_order, created_at, updated_at, image_url
 ) VALUES
-      ('전체보기', '공용', 'All types', 1, NOW(), NOW(), NULL),
-      ('Shoes', '공용', 'All types of shoes', 3, NOW(), NOW(), NULL),
-      ('전체보기', '여성', 'All types', 1, NOW(), NOW(), NULL),
-      ('전체보기', '남성', 'All types', 1, NOW(), NOW(), NULL),
-      ('전체보기', '액세서리', 'All types', 1, NOW(), NOW(), NULL),
-      ('전체보기', 'SALE', 'All types', 1, NOW(), NOW(), NULL),
-      ('전체보기', 'COLLABORATION', 'All types', 1, NOW(), NOW(), NULL),
-      ('24SS SUMMER RECOMEND STYLING', 'HOW TO', 'Styling Guide', 1, NOW(), NOW(), 'https://example.com/summer_styling_guide.jpg');
+    ('전체보기', 'common', 'All types', 1, NOW(), NOW(), NULL),
+    ('Shoes', 'common', 'All types of shoes', 3, NOW(), NOW(), NULL),
+    ('전체보기', 'women', 'All types', 1, NOW(), NOW(), NULL),
+    ('전체보기', 'men', 'All types', 1, NOW(), NOW(), NULL),
+    ('전체보기', 'accessories', 'All types', 1, NOW(), NOW(), NULL),
+    ('전체보기', 'sale', 'All types', 1, NOW(), NOW(), NULL),
+    ('전체보기', 'collaboration', 'All types', 1, NOW(), NOW(), NULL),
+    ('24SS SUMMER RECOMMEND STYLING', 'how-to', 'Styling Guide', 1, NOW(), NOW(), 'https://example.com/summer_styling_guide.jpg');
 
 -- Item 테이블에 테스트 데이터 삽입
 INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)

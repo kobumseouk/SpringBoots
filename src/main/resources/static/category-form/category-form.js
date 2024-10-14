@@ -1,4 +1,3 @@
-import { addImageToS3 } from "../../aws-s3.js";
 import * as Api from "../../api.js";
 import { checkLogin, checkAdmin } from "../../useful-functions.js";
 import { loadHeader } from "../../common/header.js";
@@ -71,10 +70,9 @@ async function handleThemeChange() {
       updateDisplayOrderOptions(categories.length);
     } catch (err) {
       console.error("Error fetching categories:", err);
-      alert('카테고리 정보를 불러오는데 실패했습니다.');
+      alert('카테고리 정보를 불러오는데 실패했습니다: ' + err.message);
     }
   } else {
-    // 테마가 선택되지 않았을 때 배치 선택 옵션 초기화
     updateDisplayOrderOptions(0);
   }
 
@@ -92,7 +90,6 @@ function updateDisplayOrderOptions(count) {
 }
 
 async function fetchCategoryData() {
-  console.log("Fetching category data...");
   try {
     const category = await Api.get('/api/admin/categories', categoryId);
     console.log("Category data received:", category);
@@ -101,7 +98,8 @@ async function fetchCategoryData() {
     descriptionInput.value = category.categoryContent;
     themeSelectBox.value = category.categoryThema;
 
-    console.log("Theme set to:", category.categoryThema);
+    const koreanTheme = translateEnglishToKorean(category.categoryThema);
+    console.log("Theme set to:", koreanTheme);
 
     // 테마에 맞는 배치 옵션 업데이트
     const categories = await Api.get(`/api/categories/themes/${category.categoryThema}`);
@@ -144,37 +142,61 @@ async function handleSubmit(e) {
   }
 
   try {
-    let imageUrl = null;
-    if (image) {
-      const imageKey = await addImageToS3(imageInput, "category");
-      imageUrl = await getImageUrl(imageKey);
-    }
+      const formData = new FormData();
+      formData.append('category', JSON.stringify({
+        categoryName: title,
+        categoryContent: description,
+        categoryThema: theme,
+        displayOrder: parseInt(displayOrder)
+      }));
 
-    const data = {
-      categoryName: title,
-      categoryContent: description,
-      categoryThema: theme,
-      imageUrl: imageUrl,
-      displayOrder: parseInt(displayOrder)
-    };
+      if (image) {
+        formData.append('file', image);
+      }
 
-    if (isEditMode) {
-      await Api.patch(`/api/admin/categories/${categoryId}`, data);
-      alert(`정상적으로 ${title} 카테고리가 수정되었습니다.`);
-    } else {
-      await Api.post("/api/admin/categories", data);
-      alert(`정상적으로 ${title} 카테고리가 등록되었습니다.`);
-    }
-    window.location.href = '/admin/categories';
+      if (isEditMode) {
+        await Api.patch(`/api/admin/categories/${categoryId}`, formData, true);
+        alert(`정상적으로 ${title} 카테고리가 수정되었습니다.`);
+      } else {
+        await Api.post("/api/admin/categories", formData, true);
+        alert(`정상적으로 ${title} 카테고리가 등록되었습니다.`);
+      }
+      window.location.href = '/admin/categories';
   } catch (err) {
-    console.error(err.stack);
-    alert(`문제가 발생하였습니다. 확인 후 다시 시도해 주세요: ${err.message}`);
+      console.error(err.stack);
+      alert(`문제가 발생하였습니다. 확인 후 다시 시도해 주세요: ${err.message}`);
   }
 }
 
 function handleImageUpload() {
   const file = imageInput.files[0];
   fileNameSpan.innerText = file ? file.name : "";
+}
+
+function translateEnglishToKorean(englishTheme) {
+  const themeMap = {
+    'common': '공용',
+    'women': '여성',
+    'men': '남성',
+    'accessories': '액세서리',
+    'sale': 'SALE',
+    'collaboration': 'COLLABORATION',
+    'how-to': 'HOW TO'
+  };
+  return themeMap[englishTheme];
+}
+
+function translateKoreanToEnglish(koreanTheme) {
+  const themeMap = {
+    '공용': 'common',
+    '여성': 'women',
+    '남성': 'men',
+    '액세서리': 'accessories',
+    'SALE': 'sale',
+    'COLLABORATION': 'collaboration',
+    'HOW TO': 'how-to'
+  };
+  return themeMap[koreanTheme];
 }
 
 // 페이지 로드 시 페이지 초기화 실행
