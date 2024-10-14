@@ -27,8 +27,8 @@ public class OrderDetailsDto {
     @AllArgsConstructor
     public static class OrderItemDetailsDto {
         private String itemName;
-        private int orderitemsQuantity;
-        private int orderitemsTotalPrice;
+        private int orderItemsQuantity;
+        private int orderItemsTotalPrice;
         private int itemsSize;
         private String itemImage; // 이미지 URL
     }

@@ -25,7 +25,7 @@ public class OrderDto {
     @AllArgsConstructor
     public static class OrderItemDto {
         private String itemName;
-        private int orderitemsQuantity;
-        private int orderitemsTotalPrice;
+        private int orderItemsQuantity;
+        private int orderItemsTotalPrice;
     }
 }
