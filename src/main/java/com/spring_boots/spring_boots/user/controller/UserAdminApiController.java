@@ -1,7 +1,7 @@
 package com.spring_boots.spring_boots.user.controller;
 
 import com.spring_boots.spring_boots.user.domain.Users;
-import com.spring_boots.spring_boots.user.dto.AdminCodeRequestDto;
+import com.spring_boots.spring_boots.user.dto.request.AdminCodeRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.AdminGrantTokenRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.AdminCodeResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.AdminGrantTokenResponseDto;
