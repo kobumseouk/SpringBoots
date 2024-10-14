@@ -21,11 +21,6 @@ public class Event extends BaseTimeEntity {
   @Column(name = "event_id")
   private Long id;
 
-  // 카테고리와의 독립 필요
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "category_id")
-  private Category category;
-
   @Column(name = "event_title", nullable = false)
   private String eventTitle;
 
@@ -59,11 +54,6 @@ public class Event extends BaseTimeEntity {
   public void setEndDate(LocalDate endDate) {
     this.endDate = endDate;
     updateActiveStatus();
-  }
-
-  // 카테고리 id가 없는 경우 제거
-  public void removeCategory() {
-    this.category = null;
   }
 
 
