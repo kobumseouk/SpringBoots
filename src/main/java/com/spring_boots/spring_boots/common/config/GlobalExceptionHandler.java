@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -71,6 +72,13 @@ public class GlobalExceptionHandler {
 
     ErrorResponseDto errorResponse = new ErrorResponseDto("유효성_검사_실패", errorMessage);
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(IOException.class)
+  public ResponseEntity<ErrorResponseDto> handleIOException(IOException ex) {
+    log.error("IOException occurred", ex);
+    ErrorResponseDto errorResponse = new ErrorResponseDto("파일_처리_오류", "파일 처리 중 오류가 발생했습니다.");
+    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
 }
