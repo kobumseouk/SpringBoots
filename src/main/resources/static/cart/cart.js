@@ -72,16 +72,17 @@ function updateItemSizeOrQuantity(item_id, item_size, new_quantity = null, new_s
   if (existingItem) {
     // 새로운 수량이 주어지면 업데이트
     if (new_quantity !== null) {
-      existingItem.item_quantity = new_quantity;
+      existingItem.item_quantity =parseInt(new_quantity);
     }
 
     // 새로운 사이즈가 주어지면 업데이트
     if (new_size !== null) {
-      existingItem.item_size = new_size;
+      existingItem.item_size = parseInt(new_size);
     }
 
     // 업데이트된 장바구니를 로컬 스토리지에 저장
     localStorage.setItem('cart', JSON.stringify(cart));
+    location.reload();
   } else {
     // 아이템이 존재하지 않으면 404 not found 로그 출력
     console.log("404 not found in updateItemSizeOrQuantity");
@@ -89,7 +90,7 @@ function updateItemSizeOrQuantity(item_id, item_size, new_quantity = null, new_s
 }
 
 // 선택된 아이템들의 총 가격을 계산하는 함수
-export function calculateTotal() {
+function calculateTotal() {
   const selectedItems = getSelectedItems(); // 선택된 아이템 목록 가져오기
 
   // 선택된 아이템에 대한 가격을 가져오는 Promise 배열 생성
@@ -132,11 +133,11 @@ function getSelectedItems() {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     console.log(`itemId: ${itemId}, itemSize: ${itemSize}`);
 
-    const item = cart.find(item => item.item_id === itemId && item.item_size === itemSize);
+    const existingItem = cart.find(item => item.item_id === itemId && item.item_size === itemSize);
 
-    if (item) {
-      selectedItems.push(item); // 선택된 아이템을 배열에 추가
-      console.log(`${item.item_id} has been selected`);
+    if (existingItem) {
+      selectedItems.push(existingItem); // 선택된 아이템을 배열에 추가
+      console.log(`${existingItem.item_id} has been selected`);
     }
   });
 
