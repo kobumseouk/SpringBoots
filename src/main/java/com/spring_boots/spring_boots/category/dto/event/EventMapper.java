@@ -11,17 +11,14 @@ import org.mapstruct.MappingTarget;
 public interface EventMapper {
 
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "category", ignore = true)
   @Mapping(target = "isActive", constant = "true")
   Event eventRequestDtoToEvent(EventRequestDto eventRequestDto);
 
-  @Mapping(source = "category.categoryName", target = "categoryName")
   EventDetailDto eventToEventDetailDto(Event event);
 
   EventDto eventToEventDto(Event event);
 
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "category", ignore = true)
   @Mapping(target = "isActive", ignore = true)
   void updateEventFromDto(EventRequestDto eventRequestDto, @MappingTarget Event event);
 

@@ -32,12 +32,6 @@ public class EventService {
   @Transactional
   public EventDetailDto createEvent(EventRequestDto eventRequestDto) {
     Event event = eventMapper.eventRequestDtoToEvent(eventRequestDto);
-    // 카테고리 id가 있는 경우 id를 찾아 이벤트에 설정, 없으면 ResourceNotFoundException 발생
-    if (eventRequestDto.getCategoryId() != null) {
-        Category category = categoryRepository.findById(eventRequestDto.getCategoryId())
-            .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + eventRequestDto.getCategoryId()));
-        event.setCategory(category);
-    }
     Event savedEvent = eventRepository.save(event);
     return eventMapper.eventToEventDetailDto(savedEvent);
   }
@@ -83,14 +77,6 @@ public class EventService {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new ResourceNotFoundException("업데이트할 이벤트를 찾을 수 없습니다: " + eventId));
     eventMapper.updateEventFromDto(eventUpdateDto, event);
-    // 카테고리 ID가 제공된 경우 카테고리 업데이트
-    if (eventUpdateDto.getCategoryId() != null) {
-      Category category = categoryRepository.findById(eventUpdateDto.getCategoryId())
-          .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + eventUpdateDto.getCategoryId()));
-      event.setCategory(category);
-    } else {
-      event.removeCategory();
-    }
 
     Event updatedEvent = eventRepository.save(event);
     return eventMapper.eventToEventDetailDto(updatedEvent);

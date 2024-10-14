@@ -110,8 +110,12 @@ public class UserService {
         }
 
         UsersInfo usersInfo = userInfoRepository.findById(userInfoId).orElse(null);
+        //회원정보가 이미 있다면 업데이트, 그렇지않다면 생성
         if (usersInfo != null) {
             usersInfo.updateUserInfo(userUpdateRequestDto);
+        } else {
+            UsersInfo newUsersInfo= userUpdateRequestDto.toUsersInfo(user);
+            userInfoRepository.save(newUsersInfo);
         }
 
         user.updateUser(userUpdateRequestDto);
