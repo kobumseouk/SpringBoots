@@ -2,6 +2,7 @@ package com.spring_boots.spring_boots.user.controller;
 
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.dto.request.AdminGrantTokenRequestDto;
+import com.spring_boots.spring_boots.user.dto.response.UserCheckAdminResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +38,8 @@ public class UserAdminApiController {
     //관리자 부여
     @PatchMapping("/admin/grant")
     public ResponseEntity<String> grantAdmin(@AuthenticationPrincipal Users user,
-                                           @RequestBody AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
-        Users authUser = userService.findByEmail(user.getEmail());
+                                             @RequestBody AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
+        Users authUser = userService.findById(user.getUserId());
 
         if (authUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("인증되지 않은 사용자입니다. 로그인해주세요");
@@ -48,6 +49,38 @@ public class UserAdminApiController {
             return ResponseEntity.status(HttpStatus.OK).build();
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("잘못된 토큰입니다.");
+        }
+    }
+
+    @GetMapping("/users/admin-check")
+    public ResponseEntity<UserCheckAdminResponseDto> checkAdmin(@CookieValue(value = "accessToken", required = false) String accessToken) {
+        //accessToken 이 없는 경우
+        if (accessToken == null || accessToken.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserCheckAdminResponseDto.builder()
+                            .message("현재 엑세스 토큰이 없습니다.")
+                            .build());
+        }
+
+        try {
+            boolean isAdmin = userService.validateAdminToken(accessToken);
+
+            if (isAdmin) {
+                return ResponseEntity.status(HttpStatus.OK)
+                        .body(UserCheckAdminResponseDto.builder()
+                                .message("관리자 인증 성공")
+                                .build());
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(UserCheckAdminResponseDto.builder()
+                                .message("관리자 인증 실패")
+                                .build());
+            }
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserCheckAdminResponseDto.builder()
+                            .message("유효하지않은 토큰")
+                            .build());
         }
     }
 }
