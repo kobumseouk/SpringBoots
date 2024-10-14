@@ -46,17 +46,18 @@ function addItemToCart(item_id, item_quantity, item_color, item_size) {
 function deleteItemFromCart(item_id, item_size) {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-  // 삭제할 아이템 찾기 (item_id와 item_size로 식별)
-  const existingItem = cart.find(item => item.item_id === item_id && item.item_size === item_size);
+  // 해당 item_id와 item_size가 아닌 아이템들만 남기기
+  const newCart = cart.filter(item => !(item.item_id === item_id && item.item_size === item_size));
 
-  if (existingItem) {
-    cart.splice(existingItem, 1);
-    localStorage.setItem('cart', JSON.stringify(cart));
+  if (newCart.length !== cart.length) {
+    // 업데이트된 장바구니 저장
+    localStorage.setItem('cart', JSON.stringify(newCart));
   } else {
     // 아이템이 존재하지 않으면 404 not found 로그 출력
-    console.log("404 not found in  deleteItemFromCart");
+    console.log("404 not found in deleteItemFromCart");
   }
 }
+
 
 // 장바구니 아이템의 사이즈나 수량을 업데이트하는 함수
 function updateItemSizeOrQuantity(item_id, item_size, new_quantity = null, new_size = null) {
@@ -172,17 +173,20 @@ function deleteSelectedItems() {
 
     // 로컬 스토리지에 업데이트된 장바구니 저장
     localStorage.setItem('cart', JSON.stringify(updatedCart));
-
-    // 장바구니 아이템 다시 렌더링
-    renderCartItems();
-
     console.log('Selected items have been deleted.');
 
     // 삭제 후 총 가격 다시 계산
+    updateOrderTotal();
     const totalPrice = calculateTotal(updatedCart); // 총 가격 재계산
     document.getElementById('orderTotal').innerText = `￦${totalPrice}`;
+    // 장바구니 아이템 다시 렌더링
+    renderCartItems();
+
   } else {
     console.log('No items selected to delete.'); // 선택된 항목이 없을 때
+    // 장바구니 아이템 다시 렌더링
+    renderCartItems();
+
   }
 }
 
