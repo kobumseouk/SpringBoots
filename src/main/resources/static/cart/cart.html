@@ -27,15 +27,23 @@
   <!-- AWS S3 사용하기 위한 파일 -->
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>
   <!-- 커스텀 css, js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/common/header.css">
   <link rel="stylesheet" href="cart.css" />
-
+  <script src="/cart/cart.js" type="module" ></script>
+  <script src="/cart/main.js" type="module" ></script>
+  <script src="/common/header.js" type="module"></script>
+  <script type="module">
+    import { loadHeader } from '/common/header.js';
+    document.addEventListener('DOMContentLoaded', loadHeader);
+  </script>
 </head>
 <body>
 
 <!-- 로그인/회원가입 버튼이 포함된 상단 div -->
 
 <!-- 헤더 -->
-  <div id="header-placeholder"></div>
+<div id="header-placeholder" class="header-container"></div>
 
     <!-- 장바구니 -->
     <section class="section">
@@ -107,7 +115,5 @@
         </div>
       </div>
     </section>
-<script src="/cart/cart.js" type="module" ></script>
-<script src="/cart/main.js" type="module" ></script>
   </body>
 </html>
