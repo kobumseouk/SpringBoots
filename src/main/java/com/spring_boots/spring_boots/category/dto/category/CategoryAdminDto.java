@@ -14,6 +14,7 @@ public class CategoryAdminDto {
   private Long id;
   private String categoryName;
   private String categoryThema;
+  private String categoryContent;
   private int displayOrder;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;

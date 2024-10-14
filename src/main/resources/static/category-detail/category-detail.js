@@ -10,8 +10,7 @@ async function init() {
   if (pathParts.length >= 4 && pathParts[1] === 'categories') {
     const englishTheme = pathParts[2];
     const categoryId = pathParts[3];
-    const koreanTheme = translateEnglishToKorean(englishTheme);
-    await handleThemeClick(koreanTheme, categoryId);
+    await handleThemeClick(englishTheme, categoryId);
   } else {
     window.location.href = '/';
   }
@@ -24,31 +23,30 @@ async function init() {
 async function handleThemeClick(theme, selectedCategoryId = null) {
   try {
     const categories = await Api.get(`/api/categories/themas/${theme}`);
-    displayCategoryButtons(categories, translateKoreanToEnglish(theme));
+    displayCategoryButtons(categories, theme);
 
     let categoryToDisplay;
     if (selectedCategoryId) {
       categoryToDisplay = categories.find(c => c.id.toString() === selectedCategoryId);
     }
     if (!categoryToDisplay) {
-      categoryToDisplay = categories.reduce((prev, current) =>
-        (prev.displayOrder < current.displayOrder) ? prev : current
-      );
+       categoryToDisplay = categories.reduce((prev, current) =>
+         (prev.displayOrder < current.displayOrder) ? prev : current
+       , categories[0]); // 초기값으로 첫 번째 카테고리 사용
     }
 
     await displayCategoryInfo(categoryToDisplay.id);
 
     // 브레드크럼 업데이트
-    updateBreadcrumb(theme, categoryToDisplay);
+    const koreanTheme = translateEnglishToKorean(theme);
+    updateBreadcrumb(koreanTheme, categoryToDisplay);
 
-    const englishTheme = translateKoreanToEnglish(theme);
-    history.pushState(null, '', `/categories/${englishTheme}/${categoryToDisplay.id}`);
+    history.pushState(null, '', `/categories/${theme}/${categoryToDisplay.id}`);
   } catch (error) {
     console.error('테마 카테고리를 가져오는 데 실패했습니다:', error);
   }
 }
 
-// 브레드크럼 업데이트
 function updateBreadcrumb(theme, category) {
   const secondBreadcrumb = document.getElementById('second-breadcrumb');
   const thirdBreadcrumb = document.getElementById('third-breadcrumb');
@@ -58,16 +56,16 @@ function updateBreadcrumb(theme, category) {
   secondBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/1`;
 
   // category 객체가 존재하고 배치 순서가 '1'이 아닌 경우에만 third-breadcrumb 표시
-  if (category?.displayOrder !== '1') {  // 옵셔널체이닝 사용
+  if (category?.displayOrder !== '1') {
     thirdBreadcrumb.querySelector('a').textContent = category.categoryName;
     thirdBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/${category.id}`;
-    thirdBreadcrumb.classList.add('is-active')
-    return;
+    thirdBreadcrumb.classList.add('is-active');
+    thirdBreadcrumb.style.display = '';
+  } else {
+    thirdBreadcrumb.style.display = 'none';
   }
-  thirdBreadcrumb.style.display = 'none';
 }
 
-// 카테고리별 버튼 생성
 function displayCategoryButtons(categories, currentEnglishTheme) {
   const categoryButtons = document.getElementById('category-buttons');
   categoryButtons.innerHTML = '';
@@ -98,7 +96,7 @@ async function displayCategoryInfo(categoryId) {
     // 브레드크럼 업데이트
     updateBreadcrumb(theme, category);
 
-    // 상품 개수 표시 (이 부분은 실제 API 응답에 따라 조정 필요)
+    // 상품 개수 표시
     const productCount = category.productCount || 0;
     document.getElementById('product-count').textContent = `${productCount}개의 상품이 있습니다.`;
 
@@ -116,16 +114,23 @@ async function displayCategoryInfo(categoryId) {
     updateFilterOptions(category.filters || []);
 
     // URL 업데이트
-    const currentTheme = translateKoreanToEnglish(theme);
-    if (category.id === '1') {
-      history.pushState(null, '', `/categories/${currentTheme}/1`);
-    } else {
-      history.pushState(null, '', `/categories/${currentTheme}/${category.id}`);
-    }
+    const currentEnglishTheme = translateKoreanToEnglish(theme);
+    history.pushState(null, '', `/categories/${currentEnglishTheme}/${category.id}`);
 
   } catch (error) {
     console.error('카테고리 정보를 가져오는 데 실패했습니다:', error);
   }
+}
+
+function updateActiveButton(categoryName) {
+  const buttons = document.querySelectorAll('#category-buttons button');
+  buttons.forEach(button => {
+    if (button.textContent === categoryName) {
+      button.classList.add('active');
+    } else {
+      button.classList.remove('active');
+    }
+  });
 }
 
 function updateFilterOptions(filters) {
@@ -138,7 +143,6 @@ function updateFilterOptions(filters) {
     filterSelect.appendChild(option);
   });
 }
-
 
 function createProductElement(product) {
   // 상품 요소 생성 로직
@@ -161,7 +165,8 @@ function handleFilterChange(event) {
   console.log('필터 기준:', sortValue);
 }
 
-// 영어 테마를 한글로 변환하는 함수
+
+// 영어 테마를 한글로 변환하는 함수 수정
 function translateEnglishToKorean(englishTheme) {
   const themeMap = {
     'common': '공용',
@@ -170,16 +175,13 @@ function translateEnglishToKorean(englishTheme) {
     'accessories': '액세서리',
     'sale': 'SALE',
     'collaboration': 'COLLABORATION',
-    'how-to': 'HOW TO',
-    'new-in': 'NEW-IN',
-    'best': 'BEST',
-    'event': 'EVENT'
+    'how-to': 'HOW TO'
   };
 
   return themeMap[englishTheme];
 }
 
-// 한글 테마를 영어로 변환하는 함수
+// 한글 테마를 영어로 변환하는 함수 수정
 function translateKoreanToEnglish(koreanTheme) {
   const themeMap = {
     '공용': 'common',
@@ -188,10 +190,7 @@ function translateKoreanToEnglish(koreanTheme) {
     '액세서리': 'accessories',
     'SALE': 'sale',
     'COLLABORATION': 'collaboration',
-    'HOW TO': 'how-to',
-    'NEW-IN': 'new-in',
-    'BEST': 'best',
-    'EVENT': 'event'
+    'HOW TO': 'how-to'
   };
 
   return themeMap[koreanTheme];

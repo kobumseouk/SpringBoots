@@ -1,4 +1,3 @@
-import { addImageToS3 } from "../../aws-s3.js";
 import * as Api from "../../api.js";
 import { checkLogin, checkAdmin } from "../../useful-functions.js";
 import { loadHeader } from "../../common/header.js";
@@ -49,7 +48,7 @@ function toggleImageUploadField() {
   console.log("Toggling image upload field...");
   console.log("Current theme:", themeSelectBox.value);
 
-  if (themeSelectBox.value !== "HOW TO") {
+  if (themeSelectBox.value !== "how-to") {
     imageUploadField.style.display = "none";
     imageInput.value = ""; // 이미지 입력 초기화
     fileNameSpan.innerText = "사진파일 (png, jpg, jpeg)";
@@ -57,7 +56,6 @@ function toggleImageUploadField() {
   } else {
     imageUploadField.style.display = "block";
     console.log("Image upload field shown.");
-    alert("'HOW TO' 테마가 선택되었습니다. 이미지 업로드 필드가 활성화됩니다.");
   }
 }
 
@@ -67,14 +65,13 @@ async function handleThemeChange() {
 
   if (selectedTheme) {
     try {
-      const categories = await Api.get(`/api/categories/themes/${selectedTheme}`);
+      const categories = await Api.get(`/api/categories/themas/${selectedTheme}`);
       updateDisplayOrderOptions(categories.length);
     } catch (err) {
       console.error("Error fetching categories:", err);
-      alert('카테고리 정보를 불러오는데 실패했습니다.');
+      alert('카테고리 정보를 불러오는데 실패했습니다: ' + err.message);
     }
   } else {
-    // 테마가 선택되지 않았을 때 배치 선택 옵션 초기화
     updateDisplayOrderOptions(0);
   }
 
@@ -92,7 +89,6 @@ function updateDisplayOrderOptions(count) {
 }
 
 async function fetchCategoryData() {
-  console.log("Fetching category data...");
   try {
     const category = await Api.get('/api/admin/categories', categoryId);
     console.log("Category data received:", category);
@@ -101,10 +97,11 @@ async function fetchCategoryData() {
     descriptionInput.value = category.categoryContent;
     themeSelectBox.value = category.categoryThema;
 
-    console.log("Theme set to:", category.categoryThema);
+    const koreanTheme = translateEnglishToKorean(category.categoryThema);
+    console.log("Theme set to:", koreanTheme);
 
     // 테마에 맞는 배치 옵션 업데이트
-    const categories = await Api.get(`/api/categories/themes/${category.categoryThema}`);
+    const categories = await Api.get(`/api/categories/themas/${category.categoryThema}`);
     updateDisplayOrderOptions(categories.length);
     displaySelectBox.value = category.displayOrder;
 
@@ -132,10 +129,10 @@ async function handleSubmit(e) {
   const title = titleInput.value;
   const description = descriptionInput.value;
   const theme = themeSelectBox.value;
-  const displayOrder = displaySelectBox.value;
+  const displayOrder = parseInt(displaySelectBox.value, 10);
   const image = imageInput.files[0];
 
-  if (!title || !theme || !displayOrder) {
+  if (!title || !theme || isNaN(displayOrder)) {
     return alert("카테고리 이름, 테마, 배치 위치는 필수 입력 항목입니다.");
   }
 
@@ -144,37 +141,81 @@ async function handleSubmit(e) {
   }
 
   try {
-    let imageUrl = null;
-    if (image) {
-      const imageKey = await addImageToS3(imageInput, "category");
-      imageUrl = await getImageUrl(imageKey);
-    }
-
-    const data = {
+    // JSON 데이터 추가
+    const formData = new FormData();
+    formData.append('category', new Blob([JSON.stringify({
       categoryName: title,
       categoryContent: description,
       categoryThema: theme,
-      imageUrl: imageUrl,
-      displayOrder: parseInt(displayOrder)
-    };
+      displayOrder: displayOrder
+    })], {type: 'application/json'}));
 
+    // 이미지 파일 추가
+    if (image) {
+      formData.append('file', image);
+    }
+
+    let response;
     if (isEditMode) {
-      await Api.patch(`/api/admin/categories/${categoryId}`, data);
+      response = await Api.patchFormData(`/api/admin/categories/${categoryId}`, formData);
       alert(`정상적으로 ${title} 카테고리가 수정되었습니다.`);
     } else {
-      await Api.post("/api/admin/categories", data);
+      response = await Api.postFormData("/api/admin/categories", formData);
       alert(`정상적으로 ${title} 카테고리가 등록되었습니다.`);
     }
+
     window.location.href = '/admin/categories';
   } catch (err) {
-    console.error(err.stack);
+    console.error("Error details:", err);
     alert(`문제가 발생하였습니다. 확인 후 다시 시도해 주세요: ${err.message}`);
   }
 }
 
 function handleImageUpload() {
   const file = imageInput.files[0];
-  fileNameSpan.innerText = file ? file.name : "";
+  const imagePreview = document.getElementById('imagePreview');
+
+  if (file) {
+    fileNameSpan.innerText = file.name;
+
+    // 이미지 미리보기
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      imagePreview.src = e.target.result;
+      imagePreview.style.display = 'block';
+    }
+    reader.readAsDataURL(file);
+  } else {
+    fileNameSpan.innerText = "사진파일 (png, jpg, jpeg)";
+    imagePreview.style.display = 'none';
+    imagePreview.src = '#';
+  }
+}
+
+function translateEnglishToKorean(englishTheme) {
+  const themeMap = {
+    'common': '공용',
+    'women': '여성',
+    'men': '남성',
+    'accessories': '액세서리',
+    'sale': 'SALE',
+    'collaboration': 'COLLABORATION',
+    'how-to': 'HOW TO'
+  };
+  return themeMap[englishTheme];
+}
+
+function translateKoreanToEnglish(koreanTheme) {
+  const themeMap = {
+    '공용': 'common',
+    '여성': 'women',
+    '남성': 'men',
+    '액세서리': 'accessories',
+    'SALE': 'sale',
+    'COLLABORATION': 'collaboration',
+    'HOW TO': 'how-to'
+  };
+  return themeMap[koreanTheme];
 }
 
 // 페이지 로드 시 페이지 초기화 실행
