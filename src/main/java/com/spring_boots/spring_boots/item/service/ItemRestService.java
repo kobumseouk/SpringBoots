@@ -1,5 +1,8 @@
 package com.spring_boots.spring_boots.item.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
@@ -11,6 +14,7 @@ import com.spring_boots.spring_boots.item.mapper.ItemMapper;
 import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,13 +29,22 @@ public class ItemRestService {
     private final ItemRepository itemRepository;
     private final S3BucketService s3BucketService;
     private final CategoryRepository categoryRepository;
+    private final AmazonS3 amazonS3;
+
+    @Value("${aws.s3.bucket.name}")
+    private String bucketName;
 
     @Autowired
-    public ItemRestService(ItemMapper itemMapper, ItemRepository itemRepository, S3BucketService s3BucketService, CategoryRepository categoryRepository) {
+    public ItemRestService(ItemMapper itemMapper,
+                           ItemRepository itemRepository,
+                           S3BucketService s3BucketService,
+                           CategoryRepository categoryRepository,
+                           AmazonS3 amazonS3) {
         this.itemMapper = itemMapper;
         this.itemRepository = itemRepository;
         this.s3BucketService = s3BucketService;
         this.categoryRepository = categoryRepository;
+        this.amazonS3 = amazonS3;
     }
 
 
@@ -109,6 +122,14 @@ public class ItemRestService {
     // Item 삭제하기
     public void deleteItem(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: "+ itemId));
+
+        String imageUrl = item.getImageUrl();
+        if (imageUrl != null) {
+
+            String key = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+            amazonS3.deleteObject(new DeleteObjectRequest(bucketName, key));
+        }
+
         itemRepository.delete(item);
     }
 
@@ -116,6 +137,7 @@ public class ItemRestService {
     public List<ResponseItemDto> getItemsByCategory(Long categoryId) {
         List<Item> items = itemRepository.findAllByCategoryId(categoryId);
         return items.stream().map(itemMapper::toResponseDto).collect(Collectors.toList());
+
     }
 }
 
