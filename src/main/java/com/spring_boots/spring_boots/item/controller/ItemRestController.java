@@ -43,7 +43,7 @@ public class ItemRestController {
     }
 
 
-    // Items 전체 보기
+    // Items 전체보기
     @GetMapping("/items")
     public ResponseEntity<List<ResponseItemDto>> getItems() {
         List<ResponseItemDto> result = itemRestService.getAllItems();
@@ -51,7 +51,7 @@ public class ItemRestController {
     }
 
 
-    // Item 상세 보기
+    // Item 상세보기
     @GetMapping("/items/{itemId}")
     public ResponseEntity<ResponseItemDto> getItem(@PathVariable("itemId") Long id) {
         try {
@@ -79,6 +79,17 @@ public class ItemRestController {
         try {
             ResponseItemDto responseDto = itemRestService.updateItem(id, updateItemDto);
             return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // CategoryId로 Item 조회하기
+    @GetMapping("/items/categories/{category_id}")
+    public ResponseEntity<List<ResponseItemDto>> getItemsByCategory(@PathVariable("category_id") Long category_id) {
+        try {
+            List<ResponseItemDto> result = itemRestService.getItemsByCategory(category_id);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
