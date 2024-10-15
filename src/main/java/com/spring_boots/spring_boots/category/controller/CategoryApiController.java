@@ -1,11 +1,8 @@
 package com.spring_boots.spring_boots.category.controller;
 
-import com.spring_boots.spring_boots.category.dto.category.CategoryAdminDto;
 import com.spring_boots.spring_boots.category.dto.category.CategoryDto;
 import com.spring_boots.spring_boots.category.service.CategoryService;
-import com.spring_boots.spring_boots.common.config.error.BadRequestException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

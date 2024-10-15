@@ -1,17 +1,13 @@
 package com.spring_boots.spring_boots.category.service;
 
-import com.spring_boots.spring_boots.category.dto.event.EventDetailDto;
-import com.spring_boots.spring_boots.category.dto.event.EventDto;
-import com.spring_boots.spring_boots.category.dto.event.EventMapper;
-import com.spring_boots.spring_boots.category.dto.event.EventRequestDto;
-import com.spring_boots.spring_boots.category.entity.Category;
+import com.spring_boots.spring_boots.category.dto.event.*;
 import com.spring_boots.spring_boots.category.entity.Event;
-import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.category.repository.EventRepository;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -137,6 +133,20 @@ public class EventService {
   // URL에서 S3 키를 추출
   private String extractKeyFromUrl(String url) {
     return url.substring(url.lastIndexOf("/") + 1);
+  }
+
+  // 관리자용 이벤트 목록 페이지네이션 적용하여 조회
+  public Page<EventAdminDto> getAdminEvents (int page, int limit) {
+    PageRequest pageRequest = PageRequest.of(page, limit);
+    Page<Event> eventPage = eventRepository.findAll(pageRequest);
+    return eventPage.map(eventMapper::eventToEventAdminDto);
+  }
+
+  // 관리자용 카테고리 개별 조회 - 카테고리 수정 시 사용
+  public EventAdminDto getAdminEvent(Long eventId) {
+    return eventRepository.findById(eventId)
+        .map(eventMapper::eventToEventAdminDto)
+        .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + eventId));
   }
 
 }
