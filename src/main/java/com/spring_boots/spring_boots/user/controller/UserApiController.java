@@ -32,16 +32,12 @@ public class UserApiController {
 
         if (userSignupRequestDto == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(UserSignupResponseDto.builder()
-                            .message("잘못된 요청입니다.")
-                            .build());
+                    .body(UserSignupResponseDto.builder().message("잘못된 요청입니다.").build());
         }
 
         Users user = userService.save(userSignupRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(UserSignupResponseDto.builder()
-                        .message("성공적으로 회원가입하셨습니다.")
-                        .build());
+                .body(UserSignupResponseDto.builder().message("성공적으로 회원가입하셨습니다.").build());
     }
 
     //개인 정보 조회
@@ -71,30 +67,28 @@ public class UserApiController {
         userService.update(authUser, request, userInfoId);
 
         return ResponseEntity.status(HttpStatus.OK).body(UserUpdateResponseDto
-                .builder()
-                .message("정상적으로 수정되었습니다.")
-                .build());
+                .builder().message("정상적으로 수정되었습니다.").build());
     }
 
-    //회원 탈퇴(hard delete)
-    @DeleteMapping("/users-hard")
-    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal Users user,
-                                           HttpServletResponse response) {
-        Users authUser = userService.findById(user.getUserId());
-        userService.deleteUser(authUser);
-
-        if (userService.isDeleteUser(authUser)) {
-            Cookie cookie = new Cookie("refreshToken", null);
-//            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            cookie.setMaxAge(0); // 쿠키 즉시 만료
-            response.addCookie(cookie);
-
-            return ResponseEntity.status(HttpStatus.OK).build();
-        }
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
+//    //회원 탈퇴(hard delete)
+//    @DeleteMapping("/users-hard")
+//    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal Users user,
+//                                           HttpServletResponse response) {
+//        Users authUser = userService.findById(user.getUserId());
+//        userService.deleteUser(authUser);
+//
+//        if (userService.isDeleteUser(authUser)) {
+//            Cookie cookie = new Cookie("refreshToken", null);
+////            cookie.setHttpOnly(true);
+//            cookie.setPath("/");
+//            cookie.setMaxAge(0); // 쿠키 즉시 만료
+//            response.addCookie(cookie);
+//
+//            return ResponseEntity.status(HttpStatus.OK).build();
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//    }
 
     //회원 탈퇴(soft delete)
     @DeleteMapping("/users-soft/{id}")
@@ -124,16 +118,13 @@ public class UserApiController {
 
         if (userService.checkPassword(authUser, request)) {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    UserPasswordResponseDto
-                            .builder()
+                    UserPasswordResponseDto.builder()
                             .id(authUser.getUserId())
                             .build());
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                UserPasswordResponseDto
-                        .builder()
-                        .build());
+                UserPasswordResponseDto.builder().build());
     }
 
     //로그아웃
@@ -152,15 +143,6 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    private void deleteCookie(String token, HttpServletResponse response) {
-
-        Cookie cookie = new Cookie(token, null);
-//        cookie.setHttpOnly(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // 쿠키 즉시 만료
-        response.addCookie(cookie);
-    }
-
     //아이디 중복확인
     @GetMapping("/signup/check-id")
     public ResponseEntity<Void> checkUsername(@RequestParam("userRealId") String userRealId) {
@@ -173,5 +155,15 @@ public class UserApiController {
 
         // 아이디 사용 가능
         return ResponseEntity.ok().build();
+    }
+
+    //쿠키 삭제 로직
+    private void deleteCookie(String token, HttpServletResponse response) {
+
+        Cookie cookie = new Cookie(token, null);
+//        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // 쿠키 즉시 만료
+        response.addCookie(cookie);
     }
 }
