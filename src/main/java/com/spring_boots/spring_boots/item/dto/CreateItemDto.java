@@ -19,8 +19,8 @@ public class CreateItemDto {
     @Length(max = 200)
     private String itemName;
 
-    @NotNull(message = "카테고리는 필수입니다.")
-    private Category categoryId;
+    @NotNull(message = "카테고리 ID는 필수입니다.")
+    private Long categoryId;
 
     @NotBlank(message = "가격은 필수입니다.")
     @Positive(message = "가격은 0보다 커야 합니다.")
@@ -40,7 +40,6 @@ public class CreateItemDto {
     public Item toEntity() {
         Item item = new Item();
         item.setItemName(itemName);
-        item.setCategory(categoryId);
         item.setItemPrice(itemPrice);
         item.setItemDescription(itemDescription);
         item.setItemMaker(itemMaker);

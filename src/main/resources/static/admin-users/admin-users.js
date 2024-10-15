@@ -60,11 +60,11 @@ async function insertUsers() {
       "beforeend",
       `
         <div class="columns orders-item" id="user-${id}">
-          <div class="column is-2">${date}</div>
-          <div class="column is-2">${userRealId}</div>
-          <div class="column is-2">${email}</div>
-          <div class="column is-2">${fullName}</div>
-          <div class="column is-2">
+          <div class="column">${date}</div>
+          <div class="column">${userRealId}</div>
+          <div class="column">${email}</div>
+          <div class="column">${fullName}</div>
+          <div class="column">
             <div class="select">
               <select id="roleSelectBox-${id}">
                 <option
@@ -82,9 +82,9 @@ async function insertUsers() {
               </select>
             </div>
           </div>
-          <div class="column is-2">
-            <button class="button" id="deleteButton-${id}">회원정보 삭제</button>
-          </div>
+          <!-- <div class="column is-2"> -->
+          <!--    <button class="button" id="deleteButton-${id}">회원정보 삭제</button>  -->
+          <!--  </div>  -->
         </div>
       `
     );
@@ -146,6 +146,8 @@ adminCodeConfirmButton.addEventListener("click", async () => {
 
     // 모달 닫기
     adminCodeModal.classList.remove("is-active");
+
+    window.location.href = "/admin/users";  //리다이렉트 url
   } else {
     alert("관리자 코드가 올바르지 않습니다.");
   }

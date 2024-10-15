@@ -1,5 +1,6 @@
 package com.spring_boots.spring_boots.item.controller;
 
+import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
 import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
@@ -43,7 +44,7 @@ public class ItemRestController {
     }
 
 
-    // Items 전체 보기
+    // Items 전체보기
     @GetMapping("/items")
     public ResponseEntity<List<ResponseItemDto>> getItems() {
         List<ResponseItemDto> result = itemRestService.getAllItems();
@@ -51,7 +52,7 @@ public class ItemRestController {
     }
 
 
-    // Item 상세 보기
+    // Item 상세보기
     @GetMapping("/items/{itemId}")
     public ResponseEntity<ResponseItemDto> getItem(@PathVariable("itemId") Long id) {
         try {
@@ -68,8 +69,10 @@ public class ItemRestController {
         try {
             itemRestService.deleteItem(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 오류
+        }catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 오류
         }
     }
 
@@ -79,6 +82,17 @@ public class ItemRestController {
         try {
             ResponseItemDto responseDto = itemRestService.updateItem(id, updateItemDto);
             return new ResponseEntity<>(responseDto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // CategoryId로 Item 조회하기
+    @GetMapping("/items/categories/{category_id}")
+    public ResponseEntity<List<ResponseItemDto>> getItemsByCategory(@PathVariable("category_id") Long category_id) {
+        try {
+            List<ResponseItemDto> result = itemRestService.getItemsByCategory(category_id);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

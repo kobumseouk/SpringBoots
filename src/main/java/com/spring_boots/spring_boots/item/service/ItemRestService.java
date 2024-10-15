@@ -1,5 +1,10 @@
 package com.spring_boots.spring_boots.item.service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.spring_boots.spring_boots.category.entity.Category;
+import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
@@ -9,6 +14,7 @@ import com.spring_boots.spring_boots.item.mapper.ItemMapper;
 import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,13 +28,25 @@ public class ItemRestService {
     private final ItemMapper itemMapper;
     private final ItemRepository itemRepository;
     private final S3BucketService s3BucketService;
+    private final CategoryRepository categoryRepository;
+    private final AmazonS3 amazonS3;
+
+    @Value("${aws.s3.bucket.name}")
+    private String bucketName;
 
     @Autowired
-    public ItemRestService(ItemMapper itemMapper, ItemRepository itemRepository, S3BucketService s3BucketService) {
+    public ItemRestService(ItemMapper itemMapper,
+                           ItemRepository itemRepository,
+                           S3BucketService s3BucketService,
+                           CategoryRepository categoryRepository,
+                           AmazonS3 amazonS3) {
         this.itemMapper = itemMapper;
         this.itemRepository = itemRepository;
         this.s3BucketService = s3BucketService;
+        this.categoryRepository = categoryRepository;
+        this.amazonS3 = amazonS3;
     }
+
 
     // Item 전체 보기
     public List<ResponseItemDto> getAllItems() {
@@ -44,6 +62,8 @@ public class ItemRestService {
 
     // Item 만들기
     public ResponseItemDto createItem(CreateItemDto itemDto, MultipartFile file) {
+        Category category = categoryRepository.findById(itemDto.getCategoryId()) // categoryId로 Category 객체 조회
+                .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다.: " + itemDto.getCategoryId()));
         String imageUrl = null;
 
         if (file != null && !file.isEmpty()) { // 이미지 파일 존재 유무 확인
@@ -56,6 +76,8 @@ public class ItemRestService {
         itemDto.setImageUrl(imageUrl); // DTO에 이미지 URL 설정
 
         Item created = itemDto.toEntity();
+        created.setCategory(category);
+
         Item result = itemRepository.save(created);
         return itemMapper.toResponseDto(result);
     }
@@ -68,9 +90,6 @@ public class ItemRestService {
         Optional.ofNullable(itemDto.getItemName())
                 .ifPresent(findItem::setItemName);
 
-        //Item Category 수정
-        Optional.ofNullable(itemDto.getCategory())
-                .ifPresent(findItem::setCategory);
 
         //Item Price 수정
         Optional.ofNullable(itemDto.getItemPrice())
@@ -103,6 +122,23 @@ public class ItemRestService {
     // Item 삭제하기
     public void deleteItem(Long itemId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: "+ itemId));
+
+        String imageUrl = item.getImageUrl();
+        if (imageUrl != null) {
+
+            String key = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+            amazonS3.deleteObject(new DeleteObjectRequest(bucketName, key));
+        }
+
         itemRepository.delete(item);
     }
+
+    // Category로 Item 조회 리스트
+    public List<ResponseItemDto> getItemsByCategory(Long categoryId) {
+        List<Item> items = itemRepository.findAllByCategoryId(categoryId);
+        return items.stream().map(itemMapper::toResponseDto).collect(Collectors.toList());
+
+    }
 }
+
+
