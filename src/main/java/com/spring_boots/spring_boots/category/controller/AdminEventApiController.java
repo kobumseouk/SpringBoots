@@ -41,7 +41,7 @@ public class AdminEventApiController {
 
   // 특정 이벤트를 수정하는 메서드
   @PreAuthorize("hasRole('ADMIN')")
-  @PutMapping("/{event_id}")
+  @PatchMapping("/{event_id}")
   public ResponseEntity<EventDetailDto> updateEvent(
       @PathVariable("event_id") Long eventId,
       @Valid @RequestPart("event") EventRequestDto eventUpdateDto,
