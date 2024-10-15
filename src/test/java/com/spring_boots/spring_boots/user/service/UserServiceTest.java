@@ -66,6 +66,9 @@ public class UserServiceTest {
 
         assertNotNull(savedUser);
         assertEquals("encodedPassword", savedUser.getPassword());
+        assertEquals("testRealId", savedUser.getUserRealId());
+        assertEquals("testUser", savedUser.getMember());
+        assertEquals("test@example.com", savedUser.getEmail());
         verify(userRepository, times(1)).save(any(Users.class));
     }
 
