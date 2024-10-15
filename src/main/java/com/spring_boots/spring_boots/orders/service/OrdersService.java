@@ -8,6 +8,8 @@ import com.spring_boots.spring_boots.orders.entity.Orders;
 import com.spring_boots.spring_boots.orders.repository.OrderItemsRepository;
 import com.spring_boots.spring_boots.orders.repository.OrdersRepository;
 import com.spring_boots.spring_boots.user.domain.Users;
+import com.spring_boots.spring_boots.user.dto.UserDto;
+import com.spring_boots.spring_boots.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,8 @@ public class OrdersService {
 
     private final ItemRepository itemRepository;
     private final OrderItemsRepository orderItemsRepository;
+
+    private final UserService userService;
 
     // 사용자 주문 목록 조회
     /*
@@ -51,7 +55,7 @@ public class OrdersService {
 
 
     // 특정 주문 상세 조회
-    public Optional<OrderDetailsDto> getOrderDetails(Long ordersId, Users currentUser) {
+    public Optional<OrderDetailsDto> getOrderDetails(Long ordersId, UserDto currentUser) {
         return ordersRepository.findById(ordersId)
                 .filter(order -> !order.getIsCanceled())
                 .filter(order -> order.getUser().getUserId().equals(currentUser.getUserId()))  // 사용자 검증 추가
@@ -92,7 +96,10 @@ public class OrdersService {
 
     // 사용자 주문 추가
     @Transactional
-    public Orders createOrder(OrderRequestDto request, Users currentUser) {
+    public Orders createOrder(OrderRequestDto request, UserDto currentUser) {
+        // UserDto를 Users 엔티티로 변환
+        Users userEntity = userService.getUserEntityByDto(currentUser);
+
         // 주문의 총 수량 및 총 가격 계산
         int totalQuantity = request.getItems().stream()
                 .mapToInt(OrderRequestDto.OrderItemDto::getItemQuantity)
@@ -104,7 +111,7 @@ public class OrdersService {
 
         // Orders 엔티티 생성 및 저장
         Orders order = Orders.builder()
-                .user(currentUser) // 현재 로그인된 사용자
+                .user(userEntity) // 현재 로그인된 사용자
                 .quantity(totalQuantity)
                 .ordersTotalPrice(totalPrice)
                 .orderStatus("주문완료") // 주문 상태는 기본적으로 '주문완료'
@@ -147,7 +154,7 @@ public class OrdersService {
 
     // 사용자 주문 수정
     @Transactional
-    public Optional<OrderResponseDto> updateOrder(Long ordersId, UpdateOrderRequest request, Users currentUser) {
+    public Optional<OrderResponseDto> updateOrder(Long ordersId, UpdateOrderRequest request, UserDto currentUser) {
         return ordersRepository.findById(ordersId).map(order -> {
             // 주문 소유자가 현재 사용자와 일치하는지 확인
             if (!order.getUser().getUserId().equals(currentUser.getUserId())) {
@@ -184,9 +191,9 @@ public class OrdersService {
 
 
     // 사용자 주문 취소
-    public Optional<OrderResponseDto> cancelOrder(Long ordersId, Users authenticatedUser) {
+    public Optional<OrderResponseDto> cancelOrder(Long ordersId, UserDto currentUser) {
         return ordersRepository.findById(ordersId)
-                .filter(order -> order.getUser().getUserId().equals(authenticatedUser.getUserId())) // 주문 소유자 확인
+                .filter(order -> order.getUser().getUserId().equals(currentUser.getUserId())) // 주문 소유자 확인
                 .map(order -> {
                     if (!order.getIsCanceled()) {
                         order.setIsCanceled(true);

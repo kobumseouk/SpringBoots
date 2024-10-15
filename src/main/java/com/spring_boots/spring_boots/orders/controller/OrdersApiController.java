@@ -5,6 +5,7 @@ import com.spring_boots.spring_boots.orders.dto.*;
 import com.spring_boots.spring_boots.orders.entity.Orders;
 import com.spring_boots.spring_boots.orders.service.OrdersService;
 import com.spring_boots.spring_boots.user.domain.Users;
+import com.spring_boots.spring_boots.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,15 +29,9 @@ public class OrdersApiController {
 
     // 사용자 주문 목록 조회
     @GetMapping("/api/orders")
-    public ResponseEntity<?> getUserOrders() {
-        // SecurityContext에서 인증 정보 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Long userId = ((Users) authentication.getPrincipal()).getUserId();  // 필요한 정보만 추출
-
-        log.debug("유저 아이디: {}", userId);
-
+    public ResponseEntity<?> getUserOrders(UserDto currentUser) {
         try {
-            List<OrderDto> orders = ordersService.getUserOrders(userId);  // 필요한 정보로만 처리
+            List<OrderDto> orders = ordersService.getUserOrders(currentUser.getUserId());
             return ResponseEntity.ok(orders);
         } catch (Exception e) {
             log.error("사용자 주문을 가져오는 도중 오류 발생: {}", e.getMessage(), e);
@@ -47,7 +42,7 @@ public class OrdersApiController {
 
     // 특정 주문 상세 조회
     @GetMapping("/api/orders/{orders_id}")
-    public ResponseEntity<OrderDetailsDto> getOrderDetails(@PathVariable Long orders_id, @AuthenticationPrincipal Users currentUser) {
+    public ResponseEntity<OrderDetailsDto> getOrderDetails(@PathVariable Long orders_id, UserDto currentUser) {
         return ordersService.getOrderDetails(orders_id, currentUser)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException("주문번호를 찾을 수 없습니다: " + orders_id));
@@ -55,7 +50,7 @@ public class OrdersApiController {
 
     // 사용자 주문 추가
     @PostMapping("/api/orders")
-    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto request, @AuthenticationPrincipal Users currentUser) {
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto request, UserDto currentUser) {
         log.debug("주문: {}", request);
         Orders order = ordersService.createOrder(request, currentUser);
         log.debug("생성된 주문 ID: {}", order.getOrdersId()); // 주문 ID 확인
@@ -72,7 +67,7 @@ public class OrdersApiController {
     public ResponseEntity<OrderResponseDto> updateOrder(
             @PathVariable Long orders_id,
             @RequestBody UpdateOrderRequest request,
-            @AuthenticationPrincipal Users currentUser) {
+            UserDto currentUser) {
 
         try {
             // 서비스에 주문 업데이트 요청을 전달, 소유자 검증도 포함됨
@@ -90,10 +85,10 @@ public class OrdersApiController {
     @DeleteMapping("/api/orders/{orders_id}")
     public ResponseEntity<OrderResponseDto> cancelOrder(
             @PathVariable Long orders_id,
-            @AuthenticationPrincipal Users authenticatedUser) {
+            UserDto currentUser) {
 
         try {
-            return ordersService.cancelOrder(orders_id, authenticatedUser)
+            return ordersService.cancelOrder(orders_id, currentUser)
                     .map(ResponseEntity::ok)
                     .orElseThrow(() -> new ResourceNotFoundException("주문번호를 찾을 수 없습니다: " + orders_id));
         } catch (IllegalStateException e) {
