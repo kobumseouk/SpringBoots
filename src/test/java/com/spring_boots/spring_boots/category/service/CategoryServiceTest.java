@@ -4,6 +4,8 @@ import com.spring_boots.spring_boots.category.dto.category.*;
 import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
+import com.spring_boots.spring_boots.item.repository.ItemRepository;
+import com.spring_boots.spring_boots.orders.repository.OrderItemsRepository;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +40,11 @@ class CategoryServiceTest {
   @Mock
   private S3BucketService s3BucketService;
 
+  @Mock
+  private ItemRepository itemRepository;
+  @Mock
+  private OrderItemsRepository orderItemsRepository;
+
   @InjectMocks
   private CategoryService categoryService;
 
@@ -55,12 +62,14 @@ class CategoryServiceTest {
         .categoryName("Test Category")
         .categoryThema("Test Thema")
         .displayOrder(1)
+        .imageUrl("http://test-url.com/test-image.jpg")
         .build();
 
     mockCategoryDto = CategoryDto.builder()
         .id(1L)
         .categoryName("Test Category")
         .displayOrder(1)
+        .imageUrl("http://test-url.com/test-image.jpg")
         .build();
 
     mockCategoryAdminDto = CategoryAdminDto.builder()
@@ -86,8 +95,24 @@ class CategoryServiceTest {
         .displayOrder(1)
         .build();
 
+    Category mappedCategory = Category.builder()
+        .categoryName("Test Category")
+        .categoryThema("Test Thema")
+        .displayOrder(1)
+        .build();
+
+    when(categoryMapper.categoryRequestDtoToCategory(any(CategoryRequestDto.class))).thenReturn(mappedCategory);
     when(s3BucketService.uploadFile(any(MultipartFile.class))).thenReturn("http://test-url.com/image.jpg");
     when(categoryRepository.save(any(Category.class))).thenReturn(mockCategory);
+    when(categoryMapper.categoryToCategoryResponseDto(any(Category.class))).thenReturn(
+        CategoryResponseDto.builder()
+            .id(1L)
+            .categoryName("Test Category")
+            .categoryThema("Test Thema")
+            .displayOrder(1)
+            .imageUrl("http://test-url.com/image.jpg")
+            .build()
+    );
 
     // when
     CategoryResponseDto result = categoryService.createCategory(requestDto, mockFile);
@@ -100,8 +125,10 @@ class CategoryServiceTest {
     assertEquals(1, result.getDisplayOrder());
     assertEquals("http://test-url.com/image.jpg", result.getImageUrl());
 
+    verify(categoryMapper).categoryRequestDtoToCategory(any(CategoryRequestDto.class));
     verify(s3BucketService).uploadFile(any(MultipartFile.class));
     verify(categoryRepository).save(any(Category.class));
+    verify(categoryMapper).categoryToCategoryResponseDto(any(Category.class));
   }
 
 
@@ -116,9 +143,26 @@ class CategoryServiceTest {
         .displayOrder(2)
         .build();
 
+    Category updatedCategory = Category.builder()
+        .id(categoryId)
+        .categoryName("Updated Category")
+        .categoryThema("Updated Thema")
+        .displayOrder(2)
+        .imageUrl("http://test-url.com/updated-image.jpg")
+        .build();
+
     when(s3BucketService.uploadFile(any(MultipartFile.class))).thenReturn("http://test-url.com/updated-image.jpg");
     when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(mockCategory));
-    when(categoryRepository.save(any(Category.class))).thenReturn(mockCategory);
+    when(categoryRepository.save(any(Category.class))).thenReturn(updatedCategory);
+    when(categoryMapper.categoryToCategoryResponseDto(any(Category.class))).thenReturn(
+        CategoryResponseDto.builder()
+            .id(categoryId)
+            .categoryName("Updated Category")
+            .categoryThema("Updated Thema")
+            .displayOrder(2)
+            .imageUrl("http://test-url.com/updated-image.jpg")
+            .build()
+    );
 
     // when
     CategoryResponseDto result = categoryService.updateCategory(categoryId, requestDto, mockFile);
@@ -134,6 +178,7 @@ class CategoryServiceTest {
     verify(s3BucketService).uploadFile(any(MultipartFile.class));
     verify(categoryRepository).findById(categoryId);
     verify(categoryRepository).save(any(Category.class));
+    verify(categoryMapper).categoryToCategoryResponseDto(any(Category.class));
 
   }
 
