@@ -40,16 +40,17 @@ async function deleteUserData(e) {
     const { id } = userToDelete;
 
     // 삭제 진행
-    const response = await fetch(`/api/users-soft/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        // 쿠키에 저장된 토큰은 자동으로 서버로 전송됨
-      },
-      credentials: 'include' // 쿠키를 포함하여 요청을 보냄
-    });
+    const response =await Api.delete("/api/users-soft",id);
+//    const response = await fetch(`/api/users-soft/${id}`, {
+//      method: 'DELETE',
+//      headers: {
+//        'Content-Type': 'application/json',
+//        // 쿠키에 저장된 토큰은 자동으로 서버로 전송됨
+//      },
+//      credentials: 'include' // 쿠키를 포함하여 요청을 보냄
+//    });
 
-    if (!response.ok) {
+    if (!response.message) {
       throw new Error('서버와의 통신에서 문제가 발생했습니다.');
     }
 
