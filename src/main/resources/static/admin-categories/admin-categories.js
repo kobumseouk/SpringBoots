@@ -87,8 +87,8 @@ async function insertCategories(page = 0, size = 10) {
             <div class="column is-2">${new Date(createdAt).toLocaleDateString()}</div>
             <div class="column is-2">${new Date(updatedAt).toLocaleDateString()}</div>
             <div class="column is-2">
-              <button class="button is-info is-small" id="editButton-${id}">수정</button>
-              <button class="button is-danger is-small" id="deleteButton-${id}">삭제</button>
+              <button class="button is-outlined is-small mr-2" id="editButton-${id}">수정</button>
+              <button class="button is-outlined is-small" id="deleteButton-${id}">삭제</button>
             </div>
           </div>
         `
