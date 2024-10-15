@@ -1,5 +1,6 @@
 package com.spring_boots.spring_boots.orders.service;
 
+import com.spring_boots.spring_boots.common.config.error.BadRequestException;
 import com.spring_boots.spring_boots.item.entity.Item;
 import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.orders.dto.*;
@@ -100,6 +101,16 @@ public class OrdersService {
         // UserDto를 Users 엔티티로 변환
         Users userEntity = userService.getUserEntityByDto(currentUser);
 
+
+        // 필수 필드 유효성 검사
+        if (request.getRecipientName().isEmpty() || request.getShippingAddress().isEmpty()) {
+            throw new BadRequestException("INVALID_ORDER_REQUEST", "수취인 정보 또는 배송 주소가 누락되었습니다.");
+        }
+
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            throw new BadRequestException("INVALID_ORDER_REQUEST", "주문할 상품이 없습니다.");
+        }
+
         // 주문의 총 수량 및 총 가격 계산
         int totalQuantity = request.getItems().stream()
                 .mapToInt(OrderRequestDto.OrderItemDto::getItemQuantity)
@@ -126,7 +137,7 @@ public class OrdersService {
         List<OrderItems> orderItemsList = request.getItems().stream()
                 .map(itemDto -> {
                     Item item = itemRepository.findById(itemDto.getItemId())
-                            .orElseThrow(() -> new IllegalArgumentException("Item not found with id: " + itemDto.getItemId()));
+                            .orElseThrow(() -> new BadRequestException("ITEM_NOT_FOUND", "해당 ID의 상품을 찾을 수 없습니다: " + itemDto.getItemId()));
 
                     return OrderItems.builder()
                             .orders(savedOrder)
