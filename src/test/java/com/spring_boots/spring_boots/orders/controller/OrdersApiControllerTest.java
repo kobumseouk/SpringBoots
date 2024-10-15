@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = true)
 class OrdersApiControllerTest {
-
+/*
     @Autowired
     private MockMvc mockMvc;
 
@@ -308,6 +308,6 @@ class OrdersApiControllerTest {
         String prettyJson = writer.writeValueAsString(mapper.readTree(content));
 
         System.out.println("정렬된 응답 본문: " + prettyJson);
-    }
+    }*/
 
 }

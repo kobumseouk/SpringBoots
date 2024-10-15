@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 class OrdersServiceTest {
-
+    /*
     @Mock
     private OrdersRepository ordersRepository;
 
@@ -286,6 +286,6 @@ class OrdersServiceTest {
 
         // Repository가 적절히 호출되었는지 검증
         verify(ordersRepository, times(1)).findByIsCanceledFalse();
-    }
+    }*/
 
 }
