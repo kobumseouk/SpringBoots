@@ -155,7 +155,7 @@ public class CategoryService {
   public CategoryDto getCategoryDetail(Long categoryId) {
     return categoryRepository.findById(categoryId)
         .map(categoryMapper::categoryToCategoryDto)
-        .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
+        .orElseThrow(() -> new ResourceNotFoundException("조회할 카테고리를 찾을 수 없습니다: " + categoryId));
   }
 
   // 카테고리 테마에 속한 카테고리 수 측정
