@@ -151,6 +151,11 @@ async function postFormData(endpoint, formData) {
   const apiUrl = endpoint;
   console.log(`%cPOST FormData 요청: ${apiUrl}`, "color: #059c4b;");
 
+  // FormData 내용 로깅
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+  }
+
   try {
     const res = await fetch(apiUrl, {
       method: "POST",
