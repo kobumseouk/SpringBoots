@@ -1,15 +1,16 @@
 /* 전체 레이아웃을 위한 컨테이너 스타일 */
-.container {
-    max-width: 1000px;  /* 더 넓은 컨테이너 */
+/*.container {
+    max-width: 1000px;
     margin: 0 auto;
     padding: 2rem;
-}
+}*/
 
 /* 페이지 상단 헤더 스타일 */
 .account-header {
     display: block;
     border-bottom: #ddd 1px solid;
     padding-bottom: 0.7rem;
+    margin-top: 20px;
     margin-bottom: 2rem;
 }
 
@@ -18,31 +19,65 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 3rem;
+    margin-bottom: 1rem;
 }
 
 /* 이벤트 폼 박스 스타일 */
 .register-event-form-box {
     width: 100%;
-    max-width: 50rem;  /* 더 넓은 폼 박스 */
-    padding: 2.5rem;  /* 더 넓은 패딩 */
+    max-width: 50rem;
+    padding: 2rem;
     background-color: #fff;
-    border-radius: 8px;  /* 더 둥근 모서리 */
+    border-radius: 8px;
     box-shadow: 0 0.6em 1.2em -0.2em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02);
 }
 
 /* 폼 필드 간 간격 조정 */
-.field:not(:last-child) {
-    margin-bottom: 1.8rem;  /* 더 넓은 간격 */
+.register-event-form-box .field:not(:last-child) {
+    margin-bottom: 1.8rem;
+}
+
+/* 라벨 스타일 */
+.register-event-form-box .label {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+}
+
+/* 입력 필드 공통 스타일 */
+.register-event-form-box .input,
+.register-event-form-box .textarea,
+.register-event-form-box .select select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* 입력 필드 포커스 시 스타일 */
+.register-event-form-box .input:focus,
+.register-event-form-box .textarea:focus,
+.register-event-form-box .select select:focus {
+    border-color: #3273dc;
+    box-shadow: 0 0 0 0.125em rgba(50, 115, 220, 0.25);
+    outline: none;
+}
+
+/* 텍스트 영역 최소 높이 설정 */
+.register-event-form-box .textarea {
+    min-height: 250px;
 }
 
 /* 파일 업로드 버튼 스타일 */
-.file-label {
+.register-event-form-box .file-label {
     width: 100%;
 }
 
 /* 파일 이름 표시 영역 스타일 */
-.file-name {
+.register-event-form-box .file-name {
     max-width: none;
     width: 100%;
     overflow: hidden;
@@ -50,61 +85,27 @@
     white-space: nowrap;
 }
 
-/* 텍스트 영역 최소 높이 설정 */
-.textarea {
-    min-height: 250px;  /* 더 높은 텍스트 영역 */
-}
-
 /* 버튼 스타일 */
-.button {
+.register-event-form-box .button {
     font-weight: bold;
-    min-width: 120px;  /* 더 넓은 버튼 */
+    min-width: 120px;
     margin-top: 1.2rem;
 }
 
-/* 라벨 스타일 */
-.label {
-    font-weight: 600;
-    font-size: 1.1rem;  /* 더 큰 글씨 */
-    margin-bottom: 0.6rem;  /* 더 넓은 간격 */
-}
-
-/* 입력 필드 공통 스타일 */
-.input,
-.textarea,
-.select select {
-    width: 100%;
-    padding: 0.6rem;  /* 더 넓은 패딩 */
-    border: 1px solid #dbdbdb;
-    border-radius: 4px;
-    font-size: 1.1rem;  /* 더 큰 글씨 */
-    line-height: 1.5;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
-/* 입력 필드 포커스 시 스타일 */
-.input:focus,
-.textarea:focus,
-.select select:focus {
-    border-color: #3273dc;
-    box-shadow: 0 0 0 0.125em rgba(50, 115, 220, 0.25);
-    outline: none;
-}
-
 /* 이미지 미리보기 컨테이너 스타일 */
-.image-preview-container {
+.register-event-form-box .image-preview-container {
     margin-top: 1.2rem;
     display: none;
 }
 
 /* 이미지 미리보기 스타일 */
-.image-preview {
+.register-event-form-box .image-preview {
     max-width: 100%;
-    max-height: 250px;  /* 더 큰 미리보기 이미지 */
+    max-height: 250px;
     object-fit: contain;
 }
 
 /* 파일 업로드 필드 스타일 */
-.file {
+.register-event-form-box .file {
     margin-top: 0.6rem;
 }
