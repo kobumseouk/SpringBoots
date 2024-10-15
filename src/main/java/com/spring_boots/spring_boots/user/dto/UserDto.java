@@ -1,7 +1,12 @@
 package com.spring_boots.spring_boots.user.dto;
 
+import com.spring_boots.spring_boots.orders.entity.Orders;
+import com.spring_boots.spring_boots.user.domain.Provider;
 import com.spring_boots.spring_boots.user.domain.UserRole;
+import com.spring_boots.spring_boots.user.domain.UsersInfo;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,5 +18,11 @@ public class UserDto {
     private String username;
     private String userRealId;
     private String email;
+    private String password;
     private UserRole role;
+    private boolean isDeleted;
+    private String deleteReason;
+    private Provider provider;
+    private List<UsersInfo> usersInfoList;
+    private List<Orders> ordersList;
 }

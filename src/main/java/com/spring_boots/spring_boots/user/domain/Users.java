@@ -141,7 +141,13 @@ public class Users extends BaseTimeEntity implements UserDetails {
                 .username(this.username)
                 .userRealId(this.userRealId)
                 .email(this.email)
+                .password(this.password)
+                .isDeleted(this.isDeleted)
+                .deleteReason(this.deleteReason)
                 .role(this.role)
+                .provider(this.provider)
+                .usersInfoList(this.usersInfoList)
+                .ordersList(this.ordersList)
                 .build();
     }
 }
