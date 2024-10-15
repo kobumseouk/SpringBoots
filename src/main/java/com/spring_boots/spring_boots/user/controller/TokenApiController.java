@@ -23,6 +23,7 @@ public class TokenApiController {
     private final UserService userService;
     private final TokenService tokenService;
 
+    //jwt 로그인
     @PostMapping("/login")
     public ResponseEntity<JwtTokenResponse> jwtLogin(
             @RequestBody JwtTokenLoginRequest request,
@@ -50,6 +51,32 @@ public class TokenApiController {
         }
     }
 
+//    //토큰 재발급 로직
+//    @PostMapping("/refresh-token")
+//    public ResponseEntity<RefreshTokenResponse> refreshAccessToken(@RequestBody RefreshTokenRequest request) {
+//        String refreshToken = request.getRefreshToken();
+//
+//        // refreshToken 검증 및 새로운 accessToken 생성
+//        String newAccessToken = tokenService.createNewAccessToken(refreshToken);
+//
+//        if (newAccessToken == null) {
+//            return ResponseEntity.status(401).build(); // 토큰이 유효하지 않은 경우 401 Unauthorized 응답
+//        }
+//
+//        return ResponseEntity.ok(new RefreshTokenResponse(newAccessToken));
+//    }
+
+//    //토큰 유효성 api
+//    @GetMapping("/protected")
+//    public ResponseEntity<String> getProtectedResource(@CookieValue("accessToken") String accessToken) {
+//        if (userService.validateToken(accessToken)) {
+//            return ResponseEntity.ok("Protected data");
+//        } else {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+//        }
+//    }
+
+    //엑세스토큰, 리프레시 토큰 쿠키삭제 로직
     private void deleteTokenCookie(HttpServletResponse response) {
         Cookie deleteRefreshTokenCookie = new Cookie("refreshToken", null);
 //            deleteRefreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
@@ -67,7 +94,8 @@ public class TokenApiController {
         response.addCookie(deleteAccessTokenCookie);
     }
 
-    private void getCookie(JwtTokenDto jwtTokenResponse,HttpServletResponse response) {
+    //쿠키 생성로직
+    private void getCookie(JwtTokenDto jwtTokenResponse, HttpServletResponse response) {
         Cookie refreshTokenCookie = new Cookie(
                 "refreshToken",
                 jwtTokenResponse.getRefreshToken()
@@ -91,28 +119,4 @@ public class TokenApiController {
         response.addCookie(refreshTokenCookie);
         response.addCookie(accessTokenCookie);
     }
-
-    @PostMapping("/refresh-token")
-    public ResponseEntity<RefreshTokenResponse> refreshAccessToken(@RequestBody RefreshTokenRequest request) {
-        String refreshToken = request.getRefreshToken();
-
-        // refreshToken 검증 및 새로운 accessToken 생성
-        String newAccessToken = tokenService.createNewAccessToken(refreshToken);
-
-        if (newAccessToken == null) {
-            return ResponseEntity.status(401).build(); // 토큰이 유효하지 않은 경우 401 Unauthorized 응답
-        }
-
-        return ResponseEntity.ok(new RefreshTokenResponse(newAccessToken));
-    }
-
-    @GetMapping("/api/protected")
-    public ResponseEntity<String> getProtectedResource(@CookieValue("accessToken") String accessToken) {
-        if (userService.validateToken(accessToken)) {
-            return ResponseEntity.ok("Protected data");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-        }
-    }
-
 }
