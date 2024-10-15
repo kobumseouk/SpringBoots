@@ -4,12 +4,14 @@ import com.spring_boots.spring_boots.config.jwt.impl.AuthTokenImpl;
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
+import com.spring_boots.spring_boots.user.domain.UsersInfo;
 import com.spring_boots.spring_boots.user.dto.request.*;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.repository.UserRepository;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,10 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.crypto.SecretKey;
 import java.security.Key;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,7 +46,8 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSave_성공() {
+    @DisplayName("회원가입 성공테스트")
+    public void testSaveSuccess() {
         UserSignupRequestDto request = new UserSignupRequestDto("testUser", "testRealId", "test@example.com", "password");
 
         Users user = Users.builder()
@@ -73,7 +73,8 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSave_중복된Id_예외발생() {
+    @DisplayName("동일한 아이디 중복 예외발생")
+    public void testSaveFail() {
         UserSignupRequestDto request = new UserSignupRequestDto("testUser", "testRealId", "test@example.com", "password");
 
         when(userRepository.existsByUserRealId(request.getUserRealId())).thenReturn(true);
@@ -86,7 +87,8 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testLogin_성공() {
+    @DisplayName("로그인 성공시")
+    public void testLoginSuccess() {
         JwtTokenLoginRequest request = new JwtTokenLoginRequest("testRealId", "password");
 
         Users user = Users.builder()
@@ -131,7 +133,8 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testLogin_잘못된비밀번호_예외발생() {
+    @DisplayName("잘못된 비밀번호발생시 예외발생")
+    public void testLoginException() {
         JwtTokenLoginRequest request = new JwtTokenLoginRequest("testRealId", "wrongPassword");
 
         Users user = Users.builder()
@@ -151,9 +154,12 @@ public class UserServiceTest {
     }
 
     @Test
+    @DisplayName("모든 회원조회")
     public void testFindAll() {
-        Users user1 = Users.builder().userRealId("user1").build();
-        Users user2 = Users.builder().userRealId("user2").build();
+        UsersInfo usersInfo = UsersInfo.builder().build();
+
+        Users user1 = Users.builder().userRealId("user1").usersInfoList(new ArrayList<>()).build();
+        Users user2 = Users.builder().userRealId("user2").usersInfoList(new ArrayList<>()).build();
 
         when(userRepository.findAll()).thenReturn(List.of(user1, user2));
 
@@ -164,7 +170,8 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testIsDuplicateUserRealId_중복확인() {
+    @DisplayName("아이디 중복확인")
+    public void testIsDuplicateUserRealId() {
         when(userRepository.existsByUserRealId("duplicateRealId")).thenReturn(true);
 
         boolean isDuplicate = userService.isDuplicateUserRealId("duplicateRealId");
