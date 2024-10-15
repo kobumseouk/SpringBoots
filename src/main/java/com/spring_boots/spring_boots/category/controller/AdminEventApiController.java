@@ -65,8 +65,8 @@ public class AdminEventApiController {
   public ResponseEntity<Page<EventAdminDto>> getAdminEvent (
       @RequestParam(name = "page", defaultValue = "0") int page,
       @RequestParam(name = "limit", defaultValue = "10") int limit) {
-    Page<EventAdminDto> pageDto = eventService.getAdminEvents(page, limit);
-    return ResponseEntity.ok(pageDto);
+    Page<EventAdminDto> adminEvents = eventService.getAdminEvents(page, limit);
+    return ResponseEntity.ok(adminEvents);
   }
 
   // 관리자 - 개별 카테고리 조회

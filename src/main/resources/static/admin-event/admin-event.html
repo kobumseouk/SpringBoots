@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Spring Boots</title>
+  <title>Spring Boots - 이벤트 관리</title>
   <!-- bulma css -->
   <link
           rel="stylesheet"
@@ -17,69 +17,65 @@
           crossorigin="anonymous"
   ></script>
   <!-- 커스텀 css, js -->
-  <link rel="stylesheet" href="/admin-categories/admin-categories.css" />
+  <link rel="stylesheet" href="/admin-event/admin-event.css" />
   <link rel="stylesheet" href="/common/header.css">
-  <script src="/admin-categories/admin-categories.js" type="module" defer></script>
+  <script src="/admin-event/admin-event.js" type="module" defer></script>
+  <script src="/common/header.js" type="module"></script>
 </head>
 <body>
-  <!-- 헤더 -->
-  <div id="header-placeholder" class="header-container"></div>
+<!-- 헤더 -->
+<div id="header-placeholder" class="header-container"></div>
 
-  <div id="content">
-    <!-- 카테고리 관리 -->
-    <section class="section">
-      <div class="container">
-        <div class="block account-header">
-          <div class="level">
-            <div class="level-left">
-              <h2 class="subtitle is-4">카테고리 목록</h2>
-            </div>
-            <div class="level-right">
-              <button class="button is-primary" id="addCategoryButton">카테고리 등록</button>
-            </div>
+<div id="content">
+  <!-- 이벤트 관리 -->
+  <section class="section">
+    <div class="container">
+      <div class="block account-header">
+        <div class="level">
+          <div class="level-left">
+            <h2 class="subtitle is-4">이벤트 목록</h2>
           </div>
-        </div>
-
-        <div id="categoriesContainer" class="category-container">
-          <div class="columns notification is-info is-light is-mobile categories-top">
-            <div class="column is-2">카테고리명</div>
-            <div class="column is-2">카테고리 테마</div>
-            <div class="column is-2">배치정보</div>
-            <div class="column is-2">생성날짜</div>
-            <div class="column is-2">수정날짜</div>
-            <div class="column is-2">관리</div>
+          <div class="level-right">
+            <button class="button is-primary" id="addEventButton">이벤트 등록</button>
           </div>
-          <!-- 카테고리 목록이 여기에 동적으로 추가됩니다 -->
         </div>
       </div>
-    </section>
-  </div>
 
-  <!-- 카테고리를 삭제할 지 묻는 Modal 창 -->
-  <div id="modal" class="modal">
-    <div class="modal-background" id="modalBackground"></div>
-    <div class="modal-content">
-      <div class="box">
-        <p class="mb-3">
-          카테고리 삭제 시 복구할 수 없습니다. 정말로 취소하시겠습니까?
-        </p>
-        <div class="buttons">
-          <button class="button mt-5" id="deleteCompleteButton" aria-label="close">
-            네
-          </button>
-          <button class="button is-primary mt-5" id="deleteCancelButton" aria-label="close">
-            아니오
-          </button>
+      <div id="eventsContainer" class="event-container">
+        <div class="columns notification is-info is-light is-mobile events-top">
+          <div class="column is-3">이벤트 제목</div>
+          <div class="column is-2">시작일</div>
+          <div class="column is-2">종료일</div>
+          <div class="column is-2">진행 여부</div>
+          <div class="column is-2">관리</div>
         </div>
+        <!-- 이벤트 목록이 여기에 동적으로 추가됩니다 -->
       </div>
     </div>
-    <button class="modal-close is-large" id="modalCloseButton" aria-label="close"></button>
-  </div>
+  </section>
+</div>
 
-  <script src="/common/header.js" type="module"></script>
-  <!--<script type="module">
-    import { loadHeader } from '/common/header.js';
-    document.addEventListener('DOMContentLoaded', loadHeader);
-  </script>-->
+<!-- 이벤트를 삭제할 지 묻는 Modal 창 -->
+<div id="modal" class="modal">
+  <div class="modal-background" id="modalBackground"></div>
+  <div class="modal-content">
+    <div class="box">
+      <p class="mb-3">
+        이벤트 삭제 시 복구할 수 없습니다. 정말로 삭제하시겠습니까?
+      </p>
+      <div class="buttons">
+        <button class="button mt-5" id="deleteCompleteButton" aria-label="close">
+          네
+        </button>
+        <button class="button is-primary mt-5" id="deleteCancelButton" aria-label="close">
+          아니오
+        </button>
+      </div>
+    </div>
+  </div>
+  <button class="modal-close is-large" id="modalCloseButton" aria-label="close"></button>
+</div>
+
+
 </body>
 </html>

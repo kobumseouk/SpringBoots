@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -123,18 +124,22 @@ class EventServiceTest {
   void getActiveEvents() {
     // given
     Pageable pageable = PageRequest.of(0, 10);
-    Page<Event> eventPage = new PageImpl<>(Arrays.asList(mockEvent, mockEvent));
-    when(eventRepository.findAll(any(Pageable.class))).thenReturn(eventPage);
+    List<Event> activeEvents = Arrays.asList(mockEvent, mockEvent);
+    Page<Event> activePage = new PageImpl<>(activeEvents, pageable, activeEvents.size());
+
+    when(eventRepository.findByIsActiveTrue(any(Pageable.class))).thenReturn(activePage);
     when(eventMapper.eventToEventDto(any(Event.class))).thenReturn(mockEventDto);
 
     // when
-    Page<EventDto> result = eventService.getActiveEvents(pageable);
+    Page<EventDto> result = eventService.getActiveEvents(0, 10);
 
     // then
     assertNotNull(result);
     assertEquals(2, result.getContent().size());
     assertEquals(mockEventDto.getEventTitle(), result.getContent().get(0).getEventTitle());
-    verify(eventRepository).findAll(any(Pageable.class));
+
+    verify(eventRepository).findByIsActiveTrue(any(Pageable.class));
+    verify(eventMapper, times(2)).eventToEventDto(any(Event.class));
   }
 
   @Test
