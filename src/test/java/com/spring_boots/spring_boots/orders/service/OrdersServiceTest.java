@@ -9,6 +9,7 @@ import com.spring_boots.spring_boots.orders.repository.OrderItemsRepository;
 import com.spring_boots.spring_boots.orders.repository.OrdersRepository;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
+import com.spring_boots.spring_boots.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,6 +33,9 @@ class OrdersServiceTest {
 
     @Mock
     private ItemRepository itemRepository;
+
+    @Mock
+    private UserService userService;  // UserService를 Mock으로 추가
 
     @InjectMocks
     private OrdersService ordersService;
