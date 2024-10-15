@@ -35,7 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
             // 액세스토큰이 유효한 경우, Authentication 객체 생성
             Authentication authentication = tokenProvider.getAuthentication(jwtAccessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else if (jwtRefreshToken != null && jwtAccessToken != null) {
+        } else if (jwtRefreshToken != null) {
             // 액세스토큰이 만료된 경우, 리프레시토큰 검증
             log.info("Access token expired, validating refresh token...");
 
