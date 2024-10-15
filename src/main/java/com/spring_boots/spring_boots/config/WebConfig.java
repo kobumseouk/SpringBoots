@@ -1,8 +1,11 @@
 package com.spring_boots.spring_boots.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 /**
  * url 패스 경로 바꾸기
@@ -49,5 +52,11 @@ public class WebConfig implements WebMvcConfigurer {
         // 이벤트 상세 페이지
         registry.addViewController("/events/**").setViewName("forward:/event-detail/event-detail.html");
         registry.addViewController("/admin/items").setViewName(("forward:/product-add/product-add.html"));
+    }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        // 커스텀 ArgumentResolver 추가
+        resolvers.add(new UserDtoArgumentResolver());
     }
 }
