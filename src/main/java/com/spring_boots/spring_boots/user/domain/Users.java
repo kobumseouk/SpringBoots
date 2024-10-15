@@ -2,6 +2,7 @@ package com.spring_boots.spring_boots.user.domain;
 
 import com.spring_boots.spring_boots.common.BaseTimeEntity;
 import com.spring_boots.spring_boots.orders.entity.Orders;
+import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.dto.request.AdminGrantTokenRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
@@ -132,5 +133,21 @@ public class Users extends BaseTimeEntity implements UserDetails {
 
     public void updateToRole(AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
         this.role = adminGrantTokenRequestDto.getRoles();
+    }
+
+    public UserDto toUserDto() {
+        return UserDto.builder()
+                .userId(this.userId)
+                .username(this.username)
+                .userRealId(this.userRealId)
+                .email(this.email)
+                .password(this.password)
+                .isDeleted(this.isDeleted)
+                .deleteReason(this.deleteReason)
+                .role(this.role)
+                .provider(this.provider)
+                .usersInfoList(this.usersInfoList)
+                .ordersList(this.ordersList)
+                .build();
     }
 }
