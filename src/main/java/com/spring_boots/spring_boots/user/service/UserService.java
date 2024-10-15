@@ -5,6 +5,7 @@ import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.domain.UsersInfo;
+import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.dto.request.*;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.repository.UserInfoRepository;
@@ -182,4 +183,11 @@ public class UserService {
             return false;
         }
     }
+
+    //엔티티 변경
+    public Users getUserEntityByDto(UserDto userDto) {
+        return userRepository.findById(userDto.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다: " + userDto.getUserId()));
+    }
+
 }

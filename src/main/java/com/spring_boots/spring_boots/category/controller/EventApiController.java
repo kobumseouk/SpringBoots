@@ -32,10 +32,9 @@ public class EventApiController {
   @GetMapping
   public ResponseEntity<Page<EventDto>> getActiveEvents(
       @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
+      @RequestParam(defaultValue = "10") int limit) {
 
-    Pageable pageable = PageRequest.of(page, size, Sort.by("startDate").descending());
-    Page<EventDto> events = eventService.getActiveEvents(pageable);
+    Page<EventDto> events = eventService.getActiveEvents(page, limit);
 
     return ResponseEntity.ok(events);
   }

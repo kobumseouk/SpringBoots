@@ -11,10 +11,9 @@
 }
 
 /* 헤더 */
-/* 제목과 버튼을 포함하는 컨테이너에 대한 스타일 */
 .account-header {
   max-width: 100%;
-  padding: 0 1rem; /* 좌우 패딩 추가 */
+  padding: 0 1rem;
   margin-bottom: 1rem;
 }
 
@@ -26,27 +25,28 @@
   margin-bottom: 0;
 }
 
-/* 카테고리 리스트 */
-.category-container {
-  max-width: 100% !important; /* 전체 너비로 확장 */
-  margin: 1rem auto; /* auto를 사용하여 좌우 중앙 정렬 */
-  padding: 0 1rem; /* 필요하다면 좌우 패딩 추가 */
+/* 이벤트 리스트 */
+.event-container {
+  max-width: 100% !important;
+  margin: 1rem auto;
+  padding: 0 1rem;
 }
 
-.categories-top {
+.events-top {
   border-bottom: #aaa 1px solid;
   padding: 1rem 0;
   background-color: #f5f5f5;
-  margin-top: 1rem; /* 상단 여백 추가 */
+  margin-top: 1rem;
 }
 
-/* 필요하다면 개별 항목에 대한 스타일도 조정 */
-.category-item {
+/* 개별 이벤트 항목 스타일 */
+.orders-item {
   padding: 0.5rem 0;
-  margin-bottom: 0.5rem; /* 항목 사이 간격 추가 */
+  margin-bottom: 0.5rem;
+  align-items: center;
 }
 
-.category-item:not(:last-child) {
+.orders-item:not(:last-child) {
   border-bottom: 1px solid #ddd;
 }
 
@@ -67,6 +67,21 @@
   align-items: center;
   justify-content: center;
   text-align: center;
+}
+
+/* 진행 여부 스타일 */
+.event-status {
+  font-weight: bold;
+}
+
+/* 진행 중인 이벤트 색상 */
+.event-status.active {
+  color: #48c774;
+}
+
+/* 만료된 이벤트 색상 */
+.event-status.inactive {
+  color: #ff3860;
 }
 
 .modal .box {

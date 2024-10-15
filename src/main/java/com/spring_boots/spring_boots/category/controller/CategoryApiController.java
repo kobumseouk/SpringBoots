@@ -17,7 +17,6 @@ public class CategoryApiController {
   private final CategoryService categoryService;
 
 
-  // TODO: 테마에 대한 추가 정보가 필요할 경우 CategoryThemaDto로 변경 고려
   // 모든 카테고리 테마 목록 조회
   @GetMapping("/themas")
   public ResponseEntity<List<String>> getAllThemas() {

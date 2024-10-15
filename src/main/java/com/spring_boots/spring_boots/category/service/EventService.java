@@ -58,19 +58,12 @@ public class EventService {
   }*/
 
   @Transactional
-  public Page<EventDto> getActiveEvents(Pageable pageable) {
-    // 모든 이벤트를 조회하고 상태를 업데이트
-    Page<Event> allEvents = eventRepository.findAll(pageable);
-    allEvents.forEach(Event::updateActiveStatus);
+  public Page<EventDto> getActiveEvents(int page, int limit) {
+    PageRequest pageRequest = PageRequest.of(page, limit);
+    Page<Event> activePage = eventRepository.findByIsActiveTrue(pageRequest);
+    activePage.forEach(Event::updateActiveStatus);
 
-    // 활성 상태인 이벤트만 필터링
-    List<EventDto> activeEventDtos = allEvents.getContent().stream()
-        .filter(Event::getIsActive)
-        .map(eventMapper::eventToEventDto)
-        .collect(Collectors.toList());
-
-    // 새로운 Page 객체 생성
-    return new PageImpl<>(activeEventDtos, pageable, allEvents.getTotalElements());
+    return activePage.map(eventMapper::eventToEventDto);
   }
 
   // 특정 이벤트의 상세 정보를 조회하는 메서드
@@ -139,6 +132,8 @@ public class EventService {
   public Page<EventAdminDto> getAdminEvents (int page, int limit) {
     PageRequest pageRequest = PageRequest.of(page, limit);
     Page<Event> eventPage = eventRepository.findAll(pageRequest);
+    eventPage.forEach(Event::updateActiveStatus);
+
     return eventPage.map(eventMapper::eventToEventAdminDto);
   }
 

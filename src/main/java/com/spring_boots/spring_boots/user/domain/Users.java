@@ -135,6 +135,10 @@ public class Users extends BaseTimeEntity implements UserDetails {
         this.role = adminGrantTokenRequestDto.getRoles();
     }
 
+    public String getMember() {
+        return username;
+    }
+
     public UserDto toUserDto() {
         return UserDto.builder()
                 .userId(this.userId)

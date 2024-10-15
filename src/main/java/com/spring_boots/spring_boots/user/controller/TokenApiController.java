@@ -34,16 +34,20 @@ public class TokenApiController {
             deleteTokenCookie(response);
         }
 
-        JwtTokenDto jwtTokenResponse = userService.login(request);
+        try {
+            JwtTokenDto jwtTokenResponse = userService.login(request);
 
-        getCookie(jwtTokenResponse, response);
+            getCookie(jwtTokenResponse, response);
 
-        return ResponseEntity.ok().body(JwtTokenResponse
-                .builder()
-                .accessToken(jwtTokenResponse.getAccessToken())
-                .refreshToken(jwtTokenResponse.getRefreshToken())
-                .isAdmin(jwtTokenResponse.getRole().equals(UserRole.ADMIN))
-                .build());
+            return ResponseEntity.ok().body(JwtTokenResponse
+                    .builder()
+                    .accessToken(jwtTokenResponse.getAccessToken())
+                    .refreshToken(jwtTokenResponse.getRefreshToken())
+                    .isAdmin(jwtTokenResponse.getRole().equals(UserRole.ADMIN))
+                    .build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     private void deleteTokenCookie(HttpServletResponse response) {

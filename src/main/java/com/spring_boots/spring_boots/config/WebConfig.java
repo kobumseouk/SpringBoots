@@ -46,7 +46,7 @@ public class WebConfig implements WebMvcConfigurer {
         // 이벤트 목록 페이지
         registry.addViewController("/events").setViewName("forward:/event-list/event-list.html");
         // 이벤트 관리 페이지
-        registry.addViewController("/admin/events").setViewName("forward:/amdin-event/amdin-event.html");
+        registry.addViewController("/admin/events").setViewName("forward:/admin-event/admin-event.html");
         // 이벤트 생성 페이지
         registry.addViewController("/admin/events/create").setViewName("forward:/event-form/event-form.html");
         // 이벤트 수정 페이지
