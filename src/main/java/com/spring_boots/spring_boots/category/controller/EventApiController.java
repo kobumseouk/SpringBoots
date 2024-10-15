@@ -28,16 +28,6 @@ public class EventApiController {
   private final EventService eventService;
 
 
-  // 새로운 이벤트를 생성하는 메서드
-  @PostMapping
-  public ResponseEntity<EventDetailDto> createEvent(
-      @Valid @RequestPart("event") EventRequestDto eventRequestDto,
-      @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
-      @RequestPart(value = "contentFile", required = false) MultipartFile contentFile) throws IOException {
-    EventDetailDto createdEvent = eventService.createEvent(eventRequestDto, thumbnailFile, contentFile);
-    return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
-  }
-
   // 모든 활성화된 이벤트를 조회하는 메서드 (페이지네이션 적용)
   @GetMapping
   public ResponseEntity<Page<EventDto>> getActiveEvents(
@@ -56,24 +46,5 @@ public class EventApiController {
     EventDetailDto eventDetail = eventService.getEventDetail(eventId);
     return ResponseEntity.ok(eventDetail);
   }
-
-  // 특정 이벤트를 수정하는 메서드
-  @PutMapping("/{event_id}")
-  public ResponseEntity<EventDetailDto> updateEvent(
-      @PathVariable("event_id") Long eventId,
-      @Valid @RequestPart("event") EventRequestDto eventUpdateDto,
-      @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
-      @RequestPart(value = "contentFile", required = false) MultipartFile contentFile) throws IOException {
-    EventDetailDto updatedEvent = eventService.updateEvent(eventId, eventUpdateDto, thumbnailFile, contentFile);
-    return ResponseEntity.ok(updatedEvent);
-  }
-
-  // 특정 이벤트를 삭제하는 메서드
-  @DeleteMapping("/{event_id}")
-  public ResponseEntity<Void> deleteEvent(@PathVariable("event_id") Long eventId) {
-    eventService.deleteEvent(eventId);
-    return ResponseEntity.noContent().build();
-  }
-
 
 }

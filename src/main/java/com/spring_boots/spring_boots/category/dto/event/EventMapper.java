@@ -22,4 +22,6 @@ public interface EventMapper {
   @Mapping(target = "isActive", ignore = true)
   void updateEventFromDto(EventRequestDto eventRequestDto, @MappingTarget Event event);
 
+  // event -> eventAdminDto
+  EventAdminDto eventToEventAdminDto(Event event);
 }

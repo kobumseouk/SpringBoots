@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spring Boots</title>
+  <!-- bulma css -->
+  <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- 폰트 어썸: 아이콘 -->
+  <script
+          defer
+          src="https://kit.fontawesome.com/9daa42bcef.js"
+          crossorigin="anonymous"
+  ></script>
+  <!-- 커스텀 css, js -->
+  <link rel="stylesheet" href="/admin-categories/admin-categories.css" />
+  <link rel="stylesheet" href="/common/header.css">
+  <script src="/admin-categories/admin-categories.js" type="module" defer></script>
+</head>
+<body>
+  <!-- 헤더 -->
+  <div id="header-placeholder" class="header-container"></div>
+
+  <div id="content">
+    <!-- 카테고리 관리 -->
+    <section class="section">
+      <div class="container">
+        <div class="block account-header">
+          <div class="level">
+            <div class="level-left">
+              <h2 class="subtitle is-4">카테고리 목록</h2>
+            </div>
+            <div class="level-right">
+              <button class="button is-primary" id="addCategoryButton">카테고리 등록</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="categoriesContainer" class="category-container">
+          <div class="columns notification is-info is-light is-mobile categories-top">
+            <div class="column is-2">카테고리명</div>
+            <div class="column is-2">카테고리 테마</div>
+            <div class="column is-2">배치정보</div>
+            <div class="column is-2">생성날짜</div>
+            <div class="column is-2">수정날짜</div>
+            <div class="column is-2">관리</div>
+          </div>
+          <!-- 카테고리 목록이 여기에 동적으로 추가됩니다 -->
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 카테고리를 삭제할 지 묻는 Modal 창 -->
+  <div id="modal" class="modal">
+    <div class="modal-background" id="modalBackground"></div>
+    <div class="modal-content">
+      <div class="box">
+        <p class="mb-3">
+          카테고리 삭제 시 복구할 수 없습니다. 정말로 취소하시겠습니까?
+        </p>
+        <div class="buttons">
+          <button class="button mt-5" id="deleteCompleteButton" aria-label="close">
+            네
+          </button>
+          <button class="button is-primary mt-5" id="deleteCancelButton" aria-label="close">
+            아니오
+          </button>
+        </div>
+      </div>
+    </div>
+    <button class="modal-close is-large" id="modalCloseButton" aria-label="close"></button>
+  </div>
+
+  <script src="/common/header.js" type="module"></script>
+  <!--<script type="module">
+    import { loadHeader } from '/common/header.js';
+    document.addEventListener('DOMContentLoaded', loadHeader);
+  </script>-->
+</body>
+</html>
