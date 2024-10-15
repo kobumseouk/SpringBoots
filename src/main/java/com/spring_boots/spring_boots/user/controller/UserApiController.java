@@ -57,17 +57,21 @@ public class UserApiController {
         }
     }
 
-    //회원 정보 수정(이름, 아이디, 이메일은 변경 불가능)
+    //회원 정보 수정(이름, 아이디는 변경 불가능)
     @PatchMapping("/users/{userInfoId}")
     public ResponseEntity<UserUpdateResponseDto> updateUser(@AuthenticationPrincipal Users user,
                                                             @PathVariable("userInfoId") Long userInfoId,
                                                             @RequestBody UserUpdateRequestDto request) {
-        Users authUser = userService.findById(user.getUserId());    //인증객체 가져올시 영속성컨텍스트에서 가져와야함
+        try {
+            Users authUser = userService.findById(user.getUserId());    //인증객체 가져올시 영속성컨텍스트에서 가져와야함
 
-        userService.update(authUser, request, userInfoId);
+            userService.update(authUser, request, userInfoId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(UserUpdateResponseDto
-                .builder().message("정상적으로 수정되었습니다.").build());
+            return ResponseEntity.status(HttpStatus.OK).body(UserUpdateResponseDto
+                    .builder().message("정상적으로 수정되었습니다.").build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserUpdateResponseDto
+                    .builder().message("잘못된 데이터 요청입니다.").build());        }
     }
 
 //    //회원 탈퇴(hard delete)
@@ -145,16 +149,20 @@ public class UserApiController {
 
     //아이디 중복확인
     @GetMapping("/signup/check-id")
-    public ResponseEntity<Void> checkUsername(@RequestParam("userRealId") String userRealId) {
+    public ResponseEntity<UserCheckIdResponseDto> checkUsername(@RequestParam("userRealId") String userRealId) {
         boolean isUsernameTaken = userService.isDuplicateUserRealId(userRealId);
 
         if (isUsernameTaken) {
             // 아이디가 이미 존재하는 경우
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(UserCheckIdResponseDto.builder()
+                            .isAvailable(false).message("이미 사용중인 아이디입니다.").build());
         }
 
         // 아이디 사용 가능
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .body(UserCheckIdResponseDto.builder()
+                        .isAvailable(true).message("사용할 수 있는 아이디입니다.").build());
     }
 
     //쿠키 삭제 로직

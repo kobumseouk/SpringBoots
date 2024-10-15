@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class UserAdminApiController {
     private final UserService userService;
 
     //모든 회원 정보 조회(관리자)
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/users")
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
         List<UserResponseDto> users = userService.findAll();
@@ -31,6 +33,7 @@ public class UserAdminApiController {
     }
 
     //특정 회원 정보 조회(관리자)
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/users/{user_id}")
     public ResponseEntity<UserResponseDto> getUserByAdmin(@PathVariable("user_id") Long userId) {
         Users findUser = userService.findById(userId);
@@ -55,6 +58,7 @@ public class UserAdminApiController {
 //    }
 
     //관리자 확인 API
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users/admin-check")
     public ResponseEntity<UserCheckAdminResponseDto> checkAdmin(@CookieValue(value = "accessToken", required = false) String accessToken) {
         //accessToken 이 없는 경우
@@ -81,13 +85,14 @@ public class UserAdminApiController {
     }
 
     //관리자 코드 체크 API
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/users/grant")
     public ResponseEntity<AdminCodeResponseDto> checkAdminCode(@RequestBody AdminCodeRequestDto adminCodeDto) {
         if (userService.checkAdminCode(adminCodeDto)) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(AdminCodeResponseDto.builder().message("success").build());
         } else {
-            return ResponseEntity.status(HttpStatus.OK)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(AdminCodeResponseDto.builder().message("fail").build());
         }
     }
