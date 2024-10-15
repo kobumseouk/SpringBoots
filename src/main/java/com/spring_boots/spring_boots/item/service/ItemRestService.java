@@ -1,5 +1,7 @@
 package com.spring_boots.spring_boots.item.service;
 
+import com.spring_boots.spring_boots.category.entity.Category;
+import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
@@ -22,13 +24,16 @@ public class ItemRestService {
     private final ItemMapper itemMapper;
     private final ItemRepository itemRepository;
     private final S3BucketService s3BucketService;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    public ItemRestService(ItemMapper itemMapper, ItemRepository itemRepository, S3BucketService s3BucketService) {
+    public ItemRestService(ItemMapper itemMapper, ItemRepository itemRepository, S3BucketService s3BucketService, CategoryRepository categoryRepository) {
         this.itemMapper = itemMapper;
         this.itemRepository = itemRepository;
         this.s3BucketService = s3BucketService;
+        this.categoryRepository = categoryRepository;
     }
+
 
     // Item 전체 보기
     public List<ResponseItemDto> getAllItems() {
@@ -44,6 +49,8 @@ public class ItemRestService {
 
     // Item 만들기
     public ResponseItemDto createItem(CreateItemDto itemDto, MultipartFile file) {
+        Category category = categoryRepository.findById(itemDto.getCategoryId()) // categoryId로 Category 객체 조회
+                .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다.: " + itemDto.getCategoryId()));
         String imageUrl = null;
 
         if (file != null && !file.isEmpty()) { // 이미지 파일 존재 유무 확인
@@ -56,6 +63,8 @@ public class ItemRestService {
         itemDto.setImageUrl(imageUrl); // DTO에 이미지 URL 설정
 
         Item created = itemDto.toEntity();
+        created.setCategory(category);
+
         Item result = itemRepository.save(created);
         return itemMapper.toResponseDto(result);
     }
@@ -68,9 +77,6 @@ public class ItemRestService {
         Optional.ofNullable(itemDto.getItemName())
                 .ifPresent(findItem::setItemName);
 
-        //Item Category 수정
-        Optional.ofNullable(itemDto.getCategory())
-                .ifPresent(findItem::setCategory);
 
         //Item Price 수정
         Optional.ofNullable(itemDto.getItemPrice())
@@ -105,4 +111,12 @@ public class ItemRestService {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: "+ itemId));
         itemRepository.delete(item);
     }
+
+    // Category로 Item 조회 리스트
+    public List<ResponseItemDto> getItemsByCategory(Long categoryId) {
+        List<Item> items = itemRepository.findAllByCategoryId(categoryId);
+        return items.stream().map(itemMapper::toResponseDto).collect(Collectors.toList());
+    }
 }
+
+
