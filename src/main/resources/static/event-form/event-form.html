@@ -17,7 +17,8 @@
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>
   <!-- 커스텀 css, js -->
   <link rel="stylesheet" href="/event-form/event-form.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"><link rel="stylesheet" href="/common/header.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="/common/header.css" />
   <script src="/event-form/event-form.js" type="module" defer></script>
   <script src="/common/header.js" type="module"></script>
   <script type="module">
@@ -29,7 +30,87 @@
 <!-- 헤더 -->
 <div id="header-placeholder" class="header-container"></div>
 
+<div id="content">
+  <section>
+    <div class="container">
+      <div class="account-header">
+        <h2 id="formTitle" class="subtitle is-4">이벤트 추가하기</h2>
+      </div>
 
+      <div class="register-event-form-container">
+        <div class="register-event-form-box">
+          <form id="eventForm">
+            <div class="field">
+              <label class="label">EVENT 제목</label>
+              <input id="titleInput" class="input" type="text" placeholder="EVENT 제목을 입력하세요">
+            </div>
+
+            <div class="columns">
+              <div class="column">
+                <div class="field">
+                  <label class="label">EVENT 시작일</label>
+                  <input id="startDateInput" class="input" type="date">
+                </div>
+              </div>
+              <div class="column">
+                <div class="field">
+                  <label class="label">EVENT 종료일</label>
+                  <input id="endDateInput" class="input" type="date">
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">썸네일 이미지</label>
+              <div class="file has-name is-fullwidth">
+                <label class="file-label">
+                  <input id="thumbnailInput" class="file-input" type="file" accept="image/*">
+                  <span class="file-cta">
+                                    <span class="file-label">사진 업로드</span>
+                                </span>
+                  <span id="thumbnailNameSpan" class="file-name">사진 파일 (png, jpg, jpeg)</span>
+                </label>
+              </div>
+              <div id="thumbnailPreviewContainer" class="image-preview-container">
+                <img id="thumbnailPreview" src="#" alt="썸네일 미리보기" class="image-preview">
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">게시글 내용</label>
+              <textarea id="contentInput" class="textarea" placeholder="게시글 내용을 입력하세요"></textarea>
+            </div>
+
+            <div class="field">
+              <label class="label">내용 이미지</label>
+              <div class="file has-name is-fullwidth">
+                <label class="file-label">
+                  <input id="contentImageInput" class="file-input" type="file" accept="image/*" multiple>
+                  <span class="file-cta">
+                <span class="file-label">사진 첨부</span>
+            </span>
+                  <span id="contentImageNameSpan" class="file-name">사진 파일 (png, jpg, jpeg)</span>
+                </label>
+              </div>
+              <div id="contentImagePreviewContainer" class="image-preview-container">
+                <!-- 이미지 미리보기 추가 -->
+              </div>
+            </div>
+
+            <div class="field is-grouped is-grouped-right">
+              <p class="control">
+                <button id="submitButton" type="submit" class="button is-dark">작성</button>
+              </p>
+              <p class="control">
+                <button id="cancelButton" type="button" class="button is-light">취소</button>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
 
 </body>
 </html>
