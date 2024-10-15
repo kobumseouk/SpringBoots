@@ -1,5 +1,6 @@
 package com.spring_boots.spring_boots.orders.service;
 
+import com.spring_boots.spring_boots.common.config.error.BadRequestException;
 import com.spring_boots.spring_boots.item.entity.Item;
 import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.orders.dto.*;
@@ -98,6 +99,21 @@ class OrdersServiceTest {
 
     }
 
+    // 사용자 주문 목록 조회 실패 테스트
+    @Test
+    void getUserOrdersFailure() {
+        // 주문 목록이 비어있는 경우를 Mock으로 설정
+        when(ordersRepository.findByUser_UserIdAndIsCanceledFalse(1L)).thenReturn(List.of());
+
+        // 서비스 호출
+        var result = ordersService.getUserOrders(1L);
+
+        // Assertions
+        assertTrue(result.isEmpty()); // 결과가 비어 있어야 함
+        verify(ordersRepository, times(1)).findByUser_UserIdAndIsCanceledFalse(1L);
+    }
+
+
     // 특정 주문 상세 조회 테스트
     @Test
     void getOrderDetails() {
@@ -123,6 +139,21 @@ class OrdersServiceTest {
         verify(ordersRepository, times(1)).findById(anyLong());
         verify(orderItemsRepository, times(1)).findByOrders(any(Orders.class));
     }
+
+    //특정 주문 상세 조회 실패 테스트
+    @Test
+    void getOrderDetailsFailure() {
+        // 주문을 찾을 수 없는 경우 Mock 설정
+        when(ordersRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        // 서비스 호출
+        var result = ordersService.getOrderDetails(1L, mockUser.toUserDto());
+
+        // Assertions
+        assertTrue(result.isEmpty()); // 결과가 비어 있어야 함
+        verify(ordersRepository, times(1)).findById(anyLong());
+    }
+
 
     // 사용자 주문 생성 테스트
     @Test
@@ -175,6 +206,23 @@ class OrdersServiceTest {
         verify(orderItemsRepository, times(1)).saveAll(anyList());
     }
 
+    // 사용자 주문 생성 실패 테스트 (필수 데이터 누락 시)
+    @Test
+    void createOrderFailure_MissingFields() {
+        // 필수 데이터가 없는 주문 요청 DTO 생성
+        OrderRequestDto request = new OrderRequestDto();
+        request.setRecipientName(""); // 빈 이름
+        request.setShippingAddress(""); // 빈 주소
+
+        // 예외 발생을 Mock으로 설정
+        assertThrows(BadRequestException.class, () -> {
+            ordersService.createOrder(request, mockUser.toUserDto());
+        });
+
+        // Repository가 호출되지 않았는지 확인
+        verify(ordersRepository, never()).save(any(Orders.class));
+        verify(orderItemsRepository, never()).saveAll(anyList());
+    }
 
 
     // 사용자 주문 수정 테스트
@@ -203,6 +251,32 @@ class OrdersServiceTest {
         verify(ordersRepository, times(1)).findById(anyLong());
     }
 
+    //사용자 주문 수정 실패 테스트 (권한 없음)
+    @Test
+    void updateOrderFailure_NotAuthorized() {
+        // 다른 사용자가 만든 주문을 Mock으로 설정
+        Users otherUser = Users.builder().userId(2L).build();
+        Orders mockOrder = new Orders();
+        mockOrder.setOrdersId(1L);
+        mockOrder.setUser(otherUser); // 다른 사용자로 설정
+
+        UpdateOrderRequest request = new UpdateOrderRequest();
+        request.setRecipientName("엘리스");
+        request.setShippingAddress("456 Street");
+        request.setRecipientContact("010-9876-5432");
+
+        // 주문 조회 Mock 설정
+        when(ordersRepository.findById(anyLong())).thenReturn(Optional.of(mockOrder));
+
+        // 예외 발생을 기대
+        assertThrows(IllegalStateException.class, () -> {
+            ordersService.updateOrder(1L, request, mockUser.toUserDto());
+        });
+
+        verify(ordersRepository, times(1)).findById(anyLong());
+    }
+
+
 
     // 사용자 주문 취소 테스트
     @Test
@@ -225,6 +299,26 @@ class OrdersServiceTest {
         verify(ordersRepository, times(1)).findById(anyLong());
     }
 
+    //사용자 주문 취소 실패 테스트 (이미 취소된 주문)
+    @Test
+    void cancelOrderFailure_AlreadyCanceled() {
+        // 이미 취소된 주문 Mock 설정
+        Orders mockOrder = new Orders();
+        mockOrder.setOrdersId(1L);
+        mockOrder.setUser(mockUser);
+        mockOrder.setIsCanceled(true); // 이미 취소된 상태
+
+        when(ordersRepository.findById(anyLong())).thenReturn(Optional.of(mockOrder));
+
+        // 예외 발생을 기대
+        assertThrows(IllegalStateException.class, () -> {
+            ordersService.cancelOrder(1L, mockUser.toUserDto());
+        });
+
+        verify(ordersRepository, times(1)).findById(anyLong());
+    }
+
+
     // 관리자 주문 취소 테스트
     @Test
     void adminCancelOrder() {
@@ -242,6 +336,24 @@ class OrdersServiceTest {
         assertTrue(result.isPresent());
         assertEquals("주문이 관리자로 인해 성공적으로 삭제되었습니다.", result.get().getStatus());
         assertTrue(mockOrder.getIsCanceled());
+        verify(ordersRepository, times(1)).findById(anyLong());
+    }
+
+    //관리자 주문 취소 실패 테스트 (이미 취소된 주문)
+    @Test
+    void adminCancelOrderFailure_AlreadyCanceled() {
+        // 이미 취소된 주문 Mock 설정
+        Orders mockOrder = new Orders();
+        mockOrder.setOrdersId(1L);
+        mockOrder.setIsCanceled(true); // 이미 취소된 상태
+
+        when(ordersRepository.findById(anyLong())).thenReturn(Optional.of(mockOrder));
+
+        // 예외 발생을 기대
+        assertThrows(IllegalStateException.class, () -> {
+            ordersService.adminCancelOrder(1L);
+        });
+
         verify(ordersRepository, times(1)).findById(anyLong());
     }
 
@@ -265,6 +377,24 @@ class OrdersServiceTest {
         assertEquals("배송완료", mockOrder.getOrderStatus());
         verify(ordersRepository, times(1)).findById(anyLong());
     }
+
+    // 관리자 주문 상태 수정 실패 테스트(주문번호를 찾을 수 없는 경우))
+    @Test
+    void updateOrderStatusFailure_OrderNotFound() {
+        // 주문을 찾을 수 없는 경우 Mock 설정
+        when(ordersRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        UpdateOrderStatusRequest request = new UpdateOrderStatusRequest();
+        request.setOrderStatus("배송완료");
+
+        // 서비스 호출
+        var result = ordersService.updateOrderStatus(1L, request);
+
+        // Assertions
+        assertTrue(result.isEmpty()); // 결과가 비어 있어야 함
+        verify(ordersRepository, times(1)).findById(anyLong());
+    }
+
 
     // 관리자 모든 주문 조회 테스트
     @Test
@@ -291,5 +421,20 @@ class OrdersServiceTest {
         // Repository가 적절히 호출되었는지 검증
         verify(ordersRepository, times(1)).findByIsCanceledFalse();
     }
+
+    // 관리자 모든 주문 조회 실패 테스트 (주문이 없는 경우)
+    @Test
+    void getAllOrdersFailure_NoOrders() {
+        // 빈 주문 목록을 반환하는 Mock 설정
+        when(ordersRepository.findByIsCanceledFalse()).thenReturn(List.of());
+
+        // 서비스 호출
+        var result = ordersService.getAllOrders();
+
+        // Assertions
+        assertTrue(result.isEmpty());  // 결과가 비어 있어야 함
+        verify(ordersRepository, times(1)).findByIsCanceledFalse();
+    }
+
 
 }
