@@ -5,10 +5,7 @@ import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.dto.request.UserPasswordRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
-import com.spring_boots.spring_boots.user.dto.response.UserPasswordResponseDto;
-import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
-import com.spring_boots.spring_boots.user.dto.response.UserSignupResponseDto;
-import com.spring_boots.spring_boots.user.dto.response.UserUpdateResponseDto;
+import com.spring_boots.spring_boots.user.dto.response.*;
 import com.spring_boots.spring_boots.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -101,9 +98,9 @@ public class UserApiController {
 
     //회원 탈퇴(soft delete)
     @DeleteMapping("/users-soft/{id}")
-    public ResponseEntity<Void> softDeleteUser(@AuthenticationPrincipal Users user,
-                                               @PathVariable Long id,
-                                               HttpServletResponse response) {
+    public ResponseEntity<UserDeleteResponseDto> softDeleteUser(@AuthenticationPrincipal Users user,
+                                                                @PathVariable Long id,
+                                                                HttpServletResponse response) {
         Users authUser = userService.findById(user.getUserId());
         userService.softDeleteUser(authUser);
 
@@ -111,10 +108,12 @@ public class UserApiController {
             deleteCookie("refreshToken", response);
             deleteCookie("accessToken", response);
 
-            return ResponseEntity.status(HttpStatus.OK).build();
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(UserDeleteResponseDto.builder().message("회원탈퇴 성공").build());
         }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(UserDeleteResponseDto.builder().message("오류 발생").build());
     }
 
     //비밀번호 확인
