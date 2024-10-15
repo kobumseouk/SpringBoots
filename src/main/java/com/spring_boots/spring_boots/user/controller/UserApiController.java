@@ -1,6 +1,7 @@
 package com.spring_boots.spring_boots.user.controller;
 
 import com.spring_boots.spring_boots.user.domain.Users;
+import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.dto.request.UserPasswordRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
@@ -48,7 +49,7 @@ public class UserApiController {
 
     //개인 정보 조회
     @GetMapping("/users-info")
-    public ResponseEntity<UserResponseDto> getUser(@AuthenticationPrincipal Users user) {
+    public ResponseEntity<UserResponseDto> getUser(UserDto user) {
         try {
             Users authUser = userService.findById(user.getUserId());
 
