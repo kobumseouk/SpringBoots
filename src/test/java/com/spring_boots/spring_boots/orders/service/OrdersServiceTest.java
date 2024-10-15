@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 class OrdersServiceTest {
-    /*
+
     @Mock
     private OrdersRepository ordersRepository;
 
@@ -102,7 +102,7 @@ class OrdersServiceTest {
         when(orderItemsRepository.findByOrders(any(Orders.class))).thenReturn(List.of(mockOrderItem));
 
         // 서비스 호출
-        var result = ordersService.getOrderDetails(1L, mockUser);
+        var result = ordersService.getOrderDetails(1L, mockUser.toUserDto());
 
         // Assertions
         assertTrue(result.isPresent());
@@ -157,7 +157,7 @@ class OrdersServiceTest {
         when(ordersRepository.save(any(Orders.class))).thenReturn(mockOrder);
 
         // 서비스 호출
-        Orders result = ordersService.createOrder(request, mockUser);
+        Orders result = ordersService.createOrder(request, mockUser.toUserDto());
 
         // Assertions
         assertNotNull(result);
@@ -191,7 +191,7 @@ class OrdersServiceTest {
         when(ordersRepository.findById(anyLong())).thenReturn(Optional.of(mockOrder));
 
         // 서비스 호출
-        var result = ordersService.updateOrder(1L, request, mockUser);
+        var result = ordersService.updateOrder(1L, request, mockUser.toUserDto());
 
         // Assertions
         assertTrue(result.isPresent());
@@ -212,7 +212,7 @@ class OrdersServiceTest {
         when(ordersRepository.findById(anyLong())).thenReturn(Optional.of(mockOrder));
 
         // 서비스 호출
-        var result = ordersService.cancelOrder(1L, mockUser);
+        var result = ordersService.cancelOrder(1L, mockUser.toUserDto());
 
         // Assertions
         assertTrue(result.isPresent());
@@ -286,6 +286,6 @@ class OrdersServiceTest {
 
         // Repository가 적절히 호출되었는지 검증
         verify(ordersRepository, times(1)).findByIsCanceledFalse();
-    }*/
+    }
 
 }
