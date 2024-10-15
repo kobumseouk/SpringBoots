@@ -1,5 +1,6 @@
 package com.spring_boots.spring_boots.item.controller;
 
+import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
 import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
@@ -68,8 +69,10 @@ public class ItemRestController {
         try {
             itemRestService.deleteItem(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (ResourceNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 오류
+        }catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 오류
         }
     }
 
