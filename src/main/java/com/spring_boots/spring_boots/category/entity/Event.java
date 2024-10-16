@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Entity
@@ -31,7 +32,7 @@ public class Event extends BaseTimeEntity {
   private String thumbnailImageUrl;
 
   @Column(name = "content_image_url")
-  private String contentImageUrl;
+  private List<String> contentImageUrl;
 
   @Column(name = "start_date")
   private LocalDate startDate;

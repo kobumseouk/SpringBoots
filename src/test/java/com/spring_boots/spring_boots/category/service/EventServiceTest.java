@@ -51,7 +51,7 @@ class EventServiceTest {
     MockitoAnnotations.openMocks(this);
 
     String thumbnailUrl = "http://test-url.com/thumbnail.jpg";
-    String contentUrl = "http://test-url.com/content.jpg";
+    List<String> contentUrls = Arrays.asList("http://test-url.com/content1.jpg", "http://test-url.com/content2.jpg");
 
     mockEvent = Event.builder()
         .id(1L)
@@ -59,7 +59,7 @@ class EventServiceTest {
         .eventContent("Test Content")
         .isActive(true)
         .thumbnailImageUrl(thumbnailUrl)
-        .contentImageUrl(contentUrl)
+        .contentImageUrl(contentUrls)
         .build();
 
     mockEventDto = EventDto.builder()
@@ -73,7 +73,7 @@ class EventServiceTest {
         .eventTitle("Test Event")
         .eventContent("Test Content")
         .thumbnailImageUrl(thumbnailUrl)
-        .contentImageUrl(contentUrl)
+        .contentImageUrl(contentUrls)
         .build();
 
     mockEventAdminDto = EventAdminDto.builder()
@@ -100,22 +100,25 @@ class EventServiceTest {
         .eventContent(mockEvent.getEventContent())
         .build();
 
+    List<MultipartFile> contentFiles = Arrays.asList(mockContentFile, mockContentFile);
+
     when(s3BucketService.uploadFile(any(MultipartFile.class)))
         .thenReturn(mockEvent.getThumbnailImageUrl())
-        .thenReturn(mockEvent.getContentImageUrl());
+        .thenReturn(mockEvent.getContentImageUrl().get(0))
+        .thenReturn(mockEvent.getContentImageUrl().get(1));
     when(eventMapper.eventRequestDtoToEvent(any(EventRequestDto.class))).thenReturn(mockEvent);
     when(eventRepository.save(any(Event.class))).thenReturn(mockEvent);
     when(eventMapper.eventToEventDetailDto(any(Event.class))).thenReturn(mockEventDetailDto);
 
     // when
-    EventDetailDto result = eventService.createEvent(requestDto, mockThumbnailFile, mockContentFile);
+    EventDetailDto result = eventService.createEvent(requestDto, mockThumbnailFile, contentFiles);
 
     // then
     assertNotNull(result);
     assertEquals(mockEventDetailDto.getEventTitle(), result.getEventTitle());
     assertEquals(mockEventDetailDto.getThumbnailImageUrl(), result.getThumbnailImageUrl());
     assertEquals(mockEventDetailDto.getContentImageUrl(), result.getContentImageUrl());
-    verify(s3BucketService, times(2)).uploadFile(any(MultipartFile.class));
+    verify(s3BucketService, times(3)).uploadFile(any(MultipartFile.class));
     verify(eventRepository).save(any(Event.class));
   }
 
@@ -181,18 +184,22 @@ class EventServiceTest {
         .eventContent("Updated Content")
         .build();
 
+    List<String> updatedContentUrls = Arrays.asList("http://test-url.com/updated-content1.jpg", "http://test-url.com/updated-content2.jpg");
     Event updatedEvent = Event.builder()
         .id(eventId)
         .eventTitle("Updated Event")
         .eventContent("Updated Content")
         .thumbnailImageUrl("http://test-url.com/updated-thumbnail.jpg")
-        .contentImageUrl("http://test-url.com/updated-content.jpg")
+        .contentImageUrl(updatedContentUrls)
         .build();
+
+    List<MultipartFile> contentFiles = Arrays.asList(mockContentFile, mockContentFile);
 
     when(eventRepository.findById(eventId)).thenReturn(Optional.of(mockEvent));
     when(s3BucketService.uploadFile(any(MultipartFile.class)))
         .thenReturn(updatedEvent.getThumbnailImageUrl())
-        .thenReturn(updatedEvent.getContentImageUrl());
+        .thenReturn(updatedContentUrls.get(0))
+        .thenReturn(updatedContentUrls.get(1));
     when(eventRepository.save(any(Event.class))).thenReturn(updatedEvent);
     when(eventMapper.eventToEventDetailDto(updatedEvent)).thenReturn(
         EventDetailDto.builder()
@@ -200,21 +207,21 @@ class EventServiceTest {
             .eventTitle(updateDto.getEventTitle())
             .eventContent(updateDto.getEventContent())
             .thumbnailImageUrl(updatedEvent.getThumbnailImageUrl())
-            .contentImageUrl(updatedEvent.getContentImageUrl())
+            .contentImageUrl(updatedContentUrls)
             .build()
     );
 
     // when
-    EventDetailDto result = eventService.updateEvent(eventId, updateDto, mockThumbnailFile, mockContentFile);
+    EventDetailDto result = eventService.updateEvent(eventId, updateDto, mockThumbnailFile, contentFiles);
 
     // then
     assertNotNull(result);
     assertEquals(updateDto.getEventTitle(), result.getEventTitle());
     assertEquals(updateDto.getEventContent(), result.getEventContent());
     assertEquals(updatedEvent.getThumbnailImageUrl(), result.getThumbnailImageUrl());
-    assertEquals(updatedEvent.getContentImageUrl(), result.getContentImageUrl());
-    verify(s3BucketService, times(2)).deleteFile(anyString());
-    verify(s3BucketService, times(2)).uploadFile(any(MultipartFile.class));
+    assertEquals(updatedContentUrls, result.getContentImageUrl());
+    verify(s3BucketService, times(mockEvent.getContentImageUrl().size() + 1)).deleteFile(anyString());
+    verify(s3BucketService, times(3)).uploadFile(any(MultipartFile.class));
     verify(eventRepository).save(any(Event.class));
   }
 
@@ -226,11 +233,12 @@ class EventServiceTest {
         .eventTitle("Updated Event")
         .eventContent("Updated Content")
         .build();
+    List<MultipartFile> contentFiles = Arrays.asList(mockContentFile, mockContentFile);
 
     when(eventRepository.findById(INVALID_EVENT_ID)).thenReturn(Optional.empty());
 
     // when & then
-    assertThrows(ResourceNotFoundException.class, () -> eventService.updateEvent(INVALID_EVENT_ID, updateDto, mockThumbnailFile, mockContentFile));
+    assertThrows(ResourceNotFoundException.class, () -> eventService.updateEvent(INVALID_EVENT_ID, updateDto, mockThumbnailFile, contentFiles));
     verify(eventRepository).findById(INVALID_EVENT_ID);
     verify(eventRepository, never()).save(any(Event.class));
   }
@@ -247,8 +255,17 @@ class EventServiceTest {
 
     // then
     verify(eventRepository).findById(eventId);
-    verify(s3BucketService, times(2)).deleteFile(anyString());  // 썸네일과 컨텐츠 이미지
+    verify(s3BucketService).deleteFile(extractFileName(mockEvent.getThumbnailImageUrl())); // 썸네일 이미지 삭제
+    List<String> urls = mockEvent.getContentImageUrl(); // 컨텐츠 이미지 URL 목록
+    for (String url : urls) {
+      verify(s3BucketService).deleteFile(extractFileName(url)); // 각 컨텐츠 이미지 URL에 대해 삭제
+    }
     verify(eventRepository).deleteById(eventId);
+  }
+
+  // URL에서 파일 이름을 추출(파일 이름으로 삭제)
+  private String extractFileName(String url) {
+    return url.substring(url.lastIndexOf('/') + 1);
   }
 
   @Test
