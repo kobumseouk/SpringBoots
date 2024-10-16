@@ -1,0 +1,35 @@
+spring:
+  config:
+    activate:
+      on-profile: release
+  profiles:
+    group:
+      deploy: release, s3Bucket
+
+  application:
+    name: Spring_boots
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://spring-boots-db.c62sszsbm7i4.ap-northeast-2.rds.amazonaws.com:3306/spring-boots-db
+    username: admin
+    password: springboots
+  jpa:
+    #defer-datasource-initialization: true
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: never
+
+jwt:
+  issuer: test@example.com
+  secret_key: spring-boots
+  secret: "zJf3VY8whF9OGkNhdMjf3Lx6jqFwG6kLcv3zjX3FSkQ="
+  token:
+    refresh-expires: 604800000
+    access-expires: 900000
