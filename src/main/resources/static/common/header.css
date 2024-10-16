@@ -94,27 +94,43 @@
 }
 
 .header-container .secondary-navbar .navbar-item {
-  color: white !important;
-}
+   color: white !important;
+   position: relative;
+ }
 
-.header-container .secondary-navbar .navbar-item:hover,
-.header-container .secondary-navbar .navbar-item:focus,
-.header-container .secondary-navbar .navbar-item.is-active {
-  background-color: #333 !important;
-  color: white !important;
-}
+ .header-container .secondary-navbar .navbar-item::after {
+   content: '';
+   position: absolute;
+   width: 100%;
+   height: 2px;
+   bottom: -2px;
+   left: 0;
+   background-color: #4caf50;
+   visibility: hidden;
+   transform: scaleX(0);
+   transition: all 0.3s ease-in-out;
+ }
 
-.header-container .secondary-navbar .sale-item {
-  color: red !important;
-}
+ .header-container .secondary-navbar .navbar-item:hover::after,
+ .header-container .secondary-navbar .navbar-item.is-active::after {
+   visibility: visible;
+   transform: scaleX(1);
+ }
 
-/* SALE 항목 hover 스타일 */
-.header-container .secondary-navbar .sale-item:hover,
-.header-container .secondary-navbar .sale-item:focus,
-.header-container .secondary-navbar .sale-item.is-active {
-  background-color: #333 !important;
-  color: red !important; /* hover 상태에서도 빨간색 유지 */
-}
+ .header-container .secondary-navbar .navbar-item:hover,
+ .header-container .secondary-navbar .navbar-item.is-active {
+   background-color: transparent !important;
+   color: #4caf50 !important;
+ }
+
+ .header-container .secondary-navbar .sale-item::after {
+   background-color: red;
+ }
+
+ .header-container .secondary-navbar .sale-item:hover,
+ .header-container .secondary-navbar .sale-item.is-active {
+   color: red !important;
+ }
 
 .header-container .secondary-navbar .navbar-end {
   margin-left: auto;

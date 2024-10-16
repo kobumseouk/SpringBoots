@@ -22,6 +22,9 @@ async function loadHeader() {
       });
     }
 
+    // 네비게이션 메뉴 활성화 처리
+    setActiveNavItem();
+
   } catch (error) {
     console.error('헤더를 로드하는 중 오류가 발생했습니다:', error);
   }
@@ -87,5 +90,49 @@ async function updateUserMenu() {
     `;
   }
 }
+
+// 카테고리 메뉴 활성화 설정
+function setActiveNavItem() {
+  const currentPath = window.location.pathname;
+  const navItems = document.querySelectorAll('.secondary-navbar .navbar-item');
+
+  navItems.forEach(item => {
+    const itemPath = item.getAttribute('href');
+    if (currentPath === itemPath || (itemPath !== '/' && currentPath.startsWith(itemPath))) {
+      item.classList.add('is-active');
+    } else {
+      item.classList.remove('is-active');
+    }
+  });
+
+  // 현재 활성 메뉴 저장
+  localStorage.setItem('activeNavItem', currentPath);
+}
+
+// 페이지 로드 시 실행
+document.addEventListener('DOMContentLoaded', () => {
+  loadHeader().then(() => {
+    const activeNavItem = localStorage.getItem('activeNavItem');
+    if (activeNavItem) {
+      const navItem = document.querySelector(`.secondary-navbar .navbar-item[href="${activeNavItem}"]`);
+      if (navItem) {
+        navItem.classList.add('is-active');
+      }
+    }
+  });
+});
+
+// 네비게이션 메뉴 클릭 이벤트 처리
+document.addEventListener('click', (event) => {
+  if (event.target.matches('.secondary-navbar .navbar-item')) {
+    const navItems = document.querySelectorAll('.secondary-navbar .navbar-item');
+    navItems.forEach(item => item.classList.remove('is-active'));
+    event.target.classList.add('is-active');
+    localStorage.setItem('activeNavItem', event.target.getAttribute('href'));
+  }
+});
+
+// 히스토리 변경 시 실행 (SPA에서 페이지 전환 시)
+window.addEventListener('popstate', setActiveNavItem);
 
 export { loadHeader };
