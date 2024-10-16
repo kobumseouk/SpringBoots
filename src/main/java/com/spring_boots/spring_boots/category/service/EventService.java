@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,20 +30,22 @@ public class EventService {
 
   // 새로운 이벤트를 생성하는 메서드
   @Transactional
-  public EventDetailDto createEvent(EventRequestDto eventRequestDto, MultipartFile thumbnailFile, MultipartFile contentFile) throws IOException {
+  public EventDetailDto createEvent(EventRequestDto eventRequestDto, MultipartFile thumbnailFile, List<MultipartFile> contentFiles) throws IOException {
     String thumbnailImageUrl = null;
-    String contentImageUrl = null;
+    List<String> contentImageUrls = new ArrayList<>();
 
     if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
       thumbnailImageUrl = s3BucketService.uploadFile(thumbnailFile);
     }
-    if (contentFile != null && !contentFile.isEmpty()) {
-      contentImageUrl = s3BucketService.uploadFile(contentFile);
+    if (contentFiles != null && !contentFiles.isEmpty()) {
+      for (MultipartFile file : contentFiles) {
+        contentImageUrls.add(s3BucketService.uploadFile(file));
+      }
     }
 
     Event event = eventMapper.eventRequestDtoToEvent(eventRequestDto);
     event.setThumbnailImageUrl(thumbnailImageUrl);
-    event.setContentImageUrl(contentImageUrl);
+    event.setContentImageUrl(contentImageUrls);
     Event savedEvent = eventRepository.save(event);
     return eventMapper.eventToEventDetailDto(savedEvent);
   }
@@ -77,24 +80,29 @@ public class EventService {
 
   // 특정 이벤트를 수정하는 메서드
   @Transactional
-  public EventDetailDto updateEvent(Long eventId, EventRequestDto eventUpdateDto, MultipartFile thumbnailFile, MultipartFile contentFile) throws IOException {
+  public EventDetailDto updateEvent(Long eventId, EventRequestDto eventUpdateDto, MultipartFile thumbnailFile, List<MultipartFile> contentFiles) throws IOException {
     Event event = eventRepository.findById(eventId)
         .orElseThrow(() -> new ResourceNotFoundException("업데이트할 이벤트를 찾을 수 없습니다: " + eventId));
 
     if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
       String newThumbnailImageUrl = s3BucketService.uploadFile(thumbnailFile);
       if (event.getThumbnailImageUrl() != null) {
-        s3BucketService.deleteFile(event.getThumbnailImageUrl().substring(event.getThumbnailImageUrl().lastIndexOf("/") + 1));
+        s3BucketService.deleteFile(extractKeyFromUrl(event.getThumbnailImageUrl()));
       }
       event.setThumbnailImageUrl(newThumbnailImageUrl);
     }
 
-    if (contentFile != null && !contentFile.isEmpty()) {
-      String newContentImageUrl = s3BucketService.uploadFile(contentFile);
-      if (event.getContentImageUrl() != null) {
-        s3BucketService.deleteFile(event.getContentImageUrl().substring(event.getContentImageUrl().lastIndexOf("/") + 1));
+    if (contentFiles != null && !contentFiles.isEmpty()) {
+      List<String> newContentImageUrls = new ArrayList<>();
+      for (MultipartFile file : contentFiles) {
+        newContentImageUrls.add(s3BucketService.uploadFile(file));
       }
-      event.setContentImageUrl(newContentImageUrl);
+      if (event.getContentImageUrl() != null) {
+        for (String url : event.getContentImageUrl()) {
+          s3BucketService.deleteFile(extractKeyFromUrl(url));
+        }
+      }
+      event.setContentImageUrl(newContentImageUrls);
     }
 
     eventMapper.updateEventFromDto(eventUpdateDto, event);
@@ -105,20 +113,17 @@ public class EventService {
   // 특정 이벤트를 삭제하는 메서드
   @Transactional
   public void deleteEvent(Long eventId) {
-    // 이벤트가 존재하는지 확인 후 삭제, 없으면 ResourceNotFoundException 발생
     Event event = eventRepository.findById(eventId)
-            .orElseThrow(() -> new ResourceNotFoundException("삭제할 이벤트를 찾을 수 없습니다: " + eventId));
+        .orElseThrow(() -> new ResourceNotFoundException("삭제할 이벤트를 찾을 수 없습니다: " + eventId));
 
-    // S3에서 썸네일 이미지 삭제
     if (event.getThumbnailImageUrl() != null) {
-      String thumbnailKey = extractKeyFromUrl(event.getThumbnailImageUrl());
-      s3BucketService.deleteFile(thumbnailKey);
+      s3BucketService.deleteFile(extractKeyFromUrl(event.getThumbnailImageUrl()));
     }
 
-    // S3에서 컨텐츠 이미지 삭제
     if (event.getContentImageUrl() != null) {
-      String contentKey = extractKeyFromUrl(event.getContentImageUrl());
-      s3BucketService.deleteFile(contentKey);
+      for (String url : event.getContentImageUrl()) {
+        s3BucketService.deleteFile(extractKeyFromUrl(url));
+      }
     }
 
     eventRepository.deleteById(eventId);
