@@ -31,6 +31,12 @@ public class JwtFilter extends OncePerRequestFilter {
         String jwtAccessToken = resolveAccessTokenFromCookies(request);
         String jwtRefreshToken = resolveRefreshTokenFromCookies(request);
 
+        String requestURI = request.getRequestURI();
+        if (requestURI.startsWith("/api/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (jwtAccessToken != null && tokenProvider.validateToken(jwtAccessToken)) {
             // 액세스토큰이 유효한 경우, Authentication 객체 생성
             Authentication authentication = tokenProvider.getAuthentication(jwtAccessToken);
