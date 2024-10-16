@@ -57,6 +57,7 @@ public class EventService {
         .collect(Collectors.toList());
   }*/
 
+  // 진행 중인 이벤트인지 확인 후 진행 중인 목록 조회 (페이지네이션)
   @Transactional
   public Page<EventDto> getActiveEvents(int page, int limit) {
     PageRequest pageRequest = PageRequest.of(page, limit);
