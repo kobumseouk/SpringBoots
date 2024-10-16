@@ -1,5 +1,5 @@
-import { loadHeader } from '../common/header.js';
-import * as Api from '../../api.js';
+import { loadHeader } from '/common/header.js';
+import * as Api from '/api.js';
 
 async function init() {
   await loadHeader();
@@ -173,8 +173,6 @@ function translateEnglishToKorean(englishTheme) {
     'women': '여성',
     'men': '남성',
     'accessories': '액세서리',
-    'sale': 'SALE',
-    'collaboration': 'COLLABORATION',
     'how-to': 'HOW TO'
   };
 
@@ -188,8 +186,6 @@ function translateKoreanToEnglish(koreanTheme) {
     '여성': 'women',
     '남성': 'men',
     '액세서리': 'accessories',
-    'SALE': 'sale',
-    'COLLABORATION': 'collaboration',
     'HOW TO': 'how-to'
   };
 
