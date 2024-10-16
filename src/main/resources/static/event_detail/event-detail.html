@@ -17,7 +17,8 @@
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>
   <!-- 커스텀 css, js -->
   <link rel="stylesheet" href="/event-detail/event-detail.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"><link rel="stylesheet" href="/common/header.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/common/header.css">
   <script src="/event-detail/event-detail.js" type="module" defer></script>
   <script src="/common/header.js" type="module"></script>
   <script type="module">
@@ -28,6 +29,25 @@
 <body>
 <!-- 헤더 -->
 <div id="header-placeholder" class="header-container"></div>
+
+<div id="category-content">
+  <div class="content-wrapper">
+    <!-- 브레드크럼 추가 -->
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li id="second-breadcrumb"><a href="/Events">Event</a></li>
+        <li id="third-breadcrumb"><a href="#"></a></li>
+      </ul>
+    </nav>
+
+    <!-- 이벤트 정보 -->
+    <div id="event-info">
+      <!--이벤트 제목-->
+      <h1 id="event-title"></h1>
+    </div>
+  </div>
+</div>
 
 
 

@@ -19,7 +19,7 @@
 
 #category-title::after {
   content: '_';
-  font-size: 45px;
+  font-size: 40px;
   font-weight: bold;
   color: #6DB33F;
   margin-bottom: 5px;
