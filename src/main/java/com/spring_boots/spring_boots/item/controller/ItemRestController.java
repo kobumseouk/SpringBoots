@@ -65,7 +65,7 @@ public class ItemRestController {
 
     // Item 삭제하기
     @DeleteMapping("/items/{itemId}")
-    public ResponseEntity<ResponseItemDto> deleteItem(@PathVariable("itemId") Long id) {
+    public ResponseEntity<Void> deleteItem(@PathVariable("itemId") Long id) {
         try {
             itemRestService.deleteItem(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -78,8 +78,9 @@ public class ItemRestController {
 
     // Item 수정하기
     @PutMapping("/items/{itemId}")
-    public ResponseEntity<ResponseItemDto> updateItem (@PathVariable("itemId") Long id, @RequestBody UpdateItemDto updateItemDto) {
+    public ResponseEntity<ResponseItemDto> updateItem (@PathVariable("itemId") Long id, @ModelAttribute UpdateItemDto updateItemDto) {
         try {
+
             ResponseItemDto responseDto = itemRestService.updateItem(id, updateItemDto);
             return new ResponseEntity<>(responseDto, HttpStatus.OK);
         } catch (Exception e) {
