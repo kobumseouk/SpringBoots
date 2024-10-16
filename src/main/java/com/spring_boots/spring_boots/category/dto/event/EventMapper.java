@@ -12,6 +12,7 @@ public interface EventMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "isActive", constant = "true")
+  @Mapping(target = "contentImageUrl", ignore = true)
   Event eventRequestDtoToEvent(EventRequestDto eventRequestDto);
 
   EventDetailDto eventToEventDetailDto(Event event);
@@ -20,6 +21,7 @@ public interface EventMapper {
 
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "isActive", ignore = true)
+  @Mapping(target = "contentImageUrl", ignore = true)
   void updateEventFromDto(EventRequestDto eventRequestDto, @MappingTarget Event event);
 
   // event -> eventAdminDto

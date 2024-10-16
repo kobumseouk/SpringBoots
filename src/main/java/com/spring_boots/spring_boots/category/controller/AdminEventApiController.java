@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Validated
@@ -34,8 +35,8 @@ public class AdminEventApiController {
   public ResponseEntity<EventDetailDto> createEvent(
       @Valid @RequestPart("event") EventRequestDto eventRequestDto,
       @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
-      @RequestPart(value = "contentFile", required = false) MultipartFile contentFile) throws IOException {
-    EventDetailDto createdEvent = eventService.createEvent(eventRequestDto, thumbnailFile, contentFile);
+      @RequestPart(value = "contentFiles", required = false) List<MultipartFile> contentFiles) throws IOException {
+    EventDetailDto createdEvent = eventService.createEvent(eventRequestDto, thumbnailFile, contentFiles);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdEvent);
   }
 
@@ -46,8 +47,8 @@ public class AdminEventApiController {
       @PathVariable("event_id") Long eventId,
       @Valid @RequestPart("event") EventRequestDto eventUpdateDto,
       @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
-      @RequestPart(value = "contentFile", required = false) MultipartFile contentFile) throws IOException {
-    EventDetailDto updatedEvent = eventService.updateEvent(eventId, eventUpdateDto, thumbnailFile, contentFile);
+      @RequestPart(value = "contentFiles", required = false) List<MultipartFile> contentFiles) throws IOException {
+    EventDetailDto updatedEvent = eventService.updateEvent(eventId, eventUpdateDto, thumbnailFile, contentFiles);
     return ResponseEntity.ok(updatedEvent);
   }
 
