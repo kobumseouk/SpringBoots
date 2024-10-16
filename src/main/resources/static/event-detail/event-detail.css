@@ -9,10 +9,6 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
-#event-info {
-  padding: 20px 0;
-}
-
 #event-title {
   font-size: 32px;
   font-weight: bold;
@@ -24,11 +20,10 @@
   font-size: 40px;
   font-weight: bold;
   color: #6DB33F;
-  margin-bottom: 10px;
+  margin-left: 10px;
 }
 
 .breadcrumb {
-  margin-bottom: 20px;
 }
 
 .breadcrumb ul {
@@ -55,21 +50,34 @@
   text-decoration: underline;
 }
 
-#event-details {
+#event-info {
   background-color: white;
+  padding: 20px 0;
+}
+
+#event-details {
+  max-width: 1500px;
+  margin: 0 auto;
   padding: 20px;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 #event-dates {
-  margin-bottom: 20px;
+  padding: 0 25px;
+  margin-bottom: 10px;
   font-size: 18px;
   color: #666;
 }
 
+#event-dates p {
+  display: inline-block;
+  margin-right: 20px;
+}
+
 #event-content-image {
   margin-bottom: 20px;
+  text-align: center;
 }
 
 #event-content-image img {
@@ -81,4 +89,21 @@
   font-size: 16px;
   line-height: 1.6;
   color: #333;
+  margin-bottom: 30px;
+}
+
+.event-list-button {
+  display: inline-block;
+  margin-top: 30px;
+  background-color: #6DB33F;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.event-list-button:hover {
+  background-color: #5a9a35;
 }
