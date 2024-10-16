@@ -23,12 +23,14 @@ public class S3BucketService {
     @Value("${aws.s3.bucket.name}")
     private String bucketName;
 
-    private final String bucketUrl = "https://project-springboots.s3.ap-northeast-2.amazonaws.com/";
+    private String getFileNameFromUrl(String fileUrl) {
+        return fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+    }
 
     // 파일 기본 경로 업로드
     public String uploadFile(MultipartFile file) throws IOException {
         String fileName = makeHashedFileName(file);
-        String fileUrl = bucketUrl + fileName;
+        String fileUrl = "https://" +  bucketName+ "s3.amazonaws.com/" + fileName;
         ObjectMetadata metadata = createFileMetadata(file);
         try {
             s3Config.amazonS3Client().putObject(bucketName, fileName, file.getInputStream(), metadata);
@@ -41,7 +43,7 @@ public class S3BucketService {
     // 파일 사용자 지정 경로 업로드
     public String uploadFile(MultipartFile file, String path) throws IOException {
         String fileName = (path.endsWith("/") ? path : path + "/") + makeHashedFileName(file);
-        String fileUrl = bucketUrl + fileName;
+        String fileUrl = "https://" +  bucketName+ "s3.amazonaws.com/" + fileName;
         ObjectMetadata metadata =  createFileMetadata(file);
         try {
             s3Config.amazonS3Client().putObject(bucketName, fileName, file.getInputStream(), metadata);
@@ -74,4 +76,6 @@ public class S3BucketService {
             throw new RuntimeException("파일 삭제 실패: " + e.getMessage());
         }
     }
+
+
 }
