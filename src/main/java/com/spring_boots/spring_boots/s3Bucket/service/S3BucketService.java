@@ -17,7 +17,6 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class S3BucketService {
 
-    @Autowired
     private final S3Config s3Config;
 
     @Value("${aws.s3.bucket.name}")
