@@ -57,6 +57,7 @@ public class ItemRestService {
     // Item 단일 보기
     public ResponseItemDto getItem(Long itemId)  {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: " + itemId));
+        System.out.println("Retrieved Item Image URL: " + item.getImageUrl());
         return itemMapper.toResponseDto(item);
     }
 
@@ -83,8 +84,10 @@ public class ItemRestService {
     }
 
     // Item 수정하기
-    public ResponseItemDto updateItem(Long itemId, UpdateItemDto itemDto)  {
+    public ResponseItemDto updateItem(Long itemId, UpdateItemDto itemDto) throws IOException {
         Item findItem = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("아이템을 찾을 수 없습니다: " + itemId));
+
+        String existingImageUrl = findItem.getImageUrl(); // 기존 저장된 이미지 URL 담기
 
         //Item Name 수정
         Optional.ofNullable(itemDto.getItemName())
@@ -112,8 +115,17 @@ public class ItemRestService {
                 .ifPresent(findItem::setItemSize);
 
         //Item Image 수정
-        Optional.ofNullable(itemDto.getImageUrl())
-                .ifPresent(findItem::setImageUrl);
+        if (itemDto.getFile() != null && !itemDto.getFile().isEmpty()) { // 수정하기 위해 HTML에 등록한 이미지 파일이 null값이 아닌 경우 동작
+            if (existingImageUrl != null) { // 기존 저장된 URL이 null인지 아닌지 체크
+                String key = existingImageUrl.substring(existingImageUrl.lastIndexOf("/") + 1);
+                amazonS3.deleteObject(new DeleteObjectRequest(bucketName, key));
+            }
+
+            String newImageUrl = s3BucketService.uploadFile(itemDto.getFile());
+            findItem.setImageUrl(newImageUrl);
+        } else {
+            findItem.setImageUrl(existingImageUrl);
+        }
 
         Item updated = itemRepository.save(findItem);
         return itemMapper.toResponseDto(updated);

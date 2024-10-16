@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Positive;
 
@@ -38,5 +39,5 @@ public class UpdateItemDto {
 
     private String imageUrl;
 
-    private String imageDeleted;
+    private MultipartFile file;
 }
