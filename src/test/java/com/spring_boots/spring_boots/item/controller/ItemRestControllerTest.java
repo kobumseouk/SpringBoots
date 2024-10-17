@@ -10,6 +10,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,6 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import org.springframework.data.domain.Pageable;
 
 @ActiveProfiles("test")
 public class ItemRestControllerTest {
@@ -103,5 +107,30 @@ public class ItemRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"field\":\"value\"}"))
                 .andExpect(status().isOk());
+    }
+
+    // 검색한 아이템들 목록 조회 + 페이지네이션 확인
+    @Test
+    public void testSearchItems() throws Exception {
+        // item1과 item2에 필요한 데이터 설정
+        List<ResponseItemDto> searchResults = Arrays.asList(new ResponseItemDto(), new ResponseItemDto(), new ResponseItemDto());
+        Page<ResponseItemDto> page = new PageImpl<>(searchResults, PageRequest.of(0, 10), 3);
+
+        // 서비스 메소드 모킹
+        when(itemRestService.searchAndSortItems(anyString(), anyString(), any(Pageable.class))).thenReturn(page);
+
+        // 테스트 실행
+        mockMvc.perform(get("/api/items/search")
+                .param("keyword", "test")
+                .param("sort", "price-asc")
+                .param("page", "0")
+                .param("size", "10"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.content", hasSize(3)))
+            .andExpect(jsonPath("$.totalElements").value(3))
+            .andExpect(jsonPath("$.totalPages").value(1))
+            .andExpect(jsonPath("$.size").value(10))
+            .andExpect(jsonPath("$.number").value(0));
     }
 }
