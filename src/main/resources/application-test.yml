@@ -6,6 +6,9 @@ spring:
     password: ''
     username: sa
     url: jdbc:h2:mem:testdb
+  config:
+    activate:
+      on-profile: test
   h2:
     console:
       path: /h2-console
