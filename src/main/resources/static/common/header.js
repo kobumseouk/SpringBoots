@@ -9,6 +9,9 @@ async function loadHeader() {
     // 사용자 메뉴 업데이트
     updateUserMenu();
 
+    // 검색 기능 설정
+    setupSearchFunction();
+
     // Bulma navbar toggle script
     const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
     if ($navbarBurgers.length > 0) {
@@ -89,6 +92,24 @@ async function updateUserMenu() {
       <a class="navbar-item" href="/register">회원가입</a>
     `;
   }
+}
+
+// 검색 기능 설정
+function setupSearchFunction() {
+  const searchForm = document.querySelector('.search-container .field');
+  const searchInput = document.querySelector('.search-input');
+  const searchButton = document.querySelector('.search-button');
+
+  function performSearch(event) {
+    event.preventDefault();
+    const keyword = searchInput.value.trim();
+    if (keyword) {
+      window.location.href = `/items/search?keyword=${encodeURIComponent(keyword)}`;
+    }
+  }
+
+  searchForm.addEventListener('submit', performSearch);
+  searchButton.addEventListener('click', performSearch);
 }
 
 // 카테고리 메뉴 활성화 설정
