@@ -44,7 +44,6 @@ function displayEvents(events) {
   });
 }
 
-// event-list.js의 createEventElement 함수 수정
 function createEventElement(event) {
   const column = document.createElement('div');
   column.className = 'column is-one-fifth'; // 5개의 열로 표시

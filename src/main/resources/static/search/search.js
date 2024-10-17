@@ -114,10 +114,15 @@ function displayProducts(products) {
     const productList = document.getElementById('product-list');
     productList.innerHTML = '';
 
+    const productContainer = document.createElement('div');
+    productContainer.className = 'product-container';
+
     products.forEach(product => {
         const productElement = createProductElement(product);
-        productList.appendChild(productElement);
+        productContainer.appendChild(productElement);
     });
+
+    productList.appendChild(productContainer);
 }
 
 // TODO: 임시 상품 요소 작성
@@ -125,10 +130,13 @@ function createProductElement(product) {
     const productDiv = document.createElement('div');
     productDiv.className = 'product-item';
     productDiv.innerHTML = `
-        <img src="${product.imageUrl}" alt="${product.itemName}" class="product-image">
-        <h3>${product.itemName}</h3>
-        <p>가격: ${product.itemPrice}원</p>
-        <p>제조사: ${product.itemMaker}</p>
+        <div class="product-image-container">
+            <img src="${product.imageUrl}" alt="${product.itemName}" class="product-image">
+        </div>
+        <div class="product-info">
+            <h3 class="product-name">${product.itemName}</h3>
+            <p class="product-price">₩${product.itemPrice.toLocaleString()}</p>
+        </div>
     `;
     return productDiv;
 }
