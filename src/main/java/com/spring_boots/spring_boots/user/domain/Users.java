@@ -40,7 +40,7 @@ public class Users extends BaseTimeEntity implements UserDetails {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @Column(name = "is_deleted")
@@ -153,5 +153,12 @@ public class Users extends BaseTimeEntity implements UserDetails {
                 .usersInfoList(this.usersInfoList)
                 .ordersList(this.ordersList)
                 .build();
+    }
+
+    //구글로 로그인시 업데이트
+    public Users updateName(String username) {
+        this.username = username;
+        this.provider = Provider.GOOGLE;
+        return this;
     }
 }
