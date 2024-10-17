@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spring Boots</title>
+  <!-- bulma css -->
+  <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+  />
+  <script
+          defer
+          src="https://cdn.jsdelivr.net/npm/bulma-carousel@4.0.4/dist/js/bulma-carousel.min.js"
+  ></script>
+  <!-- AWS S3 사진 업로드용 -->
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>
+  <!-- 커스텀 css, js -->
+  <link rel="stylesheet" href="/category-new-or-best/category-new-or-best.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"><link rel="stylesheet" href="/common/header.css">
+  <script src="/category-new-or-best/category-new-or-best.js" type="module" defer></script>
+  <script src="/common/header.js" type="module"></script>
+  <script type="module">
+    import { loadHeader } from '/common/header.js';
+    document.addEventListener('DOMContentLoaded', loadHeader);
+  </script>
+</head>
+<body>
+<!-- 헤더 -->
+<div id="header-placeholder" class="header-container"></div>
+
+<div id="category-content">
+  <div class="content-wrapper">
+    <!-- 브레드크럼 추가 -->
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li id="second-breadcrumb"><a href="#"></a></li>
+      </ul>
+    </nav>
+
+    <!-- 카테고리 정보 -->
+    <div id="category-info">
+      <h1 id="category-title"></h1>
+      <p id="category-description"></p>
+    </div>
+
+  </div>
+</div>
+
+<div id="product-info-and-options">
+  <p id="product-count"></p>
+  <div class="sorting-options">
+    <select id="sort-options">
+      <option value="default">정렬기준</option>
+      <option value="rating">별점</option>
+      <option value="sold">판매량</option>
+      <option value="price-asc">가격 낮은순</option>
+      <option value="price-desc">가격 높은순</option>
+      <option value="newest">최신순</option>
+    </select>
+  </div>
+</div>
+
+<!-- 상품 목록을 표시할 컨테이너 추가 -->
+<div id="product-list">
+
+</div>
+
+
+</body>
+</html>
