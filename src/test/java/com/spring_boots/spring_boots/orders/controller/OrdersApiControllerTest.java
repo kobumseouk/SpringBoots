@@ -23,6 +23,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -44,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = true)
+@ActiveProfiles("test")
 class OrdersApiControllerTest {
 
     @Autowired
@@ -53,6 +55,8 @@ class OrdersApiControllerTest {
     private OrdersService ordersService;
 
     private Users mockUser;
+
+    private Users mockUser2;
 
     @BeforeEach
     void setUp() {
@@ -65,12 +69,15 @@ class OrdersApiControllerTest {
                 .role(UserRole.USER)
                 .build();
 
-        // SecurityContextHolder에 Mock된 인증 정보를 설정
-        // 관리자 테스트 경우 ROLE_ADMIN으로 변경해야함
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(mockUser, null,
-                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
-        );
+
+        mockUser2 = Users.builder()
+                .userId(2L)
+                .username("admin")
+                .userRealId("admin")
+                .email("admin@example.com")
+                .role(UserRole.ADMIN)
+                .build();
+
 
         // 공통적으로 사용될 Mock 서비스 데이터 설정
         OrderDto.OrderItemDto mockOrderItem = new OrderDto.OrderItemDto("Test Item", 2, 10000);
@@ -92,7 +99,15 @@ class OrdersApiControllerTest {
 
     // 사용자 주문 목록 조회 테스트
     @Test
+    @WithMockUser(username = "user", roles = {"USER"})
     void getUserOrders() throws Exception {
+
+        // SecurityContextHolder에 Mock된 인증 정보를 설정
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
         // MockMvc로 API 호출 및 응답 출력
         MvcResult result = mockMvc.perform(get("/api/orders"))
                 .andExpect(status().isOk())
@@ -115,9 +130,16 @@ class OrdersApiControllerTest {
 
     // 사용자 주문 목록 조회 실패 테스트
     @Test
+    @WithMockUser(username = "user", roles = {"USER"})
     void getUserOrdersFailure() throws Exception {
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
         // 주문 목록이 비어있는 경우를 Mock으로 설정
-        Mockito.when(ordersService.getUserOrders(1L)).thenReturn(Collections.emptyList());
+        Mockito.when(ordersService.getUserOrders(anyLong())).thenReturn(Collections.emptyList());
 
         // API 호출 및 검증
         mockMvc.perform(get("/api/orders"))
@@ -131,6 +153,11 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     void getOrderDetails() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
         OrderDetailsDto.OrderItemDetailsDto mockOrderItemDetails = new OrderDetailsDto.OrderItemDetailsDto(
                 "Test Item", 2, 10000, 42, "http://example.com/image.png"
         );
@@ -170,6 +197,11 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     void getOrderDetailsFailure() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
         Mockito.when(ordersService.getOrderDetails(anyLong(), any(UserDto.class)))
                 .thenReturn(Optional.empty()); // 주문을 찾지 못할 경우 빈 값 반환
 
@@ -184,6 +216,11 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     void updateOrder() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
         OrderResponseDto response = new OrderResponseDto(1L, "주문이 성공적으로 수정되었습니다.");
         Mockito.when(ordersService.updateOrder(anyLong(), any(UpdateOrderRequest.class), any(UserDto.class)))
                 .thenReturn(Optional.of(response));
@@ -211,6 +248,11 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     void updateOrderFailure() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
         Mockito.when(ordersService.updateOrder(anyLong(), any(UpdateOrderRequest.class), any(UserDto.class)))
                 .thenReturn(Optional.empty()); // 주문을 찾지 못할 경우 빈 값 반환
 
@@ -230,6 +272,12 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     void createOrder() throws Exception {
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
         // OrderRequestDto 생성
         OrderRequestDto orderRequestDto = new OrderRequestDto();
         orderRequestDto.setRecipientName("홍길동");
@@ -270,6 +318,11 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     void createOrderFailure() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
         // 필수 값이 누락된 OrderRequestDto 생성
         OrderRequestDto orderRequestDto = new OrderRequestDto();
         orderRequestDto.setRecipientName(""); // 수취인 이름 누락
@@ -298,6 +351,12 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     void createOrderNoItemsFailure() throws Exception {
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
         // 주문할 상품이 없는 OrderRequestDto 생성
         OrderRequestDto orderRequestDto = new OrderRequestDto();
         orderRequestDto.setRecipientName("홍길동");
@@ -327,6 +386,12 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     void cancelOrder() throws Exception {
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
         OrderResponseDto response = new OrderResponseDto(1L, "주문이 성공적으로 취소되었습니다.");
         Mockito.when(ordersService.cancelOrder(anyLong(), any(UserDto.class)))
                 .thenReturn(Optional.of(response));
@@ -350,6 +415,12 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
     void cancelOrderFailure() throws Exception {
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_USER")))
+        );
+
         Mockito.when(ordersService.cancelOrder(anyLong(), any(UserDto.class)))
                 .thenReturn(Optional.empty()); // 주문을 찾지 못할 경우 빈 값 반환
 
@@ -365,6 +436,11 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getAllOrders() throws Exception {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser2, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
+        );
+
         OrderDto mockOrder = new OrderDto(1L, LocalDateTime.now(), 20000, "주문완료", "123 Main St", 5000, 2, List.of());
         Mockito.when(ordersService.getAllOrders()).thenReturn(Collections.singletonList(mockOrder));
 
@@ -385,6 +461,13 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getAllOrdersFailure() throws Exception {
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser2, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
+        );
+
+
         // 서비스에서 빈 주문 목록 반환을 시뮬레이션
         Mockito.when(ordersService.getAllOrders()).thenReturn(Collections.emptyList());
 
@@ -399,6 +482,13 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateOrderStatus() throws Exception {
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser2, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
+        );
+
+
         OrderResponseDto response = new OrderResponseDto(1L, "주문 상태가 성공적으로 업데이트되었습니다.");
         Mockito.when(ordersService.updateOrderStatus(anyLong(), any(UpdateOrderStatusRequest.class)))
                 .thenReturn(Optional.of(response));
@@ -426,6 +516,12 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateOrderStatusFailure() throws Exception {
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser2, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
+        );
+
         Mockito.when(ordersService.updateOrderStatus(anyLong(), any(UpdateOrderStatusRequest.class)))
                 .thenReturn(Optional.empty()); // 주문을 찾지 못할 경우 빈 값 반환
 
@@ -445,6 +541,12 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void adminCancelOrder() throws Exception {
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser2, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
+        );
+
         OrderResponseDto response = new OrderResponseDto(1L, "주문이 성공적으로 삭제되었습니다.");
         Mockito.when(ordersService.adminCancelOrder(anyLong()))
                 .thenReturn(Optional.of(response));
@@ -468,6 +570,13 @@ class OrdersApiControllerTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void adminCancelOrderFailure() throws Exception {
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(mockUser2, null,
+                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN")))
+        );
+
+
         Mockito.when(ordersService.adminCancelOrder(anyLong()))
                 .thenReturn(Optional.empty()); // 주문을 찾지 못할 경우 빈 값 반환
 

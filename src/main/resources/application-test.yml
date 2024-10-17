@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: Spring_boots
+  datasource:
+    driverClassName: org.h2.Driver
+    password: ''
+    username: sa
+    url: jdbc:h2:mem:testdb
+  config:
+    activate:
+      on-profile: test
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+  devtools:
+    restart:
+      enabled: true
+  jpa:
+    defer-datasource-initialization: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        format_sql: true
+  sql:
+    init:
+      mode: always
+
+jwt:
+  issuer: test@example.com
+  secret: "zJf3VY8whF9OGkNhdMjf3Lx6jqFwG6kLcv3zjX3FSkQ="  # 32바이트 이상
+  token:
+    refresh-expires: 604800000  # 7일
+    access-expires: 900000      # 15분
+
+
+aws:
+  s3:
+    bucket:
+      credentials:
+        accessKey: AKIAWOOXT2P2HYJJ4352
+        secretAccessKey: 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
+      region: ap-northeast-2
+      name: project-springboots
+
