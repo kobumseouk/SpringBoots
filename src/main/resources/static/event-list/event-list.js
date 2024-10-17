@@ -65,8 +65,11 @@ function createEventElement(event) {
   figure.className = 'image';
 
   const img = document.createElement('img');
-  img.src = event.thumbnailImageUrl;
+  img.src = event.thumbnailImageUrl || '/images/default-event-image.jpg';
   img.alt = event.eventTitle;
+  img.onerror = function() {
+    this.src = '/images/default-event-image.jpg';
+  };
 
   figure.appendChild(img);
   cardImage.appendChild(figure);

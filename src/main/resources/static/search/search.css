@@ -52,28 +52,6 @@
     font-size: 14px;
 }
 
-.breadcrumb {
-}
+#product-list {
 
-.breadcrumb ul {
-  display: flex;
-  align-items: center;
-}
-
-.breadcrumb li {
-  display: flex;
-  align-items: center;
-}
-
-.breadcrumb li + li::before {
-  content: ">";
-}
-
-.breadcrumb a {
-    color: #666;
-    text-decoration: none;
-}
-
-.breadcrumb a:hover {
-    text-decoration: underline;
 }

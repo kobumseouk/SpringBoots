@@ -33,6 +33,7 @@ public class EventService {
   public EventDetailDto createEvent(EventRequestDto eventRequestDto, MultipartFile thumbnailFile, List<MultipartFile> contentFiles) throws IOException {
     String thumbnailImageUrl = null;
     List<String> contentImageUrls = new ArrayList<>();
+    Event event = eventMapper.eventRequestDtoToEvent(eventRequestDto);
 
     if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
       thumbnailImageUrl = s3BucketService.uploadFile(thumbnailFile);
@@ -43,11 +44,17 @@ public class EventService {
       }
     }
 
-    Event event = eventMapper.eventRequestDtoToEvent(eventRequestDto);
-    event.setThumbnailImageUrl(thumbnailImageUrl);
-    event.setContentImageUrl(contentImageUrls);
+
+    event.setThumbnailImageUrl(thumbnailImageUrl != null ? getFullImageUrl(thumbnailImageUrl) : null);
+    event.setContentImageUrl(contentImageUrls.stream()
+        .map(this::getFullImageUrl)
+        .collect(Collectors.toList()));
     Event savedEvent = eventRepository.save(event);
     return eventMapper.eventToEventDetailDto(savedEvent);
+  }
+
+  private String getFullImageUrl(String imageKey) {
+    return s3BucketService.getFileUrl(imageKey);
   }
 
   // 모든 활성화된 이벤트를 조회하는 메서드
@@ -89,7 +96,7 @@ public class EventService {
       if (event.getThumbnailImageUrl() != null) {
         s3BucketService.deleteFile(extractKeyFromUrl(event.getThumbnailImageUrl()));
       }
-      event.setThumbnailImageUrl(newThumbnailImageUrl);
+      event.setThumbnailImageUrl(newThumbnailImageUrl != null ? getFullImageUrl(newThumbnailImageUrl) : null);
     }
 
     if (contentFiles != null && !contentFiles.isEmpty()) {
@@ -98,11 +105,11 @@ public class EventService {
         newContentImageUrls.add(s3BucketService.uploadFile(file));
       }
       if (event.getContentImageUrl() != null) {
-        for (String url : event.getContentImageUrl()) {
-          s3BucketService.deleteFile(extractKeyFromUrl(url));
-        }
+        event.getContentImageUrl().forEach(url -> s3BucketService.deleteFile(extractKeyFromUrl(url)));
       }
-      event.setContentImageUrl(newContentImageUrls);
+      event.setContentImageUrl(newContentImageUrls.stream()
+          .map(this::getFullImageUrl)
+          .collect(Collectors.toList()));
     }
 
     eventMapper.updateEventFromDto(eventUpdateDto, event);
