@@ -44,18 +44,18 @@ public class WebSecurityConfig {
     private final OAuth2AuthorizationRequestBasedOnCookieRepository cookieRepository;
 //    private final RedisTemplate redisTemplate;    //Redis db 사용
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .requestMatchers(toH2Console())
-                .requestMatchers("/static/**");
-    }
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return (web) -> web.ignoring()
+//                .requestMatchers(toH2Console())
+//                .requestMatchers("/static/**");
+//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable())  // H2 콘솔 접근을 위해 CSRF 비활성화
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))  // H2 콘솔에서 iframe 사용을 허용
+                .csrf(csrf -> csrf.disable())  // H2 콘솔 접근을 위해 CSRF 비활성화 todo 배포시 삭제
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))  // H2 콘솔에서 iframe 사용을 허용 todo 배포시 삭제
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(toH2Console()).permitAll()  // H2 콘솔에 대한 요청 허용
                         .requestMatchers(
@@ -64,6 +64,7 @@ public class WebSecurityConfig {
                                 "/login-resource/**","api.js","elice-rabbit.png",
                                 "useful-functions.js","elice-rabbit-favicon.png",
                                 "navbar.js", "/common/**","google.png"
+                                //todo 배포시 api 에 대한 접근 권한 조정
                         ).permitAll()  // 모든 요청에 대해 요청 허가
                         .anyRequest().authenticated())
 

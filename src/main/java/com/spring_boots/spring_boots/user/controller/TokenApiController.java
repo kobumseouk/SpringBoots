@@ -80,13 +80,13 @@ public class TokenApiController {
     private void deleteTokenCookie(HttpServletResponse response) {
         Cookie deleteRefreshTokenCookie = new Cookie("refreshToken", null);
 //            deleteRefreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
-        deleteRefreshTokenCookie.setSecure(true); // HTTPS에서만 전송
+        deleteRefreshTokenCookie.setSecure(true); // HTTPS에서만 전송 todo 배포시 설정 주석 해제
         deleteRefreshTokenCookie.setPath("/"); // 동일한 경로
         deleteRefreshTokenCookie.setMaxAge(0); // 쿠키 삭제 설정
 
         Cookie deleteAccessTokenCookie = new Cookie("accessToken", null);
 //            deleteAccessTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
-        deleteAccessTokenCookie.setSecure(true); // HTTPS에서만 전송
+        deleteAccessTokenCookie.setSecure(true); // HTTPS에서만 전송 todo 배포시 설정 주석 해제
         deleteAccessTokenCookie.setPath("/"); // 동일한 경로
         deleteAccessTokenCookie.setMaxAge(0); // 쿠키 삭제 설정
 
@@ -112,7 +112,7 @@ public class TokenApiController {
         refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키의 유효 기간 설정 (예: 7일)
 
 //        accessTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근할 수 없도록 설정
-        accessTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (생산 환경에서 사용)
+        accessTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (생산 환경에서 사용) todo 배포시 설정 주석 해제
         accessTokenCookie.setPath("/"); // 쿠키의 유효 경로 설정
         accessTokenCookie.setMaxAge(15 * 60); // 15분
 
