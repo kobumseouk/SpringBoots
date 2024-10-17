@@ -155,7 +155,7 @@ public class ItemRestService {
 
     // 검색한 아이템 키워드 정렬 옵션
     public List<ResponseItemDto> searchAndSortItems(String keyword, String sort) {
-        List<Item> items = itemRepository.findByItemNameContainingIgnoreCase(keyword);
+        List<Item> items = itemRepository.findByKeywordsContainingIgnoreCase(keyword);
 
         switch (sort) {
             case "price-asc":
@@ -168,7 +168,6 @@ public class ItemRestService {
                 items.sort(Comparator.comparing(Item::getCreatedAt).reversed());
                 break;
             default:
-                // 기본 정렬 (예: ID 기준 오름차순)
                 items.sort(Comparator.comparing(Item::getItemId));
         }
 

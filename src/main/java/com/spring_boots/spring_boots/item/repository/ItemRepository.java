@@ -8,5 +8,5 @@ import java.util.List;
 public interface ItemRepository extends JpaRepository<Item, Long> {
   List<Item> findAllByCategoryId(Long categoryId);
 
-  List<Item> findByItemNameContainingIgnoreCase(String keyword);
+  List<Item> findByKeywordsContainingIgnoreCase(String keyword);
 }
