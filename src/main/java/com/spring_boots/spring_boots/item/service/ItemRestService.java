@@ -15,6 +15,10 @@ import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -154,24 +158,30 @@ public class ItemRestService {
     }
 
     // 검색한 아이템 키워드 정렬 옵션
-    public List<ResponseItemDto> searchAndSortItems(String keyword, String sort) {
-        List<Item> items = itemRepository.findByKeywordsContainingIgnoreCase(keyword);
+    public Page<ResponseItemDto> searchAndSortItems(String keyword, String sort, Pageable pageable) {
+        Page<Item> itemsPage;
 
         switch (sort) {
-            case "price-asc":
-                items.sort(Comparator.comparing(Item::getItemPrice));
+            case "price-asc":  // 낮은 가격순
+                itemsPage = itemRepository.findByKeywordsContainingIgnoreCase(keyword,
+                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                        Sort.by(Sort.Direction.ASC, "itemPrice")));
                 break;
-            case "price-desc":
-                items.sort(Comparator.comparing(Item::getItemPrice).reversed());
+            case "price-desc":  // 높은 가격순
+                itemsPage = itemRepository.findByKeywordsContainingIgnoreCase(keyword,
+                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                        Sort.by(Sort.Direction.DESC, "itemPrice")));
                 break;
-            case "newest":
-                items.sort(Comparator.comparing(Item::getCreatedAt).reversed());
+            case "newest":   // 최신순
+                itemsPage = itemRepository.findByKeywordsContainingIgnoreCase(keyword,
+                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+                        Sort.by(Sort.Direction.DESC, "createdAt")));
                 break;
-            default:
-                items.sort(Comparator.comparing(Item::getItemId));
+            default:   // 아이템 id로 오름차순 정렬
+                itemsPage = itemRepository.findByKeywordsContainingIgnoreCase(keyword, pageable);
         }
 
-        return items.stream().map(itemMapper::toResponseDto).collect(Collectors.toList());
+        return itemsPage.map(itemMapper::toResponseDto);
     }
 }
 
