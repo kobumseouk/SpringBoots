@@ -115,6 +115,7 @@ public class Users extends BaseTimeEntity implements UserDetails {
                 .email(email)
                 .username(username)
                 .userRealId(userRealId)
+                .provider(provider)
                 .role(role)
                 .createdAt(getCreatedAt())
                 .userInfoList(userInfoDtos)
