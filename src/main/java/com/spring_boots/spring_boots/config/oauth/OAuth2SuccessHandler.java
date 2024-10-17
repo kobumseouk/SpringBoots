@@ -49,6 +49,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Map<String, Object> claims = Map.of(
                 "accountId", user.getUserId(),  //JWT 클래임에 accountId
                 "role", user.getRole(),  //JWT 클래임에 role
+                "provider",user.getProvider(),
                 "userRealId", user.getUserRealId()   //JWT 클래임에 실제 ID 추가
         );
 

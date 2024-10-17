@@ -1,5 +1,6 @@
 package com.spring_boots.spring_boots.user.dto.response;
 
+import com.spring_boots.spring_boots.user.domain.Provider;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class UserResponseDto {
     private String userRealId;
     private String email;
     private UserRole role;
+    private Provider provider;
     private LocalDateTime createdAt;
     private List<UsersInfoResponseDto> userInfoList;
 }

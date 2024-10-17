@@ -26,15 +26,20 @@ const modalCloseButton = document.querySelector("#modalCloseButton");
 const currentPasswordInput = document.querySelector("#currentPasswordInput");
 const saveCompleteButton = document.querySelector("#saveCompleteButton");
 
+let provider;   //provider 가 GOOGLE 인 경우 예외처리
+let userData; // 나중에 사용자가 데이터를 변경했는지 확인하기 위해, 전역 변수로 userData 설정
+let userId; //userId 정보 갖고오기(Pathvariable 로 유저정보 엔티티를 가져오기 위해 설정)
+
 checkLogin();
-addAllElements();
-addAllEvents();
+addAllElements(); // insertUserData를 호출하여 addAllEvents가 적절한 시점에 호출되게 함
+//addAllEvents();
 
 // 요소 삽입 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllElements() {
   createNavbar();
   insertUserData();
 }
+
 
 // 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllEvents() {
@@ -44,11 +49,17 @@ function addAllEvents() {
   addressToggle.addEventListener("change", toggleTargets);
   phoneNumberToggle.addEventListener("change", toggleTargets);
   searchAddressButton.addEventListener("click", searchAddress);
-  saveButton.addEventListener("click", openModal);
+//  saveButton.addEventListener("click", openModal);
   modalBackground.addEventListener("click", closeModal);
   modalCloseButton.addEventListener("click", closeModal);
   document.addEventListener("keydown", keyDownCloseModal);
   saveCompleteButton.addEventListener("click", saveUserData);
+
+  if (userData.provider === "GOOGLE") {
+    saveButton.addEventListener("click", saveUserData);
+  } else {
+    saveButton.addEventListener("click", openModal);
+  }
 }
 
 // input 및 주소찾기 버튼의 disabled <-> abled 상태를 토글함.
@@ -98,15 +109,14 @@ function toggleTargets(e) {
 
 
 // 페이지 로드 시 실행
-// 나중에 사용자가 데이터를 변경했는지 확인하기 위해, 전역 변수로 userData 설정
-let userData;
-let userId; //userId 정보 갖고오기(Pathvariable 로 유저정보 엔티티를 가져오기 위해 설정)
 async function insertUserData() {
   userData = await Api.get("/api/users-info");
-  userId= userData.userId;  //userId 정보 추출하기
+  userId = userData.userId;  // userId 정보 추출하기
+//  console.log(userData);
+//  provider = userData.provider;
 
   // 객체 destructuring
-  const { username, userRealId, email, userInfoList } = userData;
+  const { username, userRealId, email, userInfoList, provider } = userData;
 
   // 서버에서 온 비밀번호는 해쉬 문자열인데, 이를 빈 문자열로 바꿈
   // 나중에 사용자가 비밀번호 변경을 위해 입력했는지 확인하기 위함임.
@@ -115,7 +125,7 @@ async function insertUserData() {
   securityTitle.innerText = `회원정보 관리 (${email})`;
   fullNameInput.value = username;
   userRealIdInput.value = userRealId;
-  if(email){
+  if(email) {
     emailInput.value = email;
   }
 
@@ -123,30 +133,39 @@ async function insertUserData() {
   if (userInfoList && userInfoList.length > 0) {
     const { address, streetAddress, detailedAddress, phone } = userInfoList[0]; // 첫 번째 객체에서 정보 추출
 
-    if (address) {
-      const { address, streetAddress, detailedAddress, phone } = userInfoList[0]; // 첫 번째 객체에서 정보 추출
+    if (address || streetAddress || detailedAddress) {
+      // 주소 정보 설정
+      postalCodeInput.value = address || ""; // address가 없을 경우 빈 문자열
+      address1Input.value = streetAddress || ""; // streetAddress가 없을 경우 빈 문자열
+      address2Input.value = detailedAddress || ""; // detailedAddress가 없을 경우 빈 문자열
+    } else {
+      // 나중에 입력 여부를 확인하기 위해 설정함
+      userData.address = { address: "", streetAddress: "", detailedAddress: "" };
+    }
 
-      if (address || streetAddress || detailedAddress) {
-        // 주소 정보 설정
-        postalCodeInput.value = address || ""; // address가 없을 경우 빈 문자열
-        address1Input.value = streetAddress || ""; // streetAddress가 없을 경우 빈 문자열
-        address2Input.value = detailedAddress || ""; // detailedAddress가 없을 경우 빈 문자열
-      } else {
-        // 나중에 입력 여부를 확인하기 위해 설정함
-        userData.address = { address: "", streetAddress: "", detailedAddress: "" };
-      }
-
-      if (phone) {
-        phoneNumberInput.value = phone;
-      }
+    if (phone) {
+      phoneNumberInput.value = phone;
+    }
   }
-}
 
   // 크롬 자동완성 삭제함.
   passwordInput.value = "";
 
+  // provider가 "GOOGLE"이면 이메일 및 비밀번호 변경을 비활성화함
+  if (provider === "GOOGLE") {
+    emailToggle.setAttribute("disabled", "");
+    emailToggle.checked = false;
+    passwordToggle.setAttribute("disabled", "");
+    passwordToggle.checked = false;
+    alert("구글로 로그인하셨습니다. 비밀번호 변경 및 이메일 변경은 비활성화됩니다.");
+    alert("주소와 전화번호만 변경가능합니다.");
+  }
+
   // 기본적으로 disabled 상태로 만듦
   disableForm();
+
+  // addAllEvents를 insertUserData 함수 내에서 호출하여 provider가 초기화된 후에 이벤트를 추가
+  addAllEvents();
 }
 
 function disableForm() {

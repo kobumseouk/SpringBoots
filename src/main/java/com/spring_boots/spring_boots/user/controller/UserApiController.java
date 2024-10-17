@@ -1,5 +1,6 @@
 package com.spring_boots.spring_boots.user.controller;
 
+import com.spring_boots.spring_boots.user.domain.Provider;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.dto.request.UserPasswordRequestDto;
@@ -65,7 +66,11 @@ public class UserApiController {
         try {
             Users authUser = userService.findById(user.getUserId());    //인증객체 가져올시 영속성컨텍스트에서 가져와야함
 
-            userService.update(authUser, request, userInfoId);
+            if (authUser.getProvider().equals(Provider.NONE)) {
+                userService.updateNoneUser(authUser, request, userInfoId);
+            } else {
+                userService.updateGoogleUser(authUser, request, userInfoId);
+            }
 
             return ResponseEntity.status(HttpStatus.OK).body(UserUpdateResponseDto
                     .builder().message("정상적으로 수정되었습니다.").build());

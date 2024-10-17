@@ -103,29 +103,42 @@ function formatDate(dateString) {
   return date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' });
 }
 
+// 페이지 버튼 설정
 function setupPagination() {
   const paginationList = document.querySelector('.pagination-list');
   paginationList.innerHTML = '';
 
+  // 이전 페이지 버튼
+  const prevButton = document.createElement('li');
+  prevButton.innerHTML = `<a class="pagination-previous" ${currentPage === 1 ? 'disabled' : ''}> < </a>`;
+  if (currentPage > 1) {
+    prevButton.querySelector('a').onclick = () => fetchEvents(currentPage - 1);
+  }
+  paginationList.appendChild(prevButton);
+
+  // 페이지 번호
   for (let i = 1; i <= totalPages; i++) {
     const pageItem = document.createElement('li');
     const pageLink = document.createElement('a');
-    pageLink.className = 'pagination-link';
-    pageLink.setAttribute('aria-label', `Goto page ${i}`);
+    pageLink.classList.add('pagination-link');
     pageLink.textContent = i;
-
     if (i === currentPage) {
       pageLink.classList.add('is-current');
+      pageLink.setAttribute('aria-current', 'page');
+    } else {
+      pageLink.onclick = () => fetchEvents(i);
     }
-
-    pageLink.addEventListener('click', () => {
-      currentPage = i;
-      fetchEvents(currentPage);
-    });
-
     pageItem.appendChild(pageLink);
     paginationList.appendChild(pageItem);
   }
+
+  // 다음 페이지 버튼
+  const nextButton = document.createElement('li');
+  nextButton.innerHTML = `<a class="pagination-next" ${currentPage === totalPages ? 'disabled' : ''}> > </a>`;
+  if (currentPage < totalPages) {
+    nextButton.querySelector('a').onclick = () => fetchEvents(currentPage + 1);
+  }
+  paginationList.appendChild(nextButton);
 }
 
 document.addEventListener('DOMContentLoaded', init);
