@@ -90,7 +90,7 @@ async function handleSubmit(e) {
     const thumbnailImage = thumbnailInput.files[0];
     const contentImages = contentImageInput.files;
 
-    if (!title || !content || !startDate || !endDate) {
+    if (!title || !content) {
         return alert("모든 필드를 입력해주세요.");
     }
 

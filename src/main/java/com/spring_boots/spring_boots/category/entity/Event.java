@@ -50,9 +50,7 @@ public class Event extends BaseTimeEntity {
 
   // end_date가 지났는지 확인하고 is_Active를 업데이트하는 메서드
   public void updateActiveStatus() {
-    if (this.endDate != null && LocalDate.now().isAfter(this.endDate)) {
-      this.isActive = false;
-    }
+    this.isActive = this.endDate != null && !LocalDate.now().isAfter(this.endDate);
   }
 
   // 이벤트 종료일 변경 설정 시 자동으로 상태 업데이트

@@ -33,6 +33,7 @@ public class EventService {
   public EventDetailDto createEvent(EventRequestDto eventRequestDto, MultipartFile thumbnailFile, List<MultipartFile> contentFiles) throws IOException {
     String thumbnailImageUrl = null;
     List<String> contentImageUrls = new ArrayList<>();
+    Event event = eventMapper.eventRequestDtoToEvent(eventRequestDto);
 
     if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
       thumbnailImageUrl = s3BucketService.uploadFile(thumbnailFile);
@@ -43,9 +44,11 @@ public class EventService {
       }
     }
 
-    Event event = eventMapper.eventRequestDtoToEvent(eventRequestDto);
+
     event.setThumbnailImageUrl(thumbnailImageUrl != null ? getFullImageUrl(thumbnailImageUrl) : null);
-    event.setContentImageUrl(contentImageUrls);
+    event.setContentImageUrl(contentImageUrls.stream()
+        .map(this::getFullImageUrl)
+        .collect(Collectors.toList()));
     Event savedEvent = eventRepository.save(event);
     return eventMapper.eventToEventDetailDto(savedEvent);
   }
@@ -102,11 +105,11 @@ public class EventService {
         newContentImageUrls.add(s3BucketService.uploadFile(file));
       }
       if (event.getContentImageUrl() != null) {
-        for (String url : event.getContentImageUrl()) {
-          s3BucketService.deleteFile(extractKeyFromUrl(url));
-        }
+        event.getContentImageUrl().forEach(url -> s3BucketService.deleteFile(extractKeyFromUrl(url)));
       }
-      event.setContentImageUrl(newContentImageUrls);
+      event.setContentImageUrl(newContentImageUrls.stream()
+          .map(this::getFullImageUrl)
+          .collect(Collectors.toList()));
     }
 
     eventMapper.updateEventFromDto(eventUpdateDto, event);
