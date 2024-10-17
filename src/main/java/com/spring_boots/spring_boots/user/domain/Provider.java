@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum Provider {
-    BOOTS("BOOTS"), // 일반 구현
+    NONE("NONE"), // 일반 구현
     GOOGLE("GOOGLE");   //oauth google 연동 구현
     private final String provider;
 }

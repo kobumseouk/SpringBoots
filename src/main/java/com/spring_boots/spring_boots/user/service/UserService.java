@@ -13,6 +13,7 @@ import com.spring_boots.spring_boots.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,17 +37,15 @@ public class UserService {
             throw new IllegalArgumentException("이미 존재하는 ID 입니다.");
         }
 
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         Users user = Users.builder()
                 .username(dto.getUsername())
                 .userRealId(dto.getUserRealId())
                 .email(dto.getEmail())
-                .password(encoder.encode(dto.getPassword()))
+                .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .role(UserRole.USER)
                 .build();
-        Users saveUser = userRepository.save(user);
 
-        return saveUser;
+        return userRepository.save(user);
     }
 
     public Users findById(Long userId) {
@@ -115,7 +114,7 @@ public class UserService {
         if (usersInfo != null) {
             usersInfo.updateUserInfo(userUpdateRequestDto);
         } else {
-            UsersInfo newUsersInfo= userUpdateRequestDto.toUsersInfo(user);
+            UsersInfo newUsersInfo = userUpdateRequestDto.toUsersInfo(user);
             userInfoRepository.save(newUsersInfo);
         }
 
@@ -190,4 +189,9 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다: " + userDto.getUserId()));
     }
 
+    //oauth2 의 경우 이메일과 아이디 동일
+    public Users findByUserRealId(String email) {
+        return userRepository.findByUserRealId(email)
+                .orElseThrow(() -> new IllegalArgumentException("회원정보가 존재하지않습니다."));
+    }
 }
