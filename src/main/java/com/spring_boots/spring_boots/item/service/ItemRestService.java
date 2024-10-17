@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -150,6 +151,28 @@ public class ItemRestService {
         List<Item> items = itemRepository.findAllByCategoryId(categoryId);
         return items.stream().map(itemMapper::toResponseDto).collect(Collectors.toList());
 
+    }
+
+    // 검색한 아이템 키워드 정렬 옵션
+    public List<ResponseItemDto> searchAndSortItems(String keyword, String sort) {
+        List<Item> items = itemRepository.findByItemNameContainingIgnoreCase(keyword);
+
+        switch (sort) {
+            case "price-asc":
+                items.sort(Comparator.comparing(Item::getItemPrice));
+                break;
+            case "price-desc":
+                items.sort(Comparator.comparing(Item::getItemPrice).reversed());
+                break;
+            case "newest":
+                items.sort(Comparator.comparing(Item::getCreatedAt).reversed());
+                break;
+            default:
+                // 기본 정렬 (예: ID 기준 오름차순)
+                items.sort(Comparator.comparing(Item::getItemId));
+        }
+
+        return items.stream().map(itemMapper::toResponseDto).collect(Collectors.toList());
     }
 }
 
