@@ -108,8 +108,17 @@ function setupSearchFunction() {
     }
   }
 
+  // 폼 제출 이벤트 리스너
   searchForm.addEventListener('submit', performSearch);
+  // 검색 버튼 클릭 이벤트 리스너
   searchButton.addEventListener('click', performSearch);
+
+  // 입력 필드에서 엔터키 입력 처리
+  searchInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+      performSearch(event);
+    }
+  });
 }
 
 // 카테고리 메뉴 활성화 설정
