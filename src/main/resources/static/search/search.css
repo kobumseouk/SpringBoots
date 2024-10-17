@@ -1,5 +1,5 @@
 .content-wrapper {
-  max-width: 1500px;
+  max-width: 1350px;
   margin: 0 auto;
   padding: 10px 10px;
 }
@@ -30,7 +30,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 250px;
+  padding: 15px 285px;
   border-top: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
 }
@@ -52,12 +52,12 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  padding: 20px 0;
+  padding: 20px 285px;
 }
 
 /* 개별 제품 아이템 스타일 (필요한 경우) */
 .product-item {
-  width: calc(25% - 20px); /* 4개의 열로 표시, 간격 고려 */
+  width: calc(25% - 15px); /* 4개의 열로 표시, 간격 고려 */
   margin-bottom: 20px;
   padding: 10px;
   border: 1px solid #e0e0e0;

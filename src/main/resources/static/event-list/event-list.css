@@ -1,5 +1,5 @@
 .content-wrapper {
-  max-width: 1500px;
+  max-width: 1350px;
   margin: 0 auto;
   padding: 10px 10px;
 }
@@ -10,6 +10,7 @@
 }
 
 #event-info {
+
 }
 
 #info-title {
@@ -54,7 +55,7 @@
 }
 
 #event-list {
-  padding: 20px 25px;
+  padding: 20px 285px;
 }
 
 .column {
