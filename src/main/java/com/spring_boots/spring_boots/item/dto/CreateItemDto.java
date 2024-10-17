@@ -15,6 +15,8 @@ import javax.validation.constraints.Positive;
 @Setter
 @ToString
 public class CreateItemDto {
+    private Long id;
+
     @NotBlank(message = "상품명은 필수입니다.")
     @Length(max = 200)
     private String itemName;
@@ -36,6 +38,8 @@ public class CreateItemDto {
 
     private String imageUrl;
 
+    private int itemSize;
+
 
     public Item toEntity() {
         Item item = new Item();
@@ -45,6 +49,7 @@ public class CreateItemDto {
         item.setItemMaker(itemMaker);
         item.setItemColor(itemColor);
         item.setImageUrl(imageUrl);
+        item.setItemSize(itemSize);
         return item;
     }
 }

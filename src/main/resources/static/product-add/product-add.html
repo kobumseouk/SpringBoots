@@ -24,8 +24,6 @@
       src="https://kit.fontawesome.com/9daa42bcef.js"
       crossorigin="anonymous"
     ></script>
-    <!-- AWS S3 사용하기 위한 파일 -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>
     <!-- 커스텀 css, js -->
     <link rel="stylesheet" href="/product-add/product-add.css" />
     <script src="/product-add/product-add.js" type="module" defer></script>
@@ -71,39 +69,44 @@
     </nav>
 
     <!-- 제품 추가 폼(Form) -->
+
+    <!-- 상품 이름 -->
     <section class="section">
       <div class="container">
         <div class="block account-header">
           <h1 class="subtitle is-4">제품판매</h1>
         </div>
         <div class="register-product-form-container">
-          <form class="box register-product-form-box" id="registerProductForm">
+          <form class="box register-product-form-box" id="registerProductForm" enctype="multipart/form-data">
             <p class="title is-5 has-text-primary">제품을 판매해 보세요</p>
             <div class="field">
               <label class="label" for="titleInput">제품 이름</label>
               <div class="control">
                 <input
+                  name="itemName"
                   class="input"
                   id="titleInput"
                   type="text"
-                  placeholder="아이보리 티셔츠"
+                  placeholder="운동화"
                   autocomplete="on"
+                  required
                 />
               </div>
             </div>
 
+            <!-- 카테고리 -->
             <div class="field">
-              <label class="label" for="categorySelectBox">카테고리</label>
+              <label class="label">카테고리</label>
               <label for="themeSelectBox">테마 선택</label>
               <div class="control">
                 <div class="select is-fullwidth">
                   <select id="themeSelectBox" onchange="categoryChang(this)">
                     <option>테마를 선택하세요.</option>
-                    <option value="공용">공용</option>
-                    <option value="여성">여성</option>
-                    <option value="남성">남성</option>
-                    <option value="액세서리">액세서리</option>
-                    <option value="SALE">SALE</option>
+                    <option value="common">공용</option>
+                    <option value="women">여성</option>
+                    <option value="men">남성</option>
+                    <option value="accessories">액세서리</option>
+                    <option value="sale">SALE</option>
                     <option value="COLLABORATION">COLLABORATION</option>
                   </select>
                 </div>
@@ -115,7 +118,7 @@
                 <label for="categorySelectBox">카테고리 선택</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                  <select id="categorySelectBox">
+                  <select id="categorySelectBox" name="category_id" required>
                     <option value="">카테고리를 선택해 주세요.</option>
                   </select>
                   </div>
@@ -153,10 +156,12 @@
           }
         </script>
 
+            <!-- 제조사 -->
             <div class="field">
               <label class="label" for="manufacturerInput">제조사</label>
               <div class="control">
                 <input
+                  name="itemMaker"
                   class="input"
                   id="manufacturerInput"
                   type="text"
@@ -167,29 +172,18 @@
             </div>
 
             <div class="field">
-              <label class="label" for="shortDescriptionInput">요약 설명</label>
-              <div class="control">
-                <textarea
-                  class="textarea"
-                  id="shortDescriptionInput"
-                  rows="3"
-                  placeholder="제품에 대한 1~2문장의 설명을 적어 주세요."
-                  autocomplete="on"
-                ></textarea>
-              </div>
-            </div>
-
-            <div class="field">
               <label class="label" for="detailDescriptionInput"
                 >상세 설명</label
               >
               <div class="control">
                 <textarea
                   class="textarea"
+                  name="itemDescription"
                   id="detailDescriptionInput"
                   rows="8"
                   placeholder="제품에 대한 상세 설명을 적어 주세요."
                   autocomplete="on"
+                  required
                 ></textarea>
               </div>
             </div>
@@ -271,10 +265,12 @@
                 <div class="control has-icons-right">
                   <input
                     class="input"
+                    name="itemPrice"
                     id="priceInput"
                     type="number"
                     placeholder="10000"
                     autocomplete="on"
+                    required
                   />
                   <span class="icon is-small is-right"> 원 </span>
                 </div>
@@ -306,9 +302,34 @@
             ></div>
 
             <div class="mt-5">
-              <button class="button is-primary is-fullwidth" id="submitButton">
+              <button class="button is-primary is-fullwidth" id="submitButton" type="submit">
                 제품 판매하기
               </button>
+              <script>
+                document.getElementById('registerProductForm').addEventListener('submit', function(event) {
+                  event.preventDefault(); // 기본 제출 이벤트 방지
+
+                  const formData = new FormData(this); // 현재 폼의 데이터를 FormData 객체로 생성
+                  fetch('/api/admin/items', {
+                      method: 'POST',
+                      body: formData,
+                  })
+                  .then(response => {
+                      if (!response.ok) {
+                          throw new Error('Network response was not ok');
+                      }
+                      return response.json();
+                  })
+                  .then(data => {
+                      console.log ('Success', data);
+                      // 성공적으로 추가된 후의 처리
+                  })
+                  .catch((error) => {
+                      console.error('Error', error);
+                      // 오류 처리
+                  });
+              });
+              </script>
             </div>
           </form>
         </div>

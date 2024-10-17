@@ -55,14 +55,15 @@ public class ItemRestService {
     }
 
     // Item 단일 보기
-    public ResponseItemDto getItem(Long itemId)  {
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: " + itemId));
+    public ResponseItemDto getItem(Long id)  {
+        Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: " + id));
         System.out.println("Retrieved Item Image URL: " + item.getImageUrl());
         return itemMapper.toResponseDto(item);
     }
 
     // Item 만들기
     public ResponseItemDto createItem(CreateItemDto itemDto, MultipartFile file) {
+
         Category category = categoryRepository.findById(itemDto.getCategoryId()) // categoryId로 Category 객체 조회
                 .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다.: " + itemDto.getCategoryId()));
         String imageUrl = null;
@@ -84,8 +85,11 @@ public class ItemRestService {
     }
 
     // Item 수정하기
-    public ResponseItemDto updateItem(Long itemId, UpdateItemDto itemDto) throws IOException {
-        Item findItem = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("아이템을 찾을 수 없습니다: " + itemId));
+    public ResponseItemDto updateItem(Long id, UpdateItemDto itemDto) throws IOException {
+        if (id == null) {
+            throw new IllegalArgumentException("id에는 null 값이 있으면 안됩니다.");
+        }
+        Item findItem = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("아이템을 찾을 수 없습니다: " + id));
 
         String existingImageUrl = findItem.getImageUrl(); // 기존 저장된 이미지 URL 담기
 
@@ -132,8 +136,11 @@ public class ItemRestService {
     }
 
     // Item 삭제하기
-    public void deleteItem(Long itemId) {
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: "+ itemId));
+    public void deleteItem(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id에는 null 값이 있으면 안됩니다.");
+        }
+        Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: "+ id));
 
         String imageUrl = item.getImageUrl();
         if (imageUrl != null) {
