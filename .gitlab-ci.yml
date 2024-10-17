@@ -37,7 +37,7 @@ build:
     paths:
       - build/libs/*.jar
   only:
-    - main
+    - develop
 
 deploy:
   stage: deploy
@@ -49,6 +49,6 @@ deploy:
     - ssh -i ~/.ssh/id_rsa -p "$SERVER_PORT" "$SERVER_USER"@"$SERVER_HOST" "./deploy.sh"
    
   only:
-    - main
+    - develop
 variables:
   CI_DEBUG_TRACE: "true"
