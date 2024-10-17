@@ -175,7 +175,7 @@ public class ItemRestService {
                 items.sort(Comparator.comparing(Item::getCreatedAt).reversed());
                 break;
             default:
-                items.sort(Comparator.comparing(Item::getItemId));
+                items.sort(Comparator.comparing(Item::getId));
         }
 
         return items.stream().map(itemMapper::toResponseDto).collect(Collectors.toList());
