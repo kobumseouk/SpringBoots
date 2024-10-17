@@ -2,6 +2,7 @@ package com.spring_boots.spring_boots.user.service;
 
 import com.spring_boots.spring_boots.config.jwt.impl.AuthTokenImpl;
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
+import com.spring_boots.spring_boots.user.domain.Provider;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.domain.UsersInfo;
@@ -73,6 +74,7 @@ public class UserService {
         Map<String, Object> claims = Map.of(
                 "accountId", user.getUserId(),  //JWT 클래임에 accountId
                 "role", user.getRole(),  //JWT 클래임에 role
+                "provider",user.getProvider(),
                 "userRealId", user.getUserRealId()   //JWT 클래임에 실제 ID 추가
         );
 
@@ -104,7 +106,7 @@ public class UserService {
     }
 
     @Transactional
-    public void update(Users user, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
+    public void updateNoneUser(Users user, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
         if (!bCryptPasswordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), user.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
@@ -193,5 +195,17 @@ public class UserService {
     public Users findByUserRealId(String email) {
         return userRepository.findByUserRealId(email)
                 .orElseThrow(() -> new IllegalArgumentException("회원정보가 존재하지않습니다."));
+    }
+
+    @Transactional
+    public void updateGoogleUser(Users user, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
+        UsersInfo usersInfo = userInfoRepository.findById(userInfoId).orElse(null);
+        //회원정보가 이미 있다면 업데이트, 그렇지않다면 생성
+        if (usersInfo != null) {
+            usersInfo.updateUserInfo(userUpdateRequestDto);
+        } else {
+            UsersInfo newUsersInfo = userUpdateRequestDto.toUsersInfo(user);
+            userInfoRepository.save(newUsersInfo);
+        }
     }
 }
