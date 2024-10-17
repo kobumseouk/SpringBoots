@@ -1,4 +1,4 @@
-# Spring-boots : 신발 판매 쇼핑몰몰
+# Spring-boots : 신발 판매 쇼핑몰
 
 ## 프로젝트 소개
 Spring boots는 기존의 Spring boot에서 신발의 boots 의미를 추가함으로서 신발을 파는 쇼핑몰을 의미합니다.
@@ -13,7 +13,7 @@ Spring boots는 기존의 Spring boot에서 신발의 boots 의미를 추가함�
 | 차현승 | Product  | 상품 도메인   |
 
 <aside>
-<img src="/icons/code_green.svg" alt="/icons/code_green.svg" width="40px" /> **수 요구사항**
+<img src="/icons/code_green.svg" alt="/icons/code_green.svg" width="40px" /> **필수 요구사항**
 
 - **회원 도메인 (`User`) - 찬진**
 - **카테고리 도메인 (`Category`) - 범석**
