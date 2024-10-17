@@ -44,10 +44,14 @@ public class EventService {
     }
 
     Event event = eventMapper.eventRequestDtoToEvent(eventRequestDto);
-    event.setThumbnailImageUrl(thumbnailImageUrl);
+    event.setThumbnailImageUrl(thumbnailImageUrl != null ? getFullImageUrl(thumbnailImageUrl) : null);
     event.setContentImageUrl(contentImageUrls);
     Event savedEvent = eventRepository.save(event);
     return eventMapper.eventToEventDetailDto(savedEvent);
+  }
+
+  private String getFullImageUrl(String imageKey) {
+    return s3BucketService.getFileUrl(imageKey);
   }
 
   // 모든 활성화된 이벤트를 조회하는 메서드
@@ -89,7 +93,7 @@ public class EventService {
       if (event.getThumbnailImageUrl() != null) {
         s3BucketService.deleteFile(extractKeyFromUrl(event.getThumbnailImageUrl()));
       }
-      event.setThumbnailImageUrl(newThumbnailImageUrl);
+      event.setThumbnailImageUrl(newThumbnailImageUrl != null ? getFullImageUrl(newThumbnailImageUrl) : null);
     }
 
     if (contentFiles != null && !contentFiles.isEmpty()) {

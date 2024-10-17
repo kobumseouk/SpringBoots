@@ -65,8 +65,11 @@ function createEventElement(event) {
   figure.className = 'image';
 
   const img = document.createElement('img');
-  img.src = event.thumbnailImageUrl;
+  img.src = event.thumbnailImageUrl || '/path/to/default/image.jpg';  // TODO: 대체 이미지 지정
   img.alt = event.eventTitle;
+  img.onerror = function() {
+    this.src = '/path/to/default/image.jpg';
+  };
 
   figure.appendChild(img);
   cardImage.appendChild(figure);

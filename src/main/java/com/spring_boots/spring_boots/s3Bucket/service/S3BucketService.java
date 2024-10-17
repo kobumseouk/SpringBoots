@@ -76,5 +76,10 @@ public class S3BucketService {
         }
     }
 
+    // 새로 추가된 메서드: 이미지 URL 가져오기
+    public String getFileUrl(String imageKey) {
+        return "https://" + bucketName + ".s3.amazonaws.com/" + imageKey;
+    }
+
 
 }

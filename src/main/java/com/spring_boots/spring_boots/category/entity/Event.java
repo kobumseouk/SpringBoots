@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,10 +30,13 @@ public class Event extends BaseTimeEntity {
   private String eventContent;
 
   @Column(name = "thumbnail_image_url")
-  private String thumbnailImageUrl;
+  private String thumbnailImageUrl = "";
 
+  @ElementCollection
+  @CollectionTable(name = "event_content_images", joinColumns = @JoinColumn(name = "event_id"))
   @Column(name = "content_image_url")
-  private List<String> contentImageUrl;
+  @Builder.Default
+  private List<String> contentImageUrl = new ArrayList<>();  // 빈 리스트로 초기화
 
   @Column(name = "start_date")
   private LocalDate startDate;
@@ -57,6 +61,15 @@ public class Event extends BaseTimeEntity {
     updateActiveStatus();
   }
 
+  // 빌더 패턴을 사용할 때 기본값을 설정하기 위한 정적 내부 클래스
+  public static class EventBuilder {
+    private List<String> contentImageUrl = new ArrayList<>();
+
+    public EventBuilder contentImageUrl(List<String> contentImageUrl) {
+      this.contentImageUrl = contentImageUrl != null ? contentImageUrl : new ArrayList<>();
+      return this;
+    }
+  }
 
   // 1. 생성자를 통한 초기화
   // 2. 빌더 패턴 사용
