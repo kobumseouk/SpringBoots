@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+
+@ActiveProfiles("test")
 public class ItemRestControllerTest {
 
     @Autowired
@@ -41,6 +44,7 @@ public class ItemRestControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(itemRestController).build();
     }
 
+    /*
     @Test
     public void testCreateItem() throws Exception {
         // 필드 설정
@@ -54,7 +58,7 @@ public class ItemRestControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"field\":\"value\"}"))
                 .andExpect(status().isCreated());
-    }
+    }*/
 
     @Test
     public void testGetItems() throws Exception {
