@@ -39,12 +39,16 @@ function updateEventDetail() {
 
   const contentImageContainer = document.getElementById('event-content-image');
   contentImageContainer.innerHTML = ''; // 기존 내용 초기화
-  eventDetail.contentImageUrl.forEach(url => {
-    const contentImage = document.createElement('img');
-    contentImage.src = url;
-    contentImage.alt = eventDetail.eventTitle;
-    contentImageContainer.appendChild(contentImage);
-  });
+  if (eventDetail.contentImageUrl && eventDetail.contentImageUrl.length > 0) {
+    eventDetail.contentImageUrl.forEach(url => {
+      if (url) { // url이 존재하는 경우에만 이미지 생성
+        const contentImage = document.createElement('img');
+        contentImage.src = url;
+        contentImage.alt = eventDetail.eventTitle;
+        contentImageContainer.appendChild(contentImage);
+      }
+    });
+  }
 
   // 이벤트 설명 부분 수정
   const descriptionElement = document.getElementById('event-description');
