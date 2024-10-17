@@ -45,7 +45,7 @@ function displayCategoryInfo(category) {
 
 async function fetchProductCount(category) {
     try {
-        const endpoint = `/api/products/count/${category}`;
+        const endpoint = `/api/items/count/${category}`;
         const countInfo = await Api.get(endpoint);
 
         const productCount = countInfo.count || 0;

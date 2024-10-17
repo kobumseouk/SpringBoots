@@ -27,7 +27,7 @@ function displaySearchInfo(keyword) {
 // 정렬된 검색 결과 - 페이지네이션
 async function fetchSearchResults(keyword, sort = 'default', page = 0) {
     try {
-        const endpoint = `/api/items/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}&page=${page}&size=10`;
+        const endpoint = `/api/items/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}&page=${page}&size=8`;
         const searchResults = await Api.get(endpoint);
 
         const productCount = searchResults.totalElements;
