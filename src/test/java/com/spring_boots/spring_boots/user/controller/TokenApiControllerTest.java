@@ -1,6 +1,6 @@
 package com.spring_boots.spring_boots.user.controller;
 
-
+import org.springframework.test.context.ActiveProfiles;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.dto.request.JwtTokenDto;
@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
 class TokenApiControllerTest {
 
     @Mock

@@ -46,7 +46,9 @@ function updateEventDetail() {
     contentImageContainer.appendChild(contentImage);
   });
 
-  document.getElementById('event-description').textContent = eventDetail.eventContent;
+  // 이벤트 설명 부분 수정
+  const descriptionElement = document.getElementById('event-description');
+  descriptionElement.innerHTML = eventDetail.eventContent.replace(/\n/g, '<br>').replace(/\s{2,}/g, '&nbsp;'.repeat(2));
 }
 
 function formatDate(dateString) {

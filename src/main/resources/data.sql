@@ -1,12 +1,12 @@
 -- Users 테이블에 테스트 데이터 삽입
 INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
-VALUES ('test_user', 'test_real_id', 'test_user@example.com', '$2a$10$V1hEUNfKSMDNC2lkh58L0uebtdMuwl0tCf2mwlmz4j47Vt.7OgZNe', 0, NULL, 'USER', 'GOOGLE', NOW(), NOW());
+VALUES ('test_user', 'test_real_id', 'test_user@example.com', '$2a$10$V1hEUNfKSMDNC2lkh58L0uebtdMuwl0tCf2mwlmz4j47Vt.7OgZNe', 0, NULL, 'USER', 'NONE', NOW(), NOW());
 
 INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
-VALUES ('second_user', 'second_real_id', 'second_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'GOOGLE', NOW(), NOW());
+VALUES ('second_user', 'second_real_id', 'second_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
 
 INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
-VALUES ('admin', 'admin', 'admin@example.com', '$2a$10$V1hEUNfKSMDNC2lkh58L0uebtdMuwl0tCf2mwlmz4j47Vt.7OgZNe', 0, NULL, 'ADMIN', 'GOOGLE', NOW(), NOW());
+VALUES ('admin', 'admin', 'admin@example.com', '$2a$10$V1hEUNfKSMDNC2lkh58L0uebtdMuwl0tCf2mwlmz4j47Vt.7OgZNe', 0, NULL, 'ADMIN', 'NONE', NOW(), NOW());
 
 -- UsersInfo 테이블에 테스트 데이터 삽입
 INSERT INTO users_info (
@@ -29,8 +29,6 @@ INSERT INTO category (
     ('전체보기', 'women', 'All types', 1, NOW(), NOW(), NULL),
     ('전체보기', 'men', 'All types', 1, NOW(), NOW(), NULL),
     ('전체보기', 'accessories', 'All types', 1, NOW(), NOW(), NULL),
-    ('전체보기', 'sale', 'All types', 1, NOW(), NOW(), NULL),
-    ('전체보기', 'collaboration', 'All types', 1, NOW(), NOW(), NULL),
     ('24SS SUMMER RECOMMEND STYLING', 'how-to', 'Styling Guide', 1, NOW(), NOW(), 'https://example.com/summer_styling_guide.jpg');
 
 -- Item 테이블에 테스트 데이터 삽입
