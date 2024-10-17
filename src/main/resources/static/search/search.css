@@ -9,6 +9,7 @@
 }
 
 #search-info {
+  padding: 20px 0;
 }
 
 #search-title {
@@ -63,3 +64,17 @@
   border-radius: 4px;
 }
 
+.pagination {
+  margin-top: 2rem;
+}
+
+.pagination-link {
+  color: #333;
+  border-color: #dbdbdb;
+}
+
+.pagination-link.is-current {
+  background-color: #6DB33F;
+  border-color: #6DB33F;
+  color: #fff;
+}

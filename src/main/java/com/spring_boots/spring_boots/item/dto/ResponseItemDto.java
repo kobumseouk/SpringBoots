@@ -4,6 +4,8 @@ import com.spring_boots.spring_boots.category.entity.Category;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 
 @Getter
 @Setter
@@ -18,4 +20,5 @@ public class ResponseItemDto {
     private String itemColor;
     private Integer itemSize;
     private String imageUrl;
+    private List<String> keywords;
 }

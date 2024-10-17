@@ -7,6 +7,9 @@ import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
 import com.spring_boots.spring_boots.item.service.ItemRestService;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -97,6 +100,18 @@ public class ItemRestController {
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    // 키워드와 정렬 - Item 조회
+    @GetMapping("/items/search")
+    public ResponseEntity<Page<ResponseItemDto>> searchItems(
+        @RequestParam String keyword,
+        @RequestParam(required = false) String sort,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ResponseItemDto> result = itemRestService.searchAndSortItems(keyword, sort, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
 }

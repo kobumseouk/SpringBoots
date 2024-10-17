@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -49,4 +51,9 @@ public class Item extends BaseTimeEntity {
 
     @Column(name = "item_size")
     private Integer itemSize;
+
+    @ElementCollection
+    @CollectionTable(name = "item_keywords", joinColumns = @JoinColumn(name = "item_id"))
+    @Column(name = "keyword")
+    private List<String> keywords = new ArrayList<>();
 }

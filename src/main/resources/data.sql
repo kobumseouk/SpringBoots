@@ -34,9 +34,22 @@ INSERT INTO category (
 -- Item 테이블에 테스트 데이터 삽입
 INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
 VALUES (101, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://example.com/shoes.jpg', 230);
+-- 아이템 키워드 리스트
+INSERT INTO item_keywords (item_id, keyword) VALUES
+(101, 'Running Shoes'),
+(101, 'common'),
+(101, 'comfortable'),
+(101, 'athletic'),
+(101, 'mesh');
 
 INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
 VALUES (102, 2, 'Walking Shoes', 7000, 'Comfortable walking shoes', 'Brand B', 'Blue', NOW(), NOW(), 'https://example.com/walking_shoes.jpg', 240);
+INSERT INTO item_keywords (item_id, keyword) VALUES
+(102, 'Walking Shoes'),
+(102, 'common'),
+(102, 'comfortable'),
+(102, 'casual'),
+(102, 'leather');
 
 -- Orders 테이블에 테스트 데이터 삽입
 INSERT INTO orders (
