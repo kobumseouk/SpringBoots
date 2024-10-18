@@ -10,6 +10,8 @@ import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Positive;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,12 +35,12 @@ public class CreateItemDto {
 
     private String itemMaker;
 
-    @NotBlank(message = "상품 색상은 필수입니다.")
     private String itemColor;
 
     private String imageUrl;
 
-    private int itemSize;
+    private List<String> keywords = new ArrayList<>();
+
 
 
     public Item toEntity() {
@@ -49,7 +51,7 @@ public class CreateItemDto {
         item.setItemMaker(itemMaker);
         item.setItemColor(itemColor);
         item.setImageUrl(imageUrl);
-        item.setItemSize(itemSize);
+        item.setKeywords(keywords);
         return item;
     }
 }

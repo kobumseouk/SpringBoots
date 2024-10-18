@@ -26,7 +26,7 @@
     ></script>
     <!-- 커스텀 css, js -->
     <link rel="stylesheet" href="/product-add/product-add.css" />
-    <script src="/product-add/product-add.js" type="module" defer></script>
+
   </head>
   <body>
     <!-- 헤더 -->
@@ -77,7 +77,7 @@
           <h1 class="subtitle is-4">제품판매</h1>
         </div>
         <div class="register-product-form-container">
-          <form class="box register-product-form-box" id="registerProductForm" enctype="multipart/form-data">
+          <form class="box register-product-form-box" id="registerProductForm" enctype="multipart/form-data" action="/api/admin/items" method="post">
             <p class="title is-5 has-text-primary">제품을 판매해 보세요</p>
             <div class="field">
               <label class="label" for="titleInput">제품 이름</label>
@@ -118,7 +118,7 @@
                 <label for="categorySelectBox">카테고리 선택</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                  <select id="categorySelectBox" name="category_id" required>
+                  <select id="categorySelectBox" name="categoryId" required>
                     <option value="">카테고리를 선택해 주세요.</option>
                   </select>
                   </div>
@@ -167,6 +167,20 @@
                   type="text"
                   placeholder="OO의류제조(주)"
                   autocomplete="on"
+                />
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="colorInput">색상</label>
+              <div class="control">
+                <input
+                        name="itemColor"
+                        class="input"
+                        id="colorInput"
+                        type="text"
+                        placeholder="검정색"
+                        autocomplete="on"
                 />
               </div>
             </div>
@@ -246,18 +260,6 @@
               }
 
             </script>
-            <div class="field">
-              <label class="label" for="inventoryInput">재고 수</label>
-              <div class="control">
-                <input
-                  class="input"
-                  id="inventoryInput"
-                  type="number"
-                  placeholder="10"
-                  autocomplete="on"
-                />
-              </div>
-            </div>
 
             <div class="field">
               <label class="label" for="priceInput">가격</label>
@@ -284,6 +286,7 @@
                   <input
                     class="input"
                     id="searchKeywordInput"
+                    name="keywords"
                     type="text"
                     placeholder="남자옷"
                   />

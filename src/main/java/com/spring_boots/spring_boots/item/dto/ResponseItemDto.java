@@ -1,6 +1,5 @@
 package com.spring_boots.spring_boots.item.dto;
 
-import com.spring_boots.spring_boots.category.entity.Category;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +10,7 @@ import java.util.List;
 @Setter
 public class ResponseItemDto {
 
-    private Long itemId;
+    private Long id;
     private String itemName;
     private Long categoryId;
     private Integer itemPrice;
