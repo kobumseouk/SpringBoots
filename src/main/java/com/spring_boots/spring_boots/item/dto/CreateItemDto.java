@@ -39,6 +39,8 @@ public class CreateItemDto {
 
     private List<String> keywords;
 
+    private int itemSize;
+
 
 
     public Item toEntity() {
@@ -50,6 +52,7 @@ public class CreateItemDto {
         item.setItemColor(itemColor);
         item.setImageUrl(imageUrl);
         item.setKeywords(keywords);
+        item.setItemSize(itemSize);
         return item;
     }
 }
