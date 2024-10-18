@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,12 +69,11 @@ public class EventService {
   }*/
 
   // 진행 중인 이벤트인지 확인 후 진행 중인 목록 조회 (페이지네이션)
-  @Transactional
+  @Transactional(readOnly = true)
   public Page<EventDto> getActiveEvents(int page, int limit) {
     PageRequest pageRequest = PageRequest.of(page, limit);
-    Page<Event> activePage = eventRepository.findByIsActiveTrue(pageRequest);
-    activePage.forEach(Event::updateActiveStatus);
-
+    LocalDate currentDate = LocalDate.now();
+    Page<Event> activePage = eventRepository.findActiveEvents(currentDate, pageRequest);
     return activePage.map(eventMapper::eventToEventDto);
   }
 
