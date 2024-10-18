@@ -4,6 +4,8 @@ import com.spring_boots.spring_boots.item.entity.Item;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -15,5 +17,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
   Page<Item> findAllByCategoryId(Long categoryId, Pageable pageable);
 
   // 키워드를 대소문자 구분없이 포함하면 페이지로 검색
-  Page<Item> findByItemNameContainingIgnoreCaseOrKeywordsContainingIgnoreCase(String keyword, Pageable pageable);
+  @Query("SELECT DISTINCT i FROM Item i JOIN i.keywords k WHERE LOWER(k) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+  Page<Item> findByKeywordIgnoreCase(@Param("keyword") String keyword, Pageable pageable);
 }

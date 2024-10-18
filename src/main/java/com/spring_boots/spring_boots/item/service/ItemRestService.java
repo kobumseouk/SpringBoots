@@ -159,7 +159,7 @@ public class ItemRestService {
     // 검색한 아이템 키워드 정렬 옵션
     public Page<ResponseItemDto> searchAndSortItems(String keyword, String sort, int page, int limit) {
         Pageable pageable = createPageableWithSort(sort, page, limit);
-        Page<Item> itemsPage = itemRepository.findByItemNameContainingIgnoreCaseOrKeywordsContainingIgnoreCase(keyword, pageable);
+        Page<Item> itemsPage = itemRepository.findByKeywordIgnoreCase(keyword, pageable);
         return itemsPage.map(itemMapper::toResponseDto);
     }
 
