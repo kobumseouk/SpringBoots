@@ -30,7 +30,7 @@ function displaySearchInfo(keyword) {
 async function fetchSearchResults(keyword, sort = 'default', page = 1) {
     try {
         currentPage = page;  // 현재 페이지 업데이트
-        const endpoint = `/api/items/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}&page=${page - 1}&limit=${EVENTS_PER_PAGE}`; // page - 1로 수정
+        const endpoint = `/api/items/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}&page=${page - 1}&limit=${ITEMS_PER_PAGE}`; // page - 1로 수정
         const searchResults = await Api.get(endpoint);
 
         const productCount = searchResults.totalElements;

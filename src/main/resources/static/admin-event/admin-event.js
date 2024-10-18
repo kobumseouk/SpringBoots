@@ -158,7 +158,7 @@ function createPagination(currentPage, totalPages) {
       pageLink.className += ' is-current';
       pageLink.setAttribute('aria-current', 'page');
     } else {
-      pageLink.addEventListener('click', () => insertCategories(i));  // 또는 insertEvents(i)
+      pageLink.addEventListener('click', () => insertEvents(i));
     }
 
     pageItem.appendChild(pageLink);
@@ -166,7 +166,7 @@ function createPagination(currentPage, totalPages) {
   }
 
   paginationContainer.appendChild(paginationList);
-  document.querySelector("#categoriesContainer").after(paginationContainer);  // 또는 "#eventsContainer"
+  document.querySelector("#eventsContainer").after(paginationContainer);
 }
 
 // Modal 창 관련 함수들
