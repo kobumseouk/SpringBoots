@@ -1,14 +1,12 @@
 package com.spring_boots.spring_boots.config.oauth;
 
 import com.spring_boots.spring_boots.common.util.CookieUtil;
-import com.spring_boots.spring_boots.config.jwt.TokenProvider;
 import com.spring_boots.spring_boots.config.jwt.impl.AuthTokenImpl;
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
 import com.spring_boots.spring_boots.user.domain.RefreshToken;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.repository.RefreshTokenRepository;
 import com.spring_boots.spring_boots.user.service.UserService;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Map;
 
 import static com.spring_boots.spring_boots.config.jwt.UserConstants.*;
@@ -30,9 +27,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
 
     // 상수 정의
-    public static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken"; // 리프레시 토큰 쿠키 이름
-    public static final Duration REFRESH_TOKEN_DURATION = Duration.ofDays(15); // 리프레시 토큰 유효 기간
-    public static final String REDIRECT_PATH = "/"; // 로그인 성공 후 리다이렉트 경로
 
     // 의존성 주입
     private final JwtProviderImpl provider;  // JWT 토큰 제공자
@@ -63,11 +57,21 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 액세스 토큰 생성
         AuthTokenImpl createAccessToken = provider.createAccessToken(user.getUserRealId(), user.getRole(), claims); // 리프레시 토큰 생성
         String accessToken = createAccessToken.getToken();
-        String targetUrl = getTargetUrl(accessToken); // 리다이렉트 URL 생성
 
-        // 인증 관련 쿠키와 정보를 정리하고 리다이렉트 처리
-        clearAuthenticationAttributes(request, response); // 인증 속성 정리
-        getRedirectStrategy().sendRedirect(request, response, targetUrl); // 지정된 URL로 리다이렉트
+        addAccessTokenToCookie(request, response, accessToken); // 리프레시 토큰을 쿠키에 추가
+//        String targetUrl = getTargetUrl(accessToken); // 리다이렉트 URL 생성
+//
+//        // 인증 관련 쿠키와 정보를 정리하고 리다이렉트 처리
+//        clearAuthenticationAttributes(request, response); // 인증 속성 정리
+//        getRedirectStrategy().sendRedirect(request, response, targetUrl); // 지정된 URL로 리다이렉트
+    }
+
+    // 엑세스 토큰을 쿠키에 추가하는 메서드
+    private void addAccessTokenToCookie(HttpServletRequest request, HttpServletResponse response, String accessToken) {
+        int cookieMaxAge = (int) ACCESS_TOKEN_DURATION.toSeconds(); // 쿠키 유효 기간 설정
+
+        CookieUtil.deleteCookie(request, response, ACCESS_TOKEN_TYPE_VALUE); // 기존 쿠키 삭제
+        CookieUtil.addCookie(response, ACCESS_TOKEN_TYPE_VALUE, accessToken, cookieMaxAge); // 새 쿠키 추가
     }
 
     // 리프레시 토큰을 DB에 저장하는 메서드
@@ -83,8 +87,8 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
         int cookieMaxAge = (int) REFRESH_TOKEN_DURATION.toSeconds(); // 쿠키 유효 기간 설정
 
-        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_COOKIE_NAME); // 기존 쿠키 삭제
-        CookieUtil.addCookie(response, REFRESH_TOKEN_COOKIE_NAME, refreshToken, cookieMaxAge); // 새 쿠키 추가
+        CookieUtil.deleteCookie(request, response, REFRESH_TOKEN_TYPE_VALUE); // 기존 쿠키 삭제
+        CookieUtil.addCookie(response, REFRESH_TOKEN_TYPE_VALUE, refreshToken, cookieMaxAge); // 새 쿠키 추가
     }
 
     // 인증 관련 속성을 정리하는 메서드
@@ -95,7 +99,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     // 리다이렉트할 URL을 생성하는 메서드
     private String getTargetUrl(String token) {
-        return UriComponentsBuilder.fromUriString(REDIRECT_PATH) // 리다이렉트 경로 설정
+        return UriComponentsBuilder.fromUriString("/") // 리다이렉트 경로 설정
                 .queryParam("token", token) // URL에 액세스 토큰을 쿼리 파라미터로 추가
                 .build()
                 .toUriString();
