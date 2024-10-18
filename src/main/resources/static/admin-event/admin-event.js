@@ -133,6 +133,12 @@ async function deleteEventData() {
 
 // 페이지네이션 생성 함수
 function createPagination(currentPage, totalPages) {
+  // 기존 페이지네이션 제거
+  const existingPagination = document.querySelector('.pagination');
+  if (existingPagination) {
+    existingPagination.remove();
+  }
+
   const paginationContainer = document.createElement('nav');
   paginationContainer.className = 'pagination is-centered';
   paginationContainer.setAttribute('role', 'navigation');

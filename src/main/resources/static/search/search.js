@@ -1,8 +1,10 @@
 import * as Api from '/api.js';
 
+const ITEMS_PER_PAGE = 8;
+
 let currentKeyword = '';
 let currentSort = 'default';
-let currentPage = 0;
+let currentPage = 1;
 
 // 초기 검색 시 설정
 async function init() {
@@ -10,7 +12,7 @@ async function init() {
     currentKeyword = urlParams.get('keyword');
     if (currentKeyword) {
         displaySearchInfo(currentKeyword);
-        await fetchSearchResults(currentKeyword, currentSort, currentPage);
+        await fetchSearchResults(currentKeyword, currentSort, currentPage); // 첫 페이지는 1
         setupSortingOptions();
     } else {
         console.error('검색어가 없습니다.');
@@ -25,9 +27,10 @@ function displaySearchInfo(keyword) {
 }
 
 // 정렬된 검색 결과 - 페이지네이션
-async function fetchSearchResults(keyword, sort = 'default', page = 0) {
+async function fetchSearchResults(keyword, sort = 'default', page = 1) {
     try {
-        const endpoint = `/api/items/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}&page=${page}&size=8`;
+        currentPage = page;  // 현재 페이지 업데이트
+        const endpoint = `/api/items/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}&page=${page - 1}&limit=${ITEMS_PER_PAGE}`; // page - 1로 수정
         const searchResults = await Api.get(endpoint);
 
         const productCount = searchResults.totalElements;
@@ -77,21 +80,12 @@ function displayPagination(pageData) {
     const paginationList = document.querySelector('.pagination-list');
     paginationList.innerHTML = '';
 
-    // 이전 페이지 버튼
-    const prevButton = document.createElement('li');
-    prevButton.innerHTML = `<a class="pagination-previous" ${pageData.first ? 'disabled' : ''}> < </a>`;
-    if (!pageData.first) {
-        prevButton.onclick = () => fetchSearchResults(currentKeyword, currentSort, pageData.number - 1);
-    }
-    paginationList.appendChild(prevButton);
-
-    // 페이지 번호
-    for (let i = 0; i < pageData.totalPages; i++) {
+    for (let i = 1; i <= pageData.totalPages; i++) {
         const pageItem = document.createElement('li');
         const pageLink = document.createElement('a');
         pageLink.classList.add('pagination-link');
-        pageLink.textContent = i + 1;
-        if (i === pageData.number) {
+        pageLink.textContent = i;
+        if (i === currentPage) {
             pageLink.classList.add('is-current');
             pageLink.setAttribute('aria-current', 'page');
         } else {
@@ -100,14 +94,6 @@ function displayPagination(pageData) {
         pageItem.appendChild(pageLink);
         paginationList.appendChild(pageItem);
     }
-
-    // 다음 페이지 버튼
-    const nextButton = document.createElement('li');
-    nextButton.innerHTML = `<a class="pagination-next" ${pageData.last ? 'disabled' : ''}> > </a>`;
-    if (!pageData.last) {
-        nextButton.onclick = () => fetchSearchResults(currentKeyword, currentSort, pageData.number + 1);
-    }
-    paginationList.appendChild(nextButton);
 }
 
 function displayProducts(products) {
@@ -141,14 +127,16 @@ function createProductElement(product) {
     return productDiv;
 }
 
+// 정렬 변경 설정
 function setupSortingOptions() {
     const sortSelect = document.getElementById('sort-options');
     sortSelect.addEventListener('change', handleSortChange);
 }
 
+// 정렬 변경 처리 함수
 function handleSortChange(event) {
     currentSort = event.target.value;
-    currentPage = 0;   // 정렬 변경 시마다 첫 페이지로 리셋
+    currentPage = 1;   // 정렬 변경 시 첫 페이지로 리셋
     fetchSearchResults(currentKeyword, currentSort, currentPage);
 }
 

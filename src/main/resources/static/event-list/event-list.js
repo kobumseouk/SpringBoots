@@ -1,6 +1,5 @@
 import * as Api from '/api.js';
 
-
 // 한 페이지당 보여줄 이벤트 수
 const EVENTS_PER_PAGE = 10;
 
@@ -21,8 +20,9 @@ function updateBreadcrumb() {
 
 async function fetchEvents(page) {
   try {
+    currentPage = page;  // 현재 페이지 업데이트
     const response = await Api.get(`/api/events?page=${page - 1}&limit=${EVENTS_PER_PAGE}`);
-    const events = response.content.filter(event => {   // 만료된 이벤트 확인
+    const events = response.content.filter(event => {
       const endDate = new Date(event.endDate);
       return endDate >= new Date();
     });
@@ -107,15 +107,6 @@ function setupPagination() {
   const paginationList = document.querySelector('.pagination-list');
   paginationList.innerHTML = '';
 
-  // 이전 페이지 버튼
-  const prevButton = document.createElement('li');
-  prevButton.innerHTML = `<a class="pagination-previous" ${currentPage === 1 ? 'disabled' : ''}> < </a>`;
-  if (currentPage > 1) {
-    prevButton.querySelector('a').onclick = () => fetchEvents(currentPage - 1);
-  }
-  paginationList.appendChild(prevButton);
-
-  // 페이지 번호
   for (let i = 1; i <= totalPages; i++) {
     const pageItem = document.createElement('li');
     const pageLink = document.createElement('a');
@@ -130,14 +121,6 @@ function setupPagination() {
     pageItem.appendChild(pageLink);
     paginationList.appendChild(pageItem);
   }
-
-  // 다음 페이지 버튼
-  const nextButton = document.createElement('li');
-  nextButton.innerHTML = `<a class="pagination-next" ${currentPage === totalPages ? 'disabled' : ''}> > </a>`;
-  if (currentPage < totalPages) {
-    nextButton.querySelector('a').onclick = () => fetchEvents(currentPage + 1);
-  }
-  paginationList.appendChild(nextButton);
 }
 
 document.addEventListener('DOMContentLoaded', init);
