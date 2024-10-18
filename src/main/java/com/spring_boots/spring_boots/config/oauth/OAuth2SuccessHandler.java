@@ -58,9 +58,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         addAccessTokenToCookie(request, response, accessToken); // 리프레시 토큰을 쿠키에 추가
 //        String targetUrl = getTargetUrl(accessToken); // 리다이렉트 URL 생성
 //
-//        // 인증 관련 쿠키와 정보를 정리하고 리다이렉트 처리
-//        clearAuthenticationAttributes(request, response); // 인증 속성 정리
-//        getRedirectStrategy().sendRedirect(request, response, targetUrl); // 지정된 URL로 리다이렉트
+        // 인증 관련 쿠키와 정보를 정리하고 리다이렉트 처리
+        clearAuthenticationAttributes(request, response); // 인증 속성 정리
+        getRedirectStrategy().sendRedirect(request, response, "/"); // 지정된 URL로 리다이렉트
     }
 
     // 엑세스 토큰을 쿠키에 추가하는 메서드
