@@ -27,7 +27,7 @@ cache:
 build:
   stage: build
   tags:
-    - springboots_runner
+    - spring_boots_runner
   before_script:
     - chmod +x ./gradlew
   script:
