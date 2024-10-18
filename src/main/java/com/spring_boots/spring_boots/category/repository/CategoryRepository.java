@@ -14,6 +14,9 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
   // 특정 테마에 속한 카테고리들을 displayOrder 순으로 조회
   List<Category> findByCategoryThemaOrderByDisplayOrder(String categoryThema);
 
+  // DisplayOrder가 1이 아닌 카테고리 조회 메서드
+  List<Category> findByDisplayOrderNot(int displayOrder);
+
   // 모든 고유한 테마 목록 조회
   @Query("SELECT DISTINCT c.categoryThema FROM Category c")
   List<String> findDistinctThemas();

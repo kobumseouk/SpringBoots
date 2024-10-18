@@ -1,6 +1,8 @@
 package com.spring_boots.spring_boots.category.controller;
 
+import com.spring_boots.spring_boots.category.dto.category.CategoryAdminDto;
 import com.spring_boots.spring_boots.category.dto.category.CategoryDto;
+import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +39,11 @@ public class CategoryApiController {
     CategoryDto category = categoryService.getCategoryDetail(categoryId);
     return ResponseEntity.ok(category);
   }
-  
+
+  @GetMapping("/themas/displayOrder/{theme}")
+  public List<Category> getCategoriesByTheme(@PathVariable String theme) {
+    List<CategoryDto> categories = categoryService.getCategoriesByThema(theme);
+    return categoryService.getCategoriesExcludingDisplayOrder(1);
+  }
+
 }
