@@ -16,6 +16,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -126,11 +127,13 @@ class EventServiceTest {
   @DisplayName("진행 중인 이벤트 목록 확인 테스트")
   void getActiveEvents() {
     // given
-    Pageable pageable = PageRequest.of(0, 10);
-    List<Event> activeEvents = Arrays.asList(mockEvent, mockEvent);
-    Page<Event> activePage = new PageImpl<>(activeEvents, pageable, activeEvents.size());
+    PageRequest pageRequest = PageRequest.of(0, 10);
+    LocalDate currentDate = LocalDate.now();
 
-    when(eventRepository.findByIsActiveTrue(any(Pageable.class))).thenReturn(activePage);
+    List<Event> activeEvents = Arrays.asList(mockEvent, mockEvent);
+    Page<Event> activePage = new PageImpl<>(activeEvents, pageRequest, activeEvents.size());
+
+    when(eventRepository.findActiveEvents(eq(currentDate), eq(pageRequest))).thenReturn(activePage);
     when(eventMapper.eventToEventDto(any(Event.class))).thenReturn(mockEventDto);
 
     // when
@@ -141,7 +144,7 @@ class EventServiceTest {
     assertEquals(2, result.getContent().size());
     assertEquals(mockEventDto.getEventTitle(), result.getContent().get(0).getEventTitle());
 
-    verify(eventRepository).findByIsActiveTrue(any(Pageable.class));
+    verify(eventRepository).findActiveEvents(eq(currentDate), eq(pageRequest));
     verify(eventMapper, times(2)).eventToEventDto(any(Event.class));
   }
 

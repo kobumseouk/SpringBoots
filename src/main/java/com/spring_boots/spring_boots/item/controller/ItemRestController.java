@@ -109,9 +109,8 @@ public class ItemRestController {
         @RequestParam String keyword,
         @RequestParam(required = false) String sort,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "8") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ResponseItemDto> result = itemRestService.searchAndSortItems(keyword, sort, pageable);
+        @RequestParam(defaultValue = "8") int limit) {
+        Page<ResponseItemDto> result = itemRestService.searchAndSortItems(keyword, sort, page, limit);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

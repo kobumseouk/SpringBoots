@@ -156,29 +156,29 @@ public class ItemRestService {
     }
 
     // 검색한 아이템 키워드 정렬 옵션
-    public Page<ResponseItemDto> searchAndSortItems(String keyword, String sort, Pageable pageable) {
+    public Page<ResponseItemDto> searchAndSortItems(String keyword, String sort, int page, int limit) {
+        Pageable pageable = PageRequest.of(page, limit);
         Page<Item> itemsPage;
 
         switch (sort) {
-            case "price-asc":  // 낮은 가격순
-                itemsPage = itemRepository.findByKeywordsContainingIgnoreCase(keyword,
-                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-                        Sort.by(Sort.Direction.ASC, "itemPrice")));
+            case "price-asc":
+                // 낮은 가격순으로 정렬
+                pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.ASC, "itemPrice"));
                 break;
-            case "price-desc":  // 높은 가격순
-                itemsPage = itemRepository.findByKeywordsContainingIgnoreCase(keyword,
-                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-                        Sort.by(Sort.Direction.DESC, "itemPrice")));
+            case "price-desc":
+                // 높은 가격순으로 정렬
+                pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "itemPrice"));
                 break;
-            case "newest":   // 최신순
-                itemsPage = itemRepository.findByKeywordsContainingIgnoreCase(keyword,
-                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-                        Sort.by(Sort.Direction.DESC, "createdAt")));
+            case "newest":
+                // 최신순으로 정렬
+                pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
                 break;
-            default:   // 아이템 id로 오름차순 정렬
-                itemsPage = itemRepository.findByKeywordsContainingIgnoreCase(keyword, pageable);
+            default:
+                // 기본 상품 id별 정렬 유지
+                break;
         }
 
+        itemsPage = itemRepository.findByKeywordsContainingIgnoreCase(keyword, pageable);
         return itemsPage.map(itemMapper::toResponseDto);
     }
 }
