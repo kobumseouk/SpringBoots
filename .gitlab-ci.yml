@@ -1,0 +1,55 @@
+image: gradle:8.10.2-jdk17
+
+stages:
+  - build
+  - deploy
+
+before_script:
+  # SSH 설정
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  # pem openssh 형태의 키 필요
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+  - chmod 600 ~/.ssh/id_rsa
+  - sudo ssh-keygen -p -m PEM -f ~/.ssh/id_rsa -N ""
+  - eval $(ssh-agent -s)
+  - ssh-add -v ~/.ssh/id_rsa
+  - echo "$SERVER_PORT $SERVER_HOST" >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+  - sudo chmod 644 ~/.ssh/known_hosts
+  - apt-get update && apt-get install -y gradle
+
+cache:
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+build:
+  stage: build
+  tags:
+    - spring_boots_runner
+  before_script:
+    - chmod +x ./gradlew
+  script:
+    #gradlew 과정에서 문제가 있으면, gradle wrapper 확인
+    - echo 'build starts'
+    - ./gradlew build -x test
+  artifacts:
+    paths:
+      - build/libs/*.jar
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  script:
+    - ssh -i ~/.ssh/id_rsa -p "$SERVER_PORT" "$SERVER_USER"@"$SERVER_HOST" "mkdir -p /home/$SERVER_USER"
+    # 보내는 경로 끝 파일명 지정하면 파일 찾을 수 없다고 에러생김, 원하는 이름으로 생성 불가 => 원인...뭐지?
+    - scp -i ~/.ssh/id_rsa -P "$SERVER_PORT" build/libs/*.jar "$SERVER_USER"@"$SERVER_HOST":/home/"$SERVER_USER/"
+    - ssh -i ~/.ssh/id_rsa -p "$SERVER_PORT" "$SERVER_USER"@"$SERVER_HOST" "cd ~/"
+    - ssh -i ~/.ssh/id_rsa -p "$SERVER_PORT" "$SERVER_USER"@"$SERVER_HOST" "./deploy.sh"
+   
+  only:
+    - main
+variables:
+  CI_DEBUG_TRACE: "true"
