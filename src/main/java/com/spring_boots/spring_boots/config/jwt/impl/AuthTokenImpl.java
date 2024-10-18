@@ -1,7 +1,6 @@
 package com.spring_boots.spring_boots.config.jwt.impl;
 
 
-import com.spring_boots.spring_boots.config.jwt.AuthToken;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.DefaultClaims;
@@ -17,7 +16,7 @@ import java.util.Optional;
 @Getter
 @AllArgsConstructor
 @Slf4j
-public class AuthTokenImpl implements AuthToken<Claims> {
+public class AuthTokenImpl {
     private final String token;
     private final Key key;
 
@@ -48,33 +47,5 @@ public class AuthTokenImpl implements AuthToken<Claims> {
                 .setExpiration(expiredDate)
                 .compact()
         );
-    }
-
-    @Override
-    public boolean validate() {
-        return getDate() != null;
-    }
-
-    @Override
-    public Claims getDate() {
-        try {
-            return Jwts
-                    .parserBuilder()
-                    .setSigningKey(key.getEncoded())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (SecurityException e) {
-            log.warn("Invalid JWT signature");
-        } catch (MalformedJwtException e) {
-            log.warn("Invalid JWT token");
-        } catch (ExpiredJwtException e) {
-            log.warn("Expired JWT token");
-        } catch (UnsupportedJwtException e) {
-            log.warn("Unsupported JWT Token");
-        } catch (IllegalArgumentException e) {
-            log.warn("JWT token compact of handler are invalid");
-        }
-        return null;
     }
 }

@@ -20,7 +20,6 @@ import java.util.function.Function;
 
 import static com.spring_boots.spring_boots.config.jwt.UserConstants.ACCESS_TOKEN_TYPE_VALUE;
 import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOKEN_TYPE_VALUE;
-import static com.spring_boots.spring_boots.config.jwt.AuthToken.AUTHORITIES_TOKEN_KEY;
 
 @Component
 @RequiredArgsConstructor
