@@ -133,6 +133,12 @@ async function deleteEventData() {
 
 // 페이지네이션 생성 함수
 function createPagination(currentPage, totalPages) {
+  // 기존 페이지네이션 제거
+  const existingPagination = document.querySelector('.pagination');
+  if (existingPagination) {
+    existingPagination.remove();
+  }
+
   const paginationContainer = document.createElement('nav');
   paginationContainer.className = 'pagination is-centered';
   paginationContainer.setAttribute('role', 'navigation');
@@ -152,7 +158,7 @@ function createPagination(currentPage, totalPages) {
       pageLink.className += ' is-current';
       pageLink.setAttribute('aria-current', 'page');
     } else {
-      pageLink.addEventListener('click', () => insertEvents(i));
+      pageLink.addEventListener('click', () => insertCategories(i));  // 또는 insertEvents(i)
     }
 
     pageItem.appendChild(pageLink);
@@ -160,7 +166,7 @@ function createPagination(currentPage, totalPages) {
   }
 
   paginationContainer.appendChild(paginationList);
-  document.querySelector("#eventsContainer").after(paginationContainer);
+  document.querySelector("#categoriesContainer").after(paginationContainer);  // 또는 "#eventsContainer"
 }
 
 // Modal 창 관련 함수들
