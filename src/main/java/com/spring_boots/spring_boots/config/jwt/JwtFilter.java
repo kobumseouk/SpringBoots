@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.ACCESS_TOKEN_TYPE_VALUE;
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOKEN_TYPE_VALUE;
+
 @RequiredArgsConstructor
 @Component
 @Slf4j
@@ -52,7 +55,7 @@ public class JwtFilter extends OncePerRequestFilter {
             log.info("리프레시토큰 발급 완료..!");
 
             // 새로운 액세스토큰을 쿠키에 저장
-            Cookie newAccessTokenCookie = new Cookie("accessToken", newAccessToken);
+            Cookie newAccessTokenCookie = new Cookie(ACCESS_TOKEN_TYPE_VALUE, newAccessToken);
 //            newAccessTokenCookie.setHttpOnly(true);
 //            newAccessTokenCookie.setSecure(true);
             newAccessTokenCookie.setPath("/");
@@ -74,7 +77,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 쿠키에서 "accessToken" 추출
         Optional<Cookie> jwtCookie = Arrays.stream(request.getCookies())
-                .filter(cookie -> "accessToken".equals(cookie.getName()))
+                .filter(cookie -> ACCESS_TOKEN_TYPE_VALUE.equals(cookie.getName()))
                 .findFirst();
 
         return jwtCookie.map(Cookie::getValue).orElse(null);
@@ -88,7 +91,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         // 쿠키에서 "refreshToken" 추출
         Optional<Cookie> jwtCookie = Arrays.stream(request.getCookies())
-                .filter(cookie -> "refreshToken".equals(cookie.getName()))
+                .filter(cookie -> REFRESH_TOKEN_TYPE_VALUE.equals(cookie.getName()))
                 .findFirst();
 
         return jwtCookie.map(Cookie::getValue).orElse(null);
