@@ -2,7 +2,6 @@ package com.spring_boots.spring_boots.item.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,8 +58,8 @@ public class ItemRestService {
     }
 
     // Item 단일 보기
-    public ResponseItemDto getItem(Long itemId)  {
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: " + itemId));
+    public ResponseItemDto getItem(Long id)  {
+        Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: " + id));
         System.out.println("Retrieved Item Image URL: " + item.getImageUrl());
         return itemMapper.toResponseDto(item);
     }
@@ -89,8 +87,8 @@ public class ItemRestService {
     }
 
     // Item 수정하기
-    public ResponseItemDto updateItem(Long itemId, UpdateItemDto itemDto) throws IOException {
-        Item findItem = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("아이템을 찾을 수 없습니다: " + itemId));
+    public ResponseItemDto updateItem(Long id, UpdateItemDto itemDto) throws IOException {
+        Item findItem = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("아이템을 찾을 수 없습니다: " + id));
 
         String existingImageUrl = findItem.getImageUrl(); // 기존 저장된 이미지 URL 담기
 
@@ -137,8 +135,8 @@ public class ItemRestService {
     }
 
     // Item 삭제하기
-    public void deleteItem(Long itemId) {
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: "+ itemId));
+    public void deleteItem(Long id) {
+        Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: "+ id));
 
         String imageUrl = item.getImageUrl();
         if (imageUrl != null) {

@@ -8,5 +8,5 @@ import java.util.List;
 public interface OrderItemsRepository extends JpaRepository<OrderItems, Long> {
     List<OrderItems> findByOrders(Orders orders);
 
-    void deleteAllByItem_ItemId(Long itemId);
+    void deleteAllByItem_Id(Long id);
 }

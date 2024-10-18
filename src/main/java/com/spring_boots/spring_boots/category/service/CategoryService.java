@@ -123,7 +123,7 @@ public class CategoryService {
         s3BucketService.deleteFile(imageKey);
       }
       // 각 아이템과 연관된 주문 아이템 삭제
-      orderItemsRepository.deleteAllByItem_ItemId(item.getItemId());
+      orderItemsRepository.deleteAllByItem_Id(item.getId());
       // 아이템 삭제
       itemRepository.delete(item);
     }

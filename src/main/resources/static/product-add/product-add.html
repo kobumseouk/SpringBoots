@@ -24,11 +24,9 @@
       src="https://kit.fontawesome.com/9daa42bcef.js"
       crossorigin="anonymous"
     ></script>
-    <!-- AWS S3 사용하기 위한 파일 -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.410.0.min.js"></script>
     <!-- 커스텀 css, js -->
     <link rel="stylesheet" href="/product-add/product-add.css" />
-    <script src="/product-add/product-add.js" type="module" defer></script>
+
   </head>
   <body>
     <!-- 헤더 -->
@@ -71,39 +69,44 @@
     </nav>
 
     <!-- 제품 추가 폼(Form) -->
+
+    <!-- 상품 이름 -->
     <section class="section">
       <div class="container">
         <div class="block account-header">
           <h1 class="subtitle is-4">제품판매</h1>
         </div>
         <div class="register-product-form-container">
-          <form class="box register-product-form-box" id="registerProductForm">
+          <form class="box register-product-form-box" id="registerProductForm" enctype="multipart/form-data" action="/api/admin/items" method="post">
             <p class="title is-5 has-text-primary">제품을 판매해 보세요</p>
             <div class="field">
               <label class="label" for="titleInput">제품 이름</label>
               <div class="control">
                 <input
+                  name="itemName"
                   class="input"
                   id="titleInput"
                   type="text"
-                  placeholder="아이보리 티셔츠"
+                  placeholder="운동화"
                   autocomplete="on"
+                  required
                 />
               </div>
             </div>
 
+            <!-- 카테고리 -->
             <div class="field">
-              <label class="label" for="categorySelectBox">카테고리</label>
+              <label class="label">카테고리</label>
               <label for="themeSelectBox">테마 선택</label>
               <div class="control">
                 <div class="select is-fullwidth">
                   <select id="themeSelectBox" onchange="categoryChang(this)">
                     <option>테마를 선택하세요.</option>
-                    <option value="공용">공용</option>
-                    <option value="여성">여성</option>
-                    <option value="남성">남성</option>
-                    <option value="액세서리">액세서리</option>
-                    <option value="SALE">SALE</option>
+                    <option value="common">공용</option>
+                    <option value="women">여성</option>
+                    <option value="men">남성</option>
+                    <option value="accessories">액세서리</option>
+                    <option value="sale">SALE</option>
                     <option value="COLLABORATION">COLLABORATION</option>
                   </select>
                 </div>
@@ -115,7 +118,7 @@
                 <label for="categorySelectBox">카테고리 선택</label>
                 <div class="control">
                   <div class="select is-fullwidth">
-                  <select id="categorySelectBox">
+                  <select id="categorySelectBox" name="categoryId" required>
                     <option value="">카테고리를 선택해 주세요.</option>
                   </select>
                   </div>
@@ -145,7 +148,7 @@
                       categories.forEach(category => {
                           const option = document.createElement('option');
                           option.value = category.id; // 카테고리 ID 설정
-                          option.textContent = category.name; // 카테고리 이름 설정
+                          option.textContent = category.categoryName; // 카테고리 이름 설정
                           selectBox.appendChild(option); // select 박스에 추가
                       });
                   })
@@ -153,10 +156,12 @@
           }
         </script>
 
+            <!-- 제조사 -->
             <div class="field">
               <label class="label" for="manufacturerInput">제조사</label>
               <div class="control">
                 <input
+                  name="itemMaker"
                   class="input"
                   id="manufacturerInput"
                   type="text"
@@ -167,15 +172,16 @@
             </div>
 
             <div class="field">
-              <label class="label" for="shortDescriptionInput">요약 설명</label>
+              <label class="label" for="colorInput">색상</label>
               <div class="control">
-                <textarea
-                  class="textarea"
-                  id="shortDescriptionInput"
-                  rows="3"
-                  placeholder="제품에 대한 1~2문장의 설명을 적어 주세요."
-                  autocomplete="on"
-                ></textarea>
+                <input
+                        name="itemColor"
+                        class="input"
+                        id="colorInput"
+                        type="text"
+                        placeholder="검정색"
+                        autocomplete="on"
+                />
               </div>
             </div>
 
@@ -186,10 +192,12 @@
               <div class="control">
                 <textarea
                   class="textarea"
+                  name="itemDescription"
                   id="detailDescriptionInput"
                   rows="8"
                   placeholder="제품에 대한 상세 설명을 적어 주세요."
                   autocomplete="on"
+                  required
                 ></textarea>
               </div>
             </div>
@@ -252,18 +260,6 @@
               }
 
             </script>
-            <div class="field">
-              <label class="label" for="inventoryInput">재고 수</label>
-              <div class="control">
-                <input
-                  class="input"
-                  id="inventoryInput"
-                  type="number"
-                  placeholder="10"
-                  autocomplete="on"
-                />
-              </div>
-            </div>
 
             <div class="field">
               <label class="label" for="priceInput">가격</label>
@@ -271,10 +267,12 @@
                 <div class="control has-icons-right">
                   <input
                     class="input"
+                    name="itemPrice"
                     id="priceInput"
                     type="number"
                     placeholder="10000"
                     autocomplete="on"
+                    required
                   />
                   <span class="icon is-small is-right"> 원 </span>
                 </div>
@@ -293,12 +291,42 @@
                   />
                 </div>
                 <div class="control">
-                  <button class="button is-primary" id="addKeywordButton">
+                  <button type="button" class="button is-primary" id="addKeywordButton">
                     추가하기
                   </button>
                 </div>
               </div>
+              <ul id="keywordList"></ul> <!-- 키워드 리스트를 보여줄 공간 -->
             </div>
+            <script>
+              let keywords = []; // 키워드 저장 배열
+
+              document.getElementById('addKeywordButton').addEventListener('click', function() {
+                  const input = document.getElementById('searchKeywordInput');
+                  const keyword = input.value.trim();
+
+                  if (keyword) {
+                      if (keywords.length < 5) { // 키워드 개수 제한
+                          keywords.push(keyword); // 키워드 추가
+                          input.value = ''; // 입력 필드 초기화
+                          renderKeywordList(); // 키워드 리스트 갱신
+                      } else {
+                          alert('키워드는 최대 5개까지 추가할 수 있습니다.'); // 최대 개수 알림
+                      }
+                  }
+              });
+
+              function renderKeywordList() {
+                  const keywordList = document.getElementById('keywordList');
+                  keywordList.innerHTML = ''; // 리스트 초기화
+
+                  keywords.forEach((keyword, index) => {
+                      const li = document.createElement('li');
+                      li.textContent = keyword; // 키워드 텍스트 추가
+                      keywordList.appendChild(li);
+                  });
+              }
+            </script>
 
             <div
               class="field is-grouped is-grouped-multiline mt-3"
@@ -306,9 +334,44 @@
             ></div>
 
             <div class="mt-5">
-              <button class="button is-primary is-fullwidth" id="submitButton">
+              <button class="button is-primary is-fullwidth" id="submitButton" type="submit">
                 제품 판매하기
               </button>
+              <script>
+                document.getElementById('registerProductForm').addEventListener('submit', function(event) {
+                  event.preventDefault(); // 기본 제출 이벤트 방지
+                  if (keywords.length === 0) {
+                    alert('키워드를 추가하세요.');
+                    return;
+                    }
+
+                  const formData = new FormData(this); // 현재 폼의 데이터를 FormData 객체로 생성
+
+                  keywords.forEach((keyword, index) => {
+                    formData.append('keywords', keyword);
+                  });
+
+                  fetch('/api/admin/items', {
+                      method: 'POST',
+                      body: formData,
+                  })
+                  .then(response => {
+                      if (!response.ok) {
+                          throw new Error('Network response was not ok');
+                      }
+                      return response.json();
+                  })
+                  .then(data => {
+                      console.log ('Success', data);
+                      // 성공적으로 추가된 후의 처리
+                      window.location.href = 'http://localhost:3000/admin'; // 페이지 리다이렉트
+                  })
+                  .catch((error) => {
+                      console.error('Error', error);
+                      // 오류 처리
+                  });
+              });
+              </script>
             </div>
           </form>
         </div>
