@@ -93,11 +93,15 @@ public class ItemRestController {
         }
     }
 
-    // CategoryId로 Item 조회하기
+    // CategoryId로 Item 조회하기 (페이지 네이션, 정렬 추가)
     @GetMapping("/items/categories/{category_id}")
-    public ResponseEntity<List<ResponseItemDto>> getItemsByCategory(@PathVariable("category_id") Long category_id) {
+    public ResponseEntity<Page<ResponseItemDto>> getItemsByCategory(
+        @PathVariable("category_id") Long categoryId,
+        @RequestParam(required = false, defaultValue = "default") String sort,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "8") int limit) {
         try {
-            List<ResponseItemDto> result = itemRestService.getItemsByCategory(category_id);
+            Page<ResponseItemDto> result = itemRestService.getItemsByCategoryWithSorting(categoryId, sort, page, limit);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

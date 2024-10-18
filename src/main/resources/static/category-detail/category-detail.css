@@ -42,7 +42,7 @@
 
 /* 카테고리 버튼 스타일 */
 #category-buttons button {
-    background-color: #8bc34a; /* 더 밝은 녹색 */
+    background-color: #8bc34a;
     border: none;
     color: white;
     padding: 10px 20px;
@@ -122,3 +122,74 @@
 .breadcrumb a:hover {
     text-decoration: underline;
 }
+
+/* 제품 목록 컨테이너 스타일 */
+#product-list {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.product-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  width: 100%;
+  max-width: 1350px;
+}
+
+/* 개별 제품 아이템 스타일 */
+.product-item {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.product-image-container {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-info {
+  padding: 10px;
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.product-price {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+/* 페이지네이션 스타일 */
+.pagination {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.pagination-link {
+  color: #333;
+  border-color: #dbdbdb;
+}
+
+.pagination-link.is-current {
+  background-color: #6DB33F;
+  border-color: #6DB33F;
+  color: #fff;
+}
+

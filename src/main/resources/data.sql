@@ -27,7 +27,9 @@ INSERT INTO category (
     ('전체보기', 'common', 'All types', 1, NOW(), NOW(), NULL),
     ('Shoes', 'common', 'All types of shoes', 2, NOW(), NOW(), NULL),
     ('전체보기', 'women', 'All types', 1, NOW(), NOW(), NULL),
+    ('Shoes', 'women', 'All types of shoes', 2, NOW(), NOW(), NULL),
     ('전체보기', 'men', 'All types', 1, NOW(), NOW(), NULL),
+    ('Shoes', 'men', 'All types of shoes', 2, NOW(), NOW(), NULL),
     ('전체보기', 'accessories', 'All types', 1, NOW(), NOW(), NULL),
     ('24SS SUMMER RECOMMEND STYLING', 'how-to', 'Styling Guide', 1, NOW(), NOW(), 'https://example.com/summer_styling_guide.jpg');
 

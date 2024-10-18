@@ -148,39 +148,41 @@ public class ItemRestService {
         itemRepository.delete(item);
     }
 
-    // Category로 Item 조회 리스트
-    public List<ResponseItemDto> getItemsByCategory(Long categoryId) {
-        List<Item> items = itemRepository.findAllByCategoryId(categoryId);
-        return items.stream().map(itemMapper::toResponseDto).collect(Collectors.toList());
 
+    // Category로 Item 조회 리스트
+    public Page<ResponseItemDto> getItemsByCategoryWithSorting(Long categoryId, String sort, int page, int limit) {
+        Pageable pageable = createPageableWithSort(sort, page, limit);
+        Page<Item> itemsPage = itemRepository.findAllByCategoryId(categoryId, pageable);
+        return itemsPage.map(itemMapper::toResponseDto);
     }
 
     // 검색한 아이템 키워드 정렬 옵션
     public Page<ResponseItemDto> searchAndSortItems(String keyword, String sort, int page, int limit) {
-        Pageable pageable = PageRequest.of(page, limit);
-        Page<Item> itemsPage;
-
-        switch (sort) {
-            case "price-asc":
-                // 낮은 가격순으로 정렬
-                pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.ASC, "itemPrice"));
-                break;
-            case "price-desc":
-                // 높은 가격순으로 정렬
-                pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "itemPrice"));
-                break;
-            case "newest":
-                // 최신순으로 정렬
-                pageable = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "createdAt"));
-                break;
-            default:
-                // 기본 상품 id별 정렬 유지
-                break;
-        }
-
-        itemsPage = itemRepository.findByKeywordsContainingIgnoreCase(keyword, pageable);
+        Pageable pageable = createPageableWithSort(sort, page, limit);
+        Page<Item> itemsPage = itemRepository.findByItemNameContainingIgnoreCaseOrKeywordsContainingIgnoreCase(keyword, pageable);
         return itemsPage.map(itemMapper::toResponseDto);
     }
+
+    // 정렬
+    private Pageable createPageableWithSort(String sort, int page, int limit) {
+        Sort sortOrder;
+        switch (sort) {
+            case "price-asc":  // 낮은 가격순
+                sortOrder = Sort.by(Sort.Direction.ASC, "itemPrice");
+                break;
+            case "price-desc":  // 높은 가격순
+                sortOrder = Sort.by(Sort.Direction.DESC, "itemPrice");
+                break;
+            case "newest":   // 최신순
+                sortOrder = Sort.by(Sort.Direction.DESC, "createdAt");
+                break;
+            default:   // 기본 상품 id 오름차순
+                sortOrder = Sort.by(Sort.Direction.ASC, "id");
+                break;
+        }
+        return PageRequest.of(page, limit, sortOrder);
+    }
+
 }
 
 

@@ -33,14 +33,14 @@ async function fetchSearchResults(keyword, sort = 'default', page = 1) {
         const endpoint = `/api/items/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}&page=${page - 1}&limit=${ITEMS_PER_PAGE}`; // page - 1로 수정
         const searchResults = await Api.get(endpoint);
 
-        const productCount = searchResults.totalElements;
-        document.getElementById('product-count').textContent = `${productCount}개의 상품이 검색되었습니다.`;
+        const itemCount = searchResults.totalElements;
+        document.getElementById('product-count').textContent = `${itemCount}개의 상품이 검색되었습니다.`;
 
-        if (productCount === 0) {
+        if (itemCount === 0) {
             document.getElementById('product-list').innerHTML = '<p>검색 결과가 없습니다.</p>';
             document.getElementById('pagination').innerHTML = '';
         } else {
-            displayProducts(searchResults.content);
+            displayItems(searchResults.content);
             displayPagination(searchResults);
         }
     } catch (error) {
@@ -55,26 +55,6 @@ async function fetchSearchResults(keyword, sort = 'default', page = 1) {
         }
     }
 }
-
-/*function displayPagination(pageData) {
-    const paginationElement = document.getElementById('pagination');
-    paginationElement.innerHTML = '';
-
-    for (let i = 0; i < pageData.totalPages; i++) {
-        const pageLink = document.createElement('a');
-        pageLink.href = '#';
-        pageLink.textContent = i + 1;
-        pageLink.onclick = (e) => {
-            e.preventDefault();
-            currentPage = i;
-            fetchSearchResults(currentKeyword, currentSort, currentPage);
-        };
-        if (i === pageData.number) {
-            pageLink.classList.add('active');
-        }
-        paginationElement.appendChild(pageLink);
-    }
-}*/
 
 function displayPagination(pageData) {
     const paginationList = document.querySelector('.pagination-list');
@@ -96,35 +76,41 @@ function displayPagination(pageData) {
     }
 }
 
-function displayProducts(products) {
+function displayItems(items) {
     const productList = document.getElementById('product-list');
     productList.innerHTML = '';
 
-    const productContainer = document.createElement('div');
-    productContainer.className = 'product-container';
+    const itemContainer = document.createElement('div');
+    itemContainer.className = 'product-container';
 
-    products.forEach(product => {
-        const productElement = createProductElement(product);
-        productContainer.appendChild(productElement);
+    items.forEach(item => {
+        const itemElement = createItemElement(item);
+        itemContainer.appendChild(itemElement);
     });
 
-    productList.appendChild(productContainer);
+    productList.appendChild(itemContainer);
 }
 
-// TODO: 임시 상품 요소 작성
-function createProductElement(product) {
-    const productDiv = document.createElement('div');
-    productDiv.className = 'product-item';
-    productDiv.innerHTML = `
+function createItemElement(item) {
+    const itemDiv = document.createElement('div');
+    itemDiv.className = 'product-item';
+    itemDiv.innerHTML = `
         <div class="product-image-container">
-            <img src="${product.imageUrl}" alt="${product.itemName}" class="product-image">
+            <img src="${item.imageUrl}" alt="${item.itemName}" class="product-image">
         </div>
         <div class="product-info">
-            <h3 class="product-name">${product.itemName}</h3>
-            <p class="product-price">₩${product.itemPrice.toLocaleString()}</p>
+            <h3 class="product-name">${item.itemName}</h3>
+            <p class="product-price">₩${item.itemPrice.toLocaleString()}</p>
         </div>
     `;
-    return productDiv;
+
+    // 상품 전체를 클릭 가능하게 만들기
+    itemDiv.style.cursor = 'pointer';
+    itemDiv.addEventListener('click', () => {
+    window.location.href = `/items/${item.id}`;
+    });
+
+    return itemDiv;
 }
 
 // 정렬 변경 설정
@@ -141,4 +127,3 @@ function handleSortChange(event) {
 }
 
 document.addEventListener('DOMContentLoaded', init);
-
