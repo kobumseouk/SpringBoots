@@ -40,7 +40,7 @@ build:
     - main
 
 deploy:
-  stage: main
+  stage: deploy
   script:
     - ssh -i ~/.ssh/id_rsa -p "$SERVER_PORT" "$SERVER_USER"@"$SERVER_HOST" "mkdir -p /home/$SERVER_USER"
     # 보내는 경로 끝 파일명 지정하면 파일 찾을 수 없다고 에러생김, 원하는 이름으로 생성 불가 => 원인...뭐지?
@@ -49,6 +49,6 @@ deploy:
     - ssh -i ~/.ssh/id_rsa -p "$SERVER_PORT" "$SERVER_USER"@"$SERVER_HOST" "./deploy.sh"
 
   only:
-    - develop
+    - main
 variables:
   CI_DEBUG_TRACE: "true"
