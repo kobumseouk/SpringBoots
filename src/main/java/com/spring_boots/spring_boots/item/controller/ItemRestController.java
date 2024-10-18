@@ -38,6 +38,7 @@ public class ItemRestController {
             if (file != null && Objects.requireNonNull(file.getContentType()).startsWith("image")) {
                 String imageUrl = s3BucketService.uploadFile(file);
                 requestItemDto.setImageUrl(imageUrl);
+
             }
             ResponseItemDto responseDto = itemRestService.createItem(requestItemDto, file);
             return new ResponseEntity<>(responseDto, HttpStatus.CREATED);

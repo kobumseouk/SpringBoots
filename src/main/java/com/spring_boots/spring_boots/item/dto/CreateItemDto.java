@@ -1,6 +1,5 @@
 package com.spring_boots.spring_boots.item.dto;
 
-import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.item.entity.Item;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,7 +9,6 @@ import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Positive;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -39,7 +37,7 @@ public class CreateItemDto {
 
     private String imageUrl;
 
-    private List<String> keywords = new ArrayList<>();
+    private List<String> keywords;
 
 
 
