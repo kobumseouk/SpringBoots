@@ -19,6 +19,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.ACCESS_TOKEN_TYPE_VALUE;
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOKEN_TYPE_VALUE;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -108,8 +111,8 @@ public class UserApiController {
         userService.softDeleteUser(authUser);
 
         if (authUser.isDeleted()) {
-            deleteCookie("refreshToken", response);
-            deleteCookie("accessToken", response);
+            deleteCookie(REFRESH_TOKEN_TYPE_VALUE, response);
+            deleteCookie(ACCESS_TOKEN_TYPE_VALUE, response);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserDeleteResponseDto.builder().message("회원탈퇴 성공").build());
@@ -146,8 +149,8 @@ public class UserApiController {
         }
 
         //엑세스토큰, 리프레시토큰 삭제
-        deleteCookie("refreshToken", response);
-        deleteCookie("accessToken", response);
+        deleteCookie(REFRESH_TOKEN_TYPE_VALUE, response);
+        deleteCookie(ACCESS_TOKEN_TYPE_VALUE, response);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
