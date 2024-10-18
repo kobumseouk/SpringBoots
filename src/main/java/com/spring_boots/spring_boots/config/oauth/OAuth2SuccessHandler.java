@@ -25,9 +25,6 @@ import static com.spring_boots.spring_boots.config.jwt.UserConstants.*;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
-
-    // 상수 정의
-
     // 의존성 주입
     private final JwtProviderImpl provider;  // JWT 토큰 제공자
     private final RefreshTokenRepository refreshTokenRepository; // 리프레시 토큰 저장소

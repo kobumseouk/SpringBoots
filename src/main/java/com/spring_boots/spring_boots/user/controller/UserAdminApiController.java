@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.ACCESS_TOKEN_TYPE_VALUE;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -60,7 +62,7 @@ public class UserAdminApiController {
     //관리자 확인 API
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users/admin-check")
-    public ResponseEntity<UserCheckAdminResponseDto> checkAdmin(@CookieValue(value = "accessToken", required = false) String accessToken) {
+    public ResponseEntity<UserCheckAdminResponseDto> checkAdmin(@CookieValue(value = ACCESS_TOKEN_TYPE_VALUE, required = false) String accessToken) {
         //accessToken 이 없는 경우
         if (accessToken == null || accessToken.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)

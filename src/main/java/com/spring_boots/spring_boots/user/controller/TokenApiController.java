@@ -15,6 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.ACCESS_TOKEN_TYPE_VALUE;
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOKEN_TYPE_VALUE;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -78,13 +81,13 @@ public class TokenApiController {
 
     //엑세스토큰, 리프레시 토큰 쿠키삭제 로직
     private void deleteTokenCookie(HttpServletResponse response) {
-        Cookie deleteRefreshTokenCookie = new Cookie("refreshToken", null);
+        Cookie deleteRefreshTokenCookie = new Cookie(REFRESH_TOKEN_TYPE_VALUE, null);
 //            deleteRefreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
         deleteRefreshTokenCookie.setSecure(true); // HTTPS에서만 전송 todo 배포시 설정 주석 해제
         deleteRefreshTokenCookie.setPath("/"); // 동일한 경로
         deleteRefreshTokenCookie.setMaxAge(0); // 쿠키 삭제 설정
 
-        Cookie deleteAccessTokenCookie = new Cookie("accessToken", null);
+        Cookie deleteAccessTokenCookie = new Cookie(ACCESS_TOKEN_TYPE_VALUE, null);
 //            deleteAccessTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
         deleteAccessTokenCookie.setSecure(true); // HTTPS에서만 전송 todo 배포시 설정 주석 해제
         deleteAccessTokenCookie.setPath("/"); // 동일한 경로
@@ -97,12 +100,12 @@ public class TokenApiController {
     //쿠키 생성로직
     private void getCookie(JwtTokenDto jwtTokenResponse, HttpServletResponse response) {
         Cookie refreshTokenCookie = new Cookie(
-                "refreshToken",
+                REFRESH_TOKEN_TYPE_VALUE,
                 jwtTokenResponse.getRefreshToken()
         );
 
         Cookie accessTokenCookie = new Cookie(
-                "accessToken",
+                ACCESS_TOKEN_TYPE_VALUE,
                 jwtTokenResponse.getAccessToken()
         );
 
