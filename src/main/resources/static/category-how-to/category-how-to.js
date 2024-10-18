@@ -9,8 +9,8 @@ async function loadCategories() {
 
         // 제목 및 브레드크럼 설정
         categoryTitle.textContent = "HOW TO";
-        secondBreadcrumb.textContent = "HOW TO";
-        secondBreadcrumb.href = "/categories/how-to";
+        secondBreadcrumb.querySelector('a').textContent = "HOW TO";
+        secondBreadcrumb.querySelector('a').href = "/categories/how-to";
         secondBreadcrumb.classList.add('is-active');
 
         categories.forEach(category => {
