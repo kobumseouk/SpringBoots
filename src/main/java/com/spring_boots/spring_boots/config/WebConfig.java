@@ -39,7 +39,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/admin/categories/edit/**").setViewName("forward:/category-form/category-form.html");
         // 카테고리 상세 페이지
         registry.addViewController("/categories/how-to").setViewName("forward:/category-how-to/category-how-to.html");
-        registry.addViewController("/categories/how-to/**").setViewName("forward:/category-how-to/category-how-to-detail.html");
         registry.addViewController("/categories/new-in").setViewName("forward:/category-new-or-best/category-new-or-best.html");
         registry.addViewController("/categories/best").setViewName("forward:/category-new-or-best/category-new-or-best.html");
         registry.addViewController("/categories/**").setViewName("forward:/category-detail/category-detail.html");
