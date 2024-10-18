@@ -60,7 +60,7 @@ function updateBreadcrumb(theme, category) {
     thirdBreadcrumb.querySelector('a').textContent = category.categoryName;
     thirdBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/${category.id}`;
     thirdBreadcrumb.classList.add('is-active');
-    thirdBreadcrumb.style.display = '';
+    thirdBreadcrumb.style.display = '';  // none에서 기본 표시 방식 전환
   } else {
     thirdBreadcrumb.style.display = 'none';
   }
