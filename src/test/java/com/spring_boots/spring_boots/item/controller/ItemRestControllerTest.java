@@ -114,23 +114,23 @@ public class ItemRestControllerTest {
     public void testSearchItems() throws Exception {
         // item1과 item2에 필요한 데이터 설정
         List<ResponseItemDto> searchResults = Arrays.asList(new ResponseItemDto(), new ResponseItemDto(), new ResponseItemDto());
-        Page<ResponseItemDto> page = new PageImpl<>(searchResults, PageRequest.of(0, 10), 3);
+        Page<ResponseItemDto> page = new PageImpl<>(searchResults, PageRequest.of(0, 8), 3);
 
         // 서비스 메소드 모킹
-        when(itemRestService.searchAndSortItems(anyString(), anyString(), any(Pageable.class))).thenReturn(page);
+        when(itemRestService.searchAndSortItems(anyString(), anyString(), anyInt(), anyInt())).thenReturn(page);
 
         // 테스트 실행
         mockMvc.perform(get("/api/items/search")
                 .param("keyword", "test")
                 .param("sort", "price-asc")
                 .param("page", "0")
-                .param("size", "10"))
+                .param("limit", "8"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.content", hasSize(3)))
             .andExpect(jsonPath("$.totalElements").value(3))
             .andExpect(jsonPath("$.totalPages").value(1))
-            .andExpect(jsonPath("$.size").value(10))
+            .andExpect(jsonPath("$.size").value(8))
             .andExpect(jsonPath("$.number").value(0));
     }
 }
