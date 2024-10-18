@@ -36,6 +36,8 @@ spring:
             scope:
               - email
               - profile
+            redirect-uri: "https://jnfnrgyjnymezkmx.tunnel-pt.elice.io/login/oauth2/code/google"
+
 
 jwt:
   issuer: test@example.com
