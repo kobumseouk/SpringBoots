@@ -231,7 +231,7 @@ function updateBreadcrumb(theme, category) {
   const thirdBreadcrumb = document.getElementById('third-breadcrumb');
 
   secondBreadcrumb.querySelector('a').textContent = theme;
-  secondBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/1`;
+  secondBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}`;
 
   if (category?.categoryName !== '전체보기') {
     thirdBreadcrumb.querySelector('a').textContent = category.categoryName;
