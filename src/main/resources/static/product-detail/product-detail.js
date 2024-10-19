@@ -1,118 +1,122 @@
-import { getImageUrl } from "../../aws-s3.js";
-import * as Api from "../../api.js";
+// 필요한 모듈 및 함수 import
+import { loadHeader } from "../../common/header.js";
+import * as Api from "../api.js";
 import {
-  getUrlParams,
+  getUrlParams as getQueryParams,  // 이름 충돌 방지를 위해 변경
   addCommas,
   checkUrlParams,
   createNavbar,
-} from "../../useful-functions.js";
-import { addToDb, putToDb } from "../../indexed-db.js";
+} from "../useful-functions.js";
+import { addToDb, putToDb } from "../indexed-db.js";
 
-// 요소(element), input 혹은 상수
+// URL에서 id 파라미터를 추출하는 함수
+function getUrlParams() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return { id: urlParams.get('id') };
+}
+
+// 요소 선택
 const productImageTag = document.querySelector("#productImageTag");
 const manufacturerTag = document.querySelector("#manufacturerTag");
 const titleTag = document.querySelector("#titleTag");
+const priceTag = document.querySelector("#priceTag");
 const detailDescriptionTag = document.querySelector("#detailDescriptionTag");
 const addToCartButton = document.querySelector("#addToCartButton");
 const purchaseButton = document.querySelector("#purchaseButton");
 
-checkUrlParams("id");
-addAllElements();
-addAllEvents();
+// 상품 정보를 API에서 가져와 화면에 표시하는 함수
+let currentProduct = null; // API에서 받아온 상품 정보를 저장할 전역 변수
 
-// html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-function addAllElements() {
-  createNavbar();
-  insertProductData();
-}
+export async function insertProductData() {
+  const { id } = getUrlParams(); // URL에서 itemId 추출
+  try {
+    const product = await Api.get(`/api/items/${id}`); // API 호출로 상품 정보 받아오기
+    console.log("받아온 상품 정보:", product); // 받아온 상품 정보 출력
+    currentProduct = product; // 전역 변수에 상품 정보 저장
 
-// addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
-function addAllEvents() {}
+    // 상품 정보 구조 분해 할당
+    const { itemName, itemDescription, itemPrice, itemMaker, imageUrl, isRecommended } = product;
 
-async function insertProductData() {
-  const { id } = getUrlParams();
-  const product = await Api.get(`/products/${id}`);
+    // HTML에 반영
+    productImageTag.src = imageUrl;
+    titleTag.innerText = itemName;
+    detailDescriptionTag.innerText = itemDescription;
+    manufacturerTag.innerText = `제조사: ${itemMaker}`;
+    priceTag.innerText = `${addCommas(itemPrice)}원`;
 
-  // 객체 destructuring
-  const {
-    title,
-    detailDescription,
-    menufacturer,
-    imageKey,
-    isRecommended,
-    price,
-  } = product;
-  const imageUrl = await getImageUrl(imageKey);
-
-  productImageTag.src = imageUrl;
-  titleTag.innerText = title;
-  detailDescriptionTag.innerText = detailDescription;
-  manufacturerTag.innerText = menufacturer;
-  priceTag.innerText = `${addCommas(price)}원`;
-
-  if (isRecommended) {
-    titleTag.insertAdjacentHTML(
-      "beforeend",
-      '<span class="tag is-success is-rounded">추천</span>'
-    );
+    // 추천 상품 표시
+    if (isRecommended) {
+      titleTag.insertAdjacentHTML(
+          "beforeend",
+          '<span class="tag is-success is-rounded">추천</span>'
+      );
+    }
+  } catch (error) {
+    console.error("상품 정보를 가져오는 중 오류 발생:", error);
   }
+}
 
-  addToCartButton.addEventListener("click", async () => {
-    try {
-      await insertDb(product);
-
-      alert("장바구니에 추가되었습니다.");
-    } catch (err) {
-      // Key already exists 에러면 아래와 같이 alert함
-      if (err.message.includes("Key")) {
-        alert("이미 장바구니에 추가되어 있습니다.");
-      }
-
-      console.log(err);
+// 이벤트 리스너를 추가하는 함수
+export function addAllEvents() {
+  addToCartButton.addEventListener("click", () => {
+    if (currentProduct) {
+      addToCart(currentProduct); // currentProduct는 API 호출 후 저장될 전역 변수
     }
   });
 
-  purchaseButton.addEventListener("click", async () => {
-    try {
-      await insertDb(product);
-
-      window.location.href = "/order";
-    } catch (err) {
-      console.log(err);
-
-      //insertDb가 에러가 되는 경우는 이미 제품이 장바구니에 있던 경우임
-      //따라서 다시 추가 안 하고 바로 order 페이지로 이동함
-      window.location.href = "/order";
+  purchaseButton.addEventListener("click", () => {
+    if (currentProduct) {
+      purchaseNow(currentProduct); // currentProduct를 사용
     }
   });
 }
 
+// 장바구니에 추가하는 함수
+function addToCart(product) {
+  const cartItem = {
+    itemId: product.itemId,
+    itemQuantity: 1, // 기본 수량 1
+    itemSize: product.itemSize,
+    itemColor: product.itemColor,
+  };
+
+  // 로컬스토리지에 저장
+  const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  cart.push(cartItem);
+  localStorage.setItem('cart', JSON.stringify(cart));
+
+  alert("장바구니에 추가되었습니다.");
+}
+
+// 바로 구매하기 함수
+function purchaseNow(product) {
+  const purchaseItem = {
+    itemId: product.itemId,
+    itemQuantity: 1,
+    itemSize: product.itemSize,
+    itemColor: product.itemColor,
+  };
+
+  // 로컬스토리지에 저장하고 구매 페이지로 이동
+  localStorage.setItem('purchase', JSON.stringify(purchaseItem));
+  window.location.href = '/order'; // 구매 페이지로 이동
+}
+
+// indexedDB에 추가하는 함수 (선택적으로 사용 가능)
 async function insertDb(product) {
-  // 객체 destructuring
-  const { id: id, price } = product;
+  const { itemId, price } = product;
 
-  // 장바구니 추가 시, indexedDB에 제품 데이터 및
-  // 주문수량 (기본값 1)을 저장함.
-  await addToDb("cart", { ...product, quantity: 1 }, id);
+  await addToDb("cart", { ...product, quantity: 1 }, itemId);
 
-  // 장바구니 요약(=전체 총합)을 업데이트함.
   await putToDb("order", "summary", (data) => {
-    // 기존 데이터를 가져옴
-    const count = data.productsCount;
-    const total = data.productsTotal;
-    const ids = data.ids;
-    const selectedIds = data.selectedIds;
+    const count = data.productsCount ? data.productsCount + 1 : 1;
+    const total = data.productsTotal ? data.productsTotal + price : price;
+    const ids = data.ids ? [...data.ids, itemId] : [itemId];
+    const selectedIds = data.selectedIds ? [...data.selectedIds, itemId] : [itemId];
 
-    // 기존 데이터가 있다면 1을 추가하고, 없다면 초기값 1을 줌
-    data.productsCount = count ? count + 1 : 1;
-
-    // 기존 데이터가 있다면 가격만큼 추가하고, 없다면 초기값으로 해당 가격을 줌
-    data.productsTotal = total ? total + price : price;
-
-    // 기존 데이터(배열)가 있다면 id만 추가하고, 없다면 배열 새로 만듦
-    data.ids = ids ? [...ids, id] : [id];
-
-    // 위와 마찬가지 방식
-    data.selectedIds = selectedIds ? [...selectedIds, id] : [id];
+    data.productsCount = count;
+    data.productsTotal = total;
+    data.ids = ids;
+    data.selectedIds = selectedIds;
   });
 }
