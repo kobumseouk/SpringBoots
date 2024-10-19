@@ -163,6 +163,13 @@ public class ItemRestService {
         return itemsPage.map(itemMapper::toResponseDto);
     }
 
+    // 테마별 정렬된 모든 아이템 조회
+    public Page<ResponseItemDto> getItemsByCategoryThemaWithSorting(String thema, String sort, int page, int limit) {
+        Pageable pageable = createPageableWithSort(sort, page, limit);
+        Page<Item> itemsPage = itemRepository.findByCategory_CategoryThema(thema, pageable);
+        return itemsPage.map(itemMapper::toResponseDto);
+    }
+
     // 정렬
     private Pageable createPageableWithSort(String sort, int page, int limit) {
         Sort sortOrder;
@@ -182,6 +189,7 @@ public class ItemRestService {
         }
         return PageRequest.of(page, limit, sortOrder);
     }
+
 
 }
 
