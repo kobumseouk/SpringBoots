@@ -1,21 +1,4 @@
 // 로컬 스토리지에 저장하는 함수
-
-const itemData = {
-  itemId: 101,
-  itemQuantity: 2,
-  itemSize: 280,
-  itemColor: 'black'
-};
-
-const itemData1 = {
-  itemId: 102,
-  itemQuantity: 5,
-  itemSize: 270,
-  itemColor: 'white'
-};
-
-
-
 function addItemToCart(itemId, itemQuantity, itemColor, itemSize) {
   // 장바구니에 담긴 아이템을 로컬 스토리지에서 가져오기
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -435,10 +418,3 @@ async function getData(itemId) {
     return null; // 오류가 발생한 경우 null 반환
   }
 }
-
-
-
-
-// 장바구니에 아이템 추가
-addItemToCart(itemData.itemId, itemData.itemQuantity, itemData.itemColor, itemData.itemSize);
-addItemToCart(itemData1.itemId, itemData1.itemQuantity, itemData1.itemColor, itemData1.itemSize);
