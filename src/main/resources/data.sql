@@ -24,18 +24,15 @@ INSERT INTO users_info (
 INSERT INTO category (
     category_name, category_thema, category_content, display_order, created_at, updated_at, image_url
 ) VALUES
-    ('전체보기', 'common', 'All types', 1, NOW(), NOW(), NULL),
-    ('Shoes', 'common', 'All types of shoes', 2, NOW(), NOW(), NULL),
-    ('전체보기', 'women', 'All types', 1, NOW(), NOW(), NULL),
-    ('Shoes', 'women', 'All types of shoes', 2, NOW(), NOW(), NULL),
-    ('전체보기', 'men', 'All types', 1, NOW(), NOW(), NULL),
-    ('Shoes', 'men', 'All types of shoes', 2, NOW(), NOW(), NULL),
-    ('전체보기', 'accessories', 'All types', 1, NOW(), NOW(), NULL),
+    ('Shoes', 'common', 'All types of shoes', 1, NOW(), NOW(), NULL),
+    ('Shoes', 'women', 'All types of shoes', 1, NOW(), NOW(), NULL),
+    ('Shoes', 'men', 'All types of shoes', 1, NOW(), NOW(), NULL),
+    ('Socks', 'accessories', 'All types of socks', 1, NOW(), NOW(), NULL),
     ('24SS SUMMER RECOMMEND STYLING', 'how-to', 'Styling Guide', 1, NOW(), NOW(), 'https://example.com/summer_styling_guide.jpg');
 
 -- Item 테이블에 테스트 데이터 삽입
 INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (101, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://example.com/shoes.jpg', 230);
+VALUES (101, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/202410191209001928034094', 230);
 -- 아이템 키워드 리스트
 INSERT INTO item_keywords (item_id, keyword) VALUES
 (101, 'Running Shoes'),

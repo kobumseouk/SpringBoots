@@ -92,25 +92,25 @@ function displayItems(items) {
 }
 
 function createItemElement(item) {
-    const itemDiv = document.createElement('div');
-    itemDiv.className = 'product-item';
-    itemDiv.innerHTML = `
-        <div class="product-image-container">
-            <img src="${item.imageUrl}" alt="${item.itemName}" class="product-image">
-        </div>
-        <div class="product-info">
-            <h3 class="product-name">${item.itemName}</h3>
-            <p class="product-price">₩${item.itemPrice.toLocaleString()}</p>
-        </div>
-    `;
+  const itemDiv = document.createElement('div');
+  itemDiv.className = 'product-item';
+  itemDiv.innerHTML = `
+    <div class="product-image-container">
+      <img src="${item.imageUrl}" alt="${item.itemName}" class="product-image">
+    </div>
+    <div class="product-info">
+      <h3 class="product-name">${item.itemName}</h3>
+      <p class="product-price">₩${item.itemPrice.toLocaleString()}</p>
+    </div>
+  `;
 
-    // 상품 전체를 클릭 가능하게 만들기
-    itemDiv.style.cursor = 'pointer';
-    itemDiv.addEventListener('click', () => {
-    window.location.href = `/items/${item.id}`;
-    });
+  // 상품 전체를 클릭 가능하게 만들기
+  itemDiv.style.cursor = 'pointer';
+  itemDiv.addEventListener('click', () => {
+    window.location.href = `/items?item_id=${item.id}`;
+  });
 
-    return itemDiv;
+  return itemDiv;
 }
 
 // 정렬 변경 설정
