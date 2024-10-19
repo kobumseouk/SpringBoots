@@ -5,3 +5,7 @@
 .modal-card {
     max-width: 600px;
 }
+
+.content figure {
+    margin-left: 0px;
+}
