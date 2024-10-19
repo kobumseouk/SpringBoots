@@ -101,10 +101,16 @@ sizeButtons.forEach(button => {
 
 // 장바구니에 추가하는 함수
 function addToCart(product) {
+  const selectedSize = getSelectedSize();
+  if (!selectedSize) {
+    alert("사이즈를 선택해 주세요.");
+    return; // 사이즈가 선택되지 않았을 경우 처리
+  }
+
   const cartItem = {
     itemId: product.id,
     itemQuantity: parseInt(quantityInput.value), // 기본 수량 1
-    itemSize: getSelectedSize(),
+    itemSize: selectedSize,
     itemColor: colorSelect.value,
   };
 
@@ -118,10 +124,16 @@ function addToCart(product) {
 
 // 바로 구매하기 함수
 function purchaseNow(product) {
+  const selectedSize = getSelectedSize();
+  if (!selectedSize) {
+    alert("사이즈를 선택해 주세요.");
+    return; // 사이즈가 선택되지 않았을 경우 처리
+  }
+
   const purchaseItem = {
-    itemId: product.itemId,
+    itemId: product.id,
     itemQuantity: parseInt(quantityInput.value),
-    itemSize: getSelectedSize(),
+    itemSize: selectedSize,
     itemColor: colorSelect.value,
   };
 
