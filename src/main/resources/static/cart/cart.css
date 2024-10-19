@@ -69,6 +69,11 @@
 .item-size {
   margin-top: 5px !important;
 }
+
+.image img {
+  height: 100px !important;
+  width: 80px !important;
+}
 /*추가끝*/
 
 .cart-header {
