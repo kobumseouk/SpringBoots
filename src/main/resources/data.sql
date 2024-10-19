@@ -28,7 +28,7 @@ INSERT INTO category (
     ('Shoes', 'women', 'All types of shoes', 1, NOW(), NOW(), NULL),
     ('Shoes', 'men', 'All types of shoes', 1, NOW(), NOW(), NULL),
     ('Socks', 'accessories', 'All types of socks', 1, NOW(), NOW(), NULL),
-    ('24SS SUMMER RECOMMEND STYLING', 'how-to', 'Styling Guide', 1, NOW(), NOW(), 'https://example.com/summer_styling_guide.jpg');
+    ('24SS SUMMER RECOMMEND STYLING', 'how-to', 'Styling Guide', 1, NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/202410191209001928034094');
 
 -- Item 테이블에 테스트 데이터 삽입
 INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
