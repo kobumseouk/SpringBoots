@@ -133,5 +133,5 @@ function purchaseNow(product) {
 // 사이즈 선택 확인 함수
 function getSelectedSize() {
   const activeSizeButton = document.querySelector('.size-option.active');
-  return activeSizeButton ? activeSizeButton.value : null;
+  return activeSizeButton ? parseInt(activeSizeButton.value) : null;
 }
