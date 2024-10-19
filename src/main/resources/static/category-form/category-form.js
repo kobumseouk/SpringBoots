@@ -89,12 +89,21 @@ function updateDisplayOrderOptions(count) {
 
   displaySelectBox.disabled = false;
 
-  // 가능한 모든 위치에 대한 옵션 추가
-  for (let i = 1; i <= count + 1; i++) {
-    const option = document.createElement('option');
-    option.value = i;
-    option.textContent = `${i}번째`;
-    displaySelectBox.appendChild(option);
+  if (isEditMode) {
+    // 수정 모드: 카테고리 숫자와 동일하게 배치 순서 결정
+    for (let i = 1; i <= count; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = `${i}번째`;
+      displaySelectBox.appendChild(option);
+    }
+  } else {   // 등록 모드: 배치 가능한 모든 위치에 대한 옵션 추가
+    for (let i = 1; i <= count + 1; i++) {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = `${i}번째`;
+      displaySelectBox.appendChild(option);
+    }
   }
 }
 
