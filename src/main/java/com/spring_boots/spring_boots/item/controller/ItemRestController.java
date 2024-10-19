@@ -108,9 +108,9 @@ public class ItemRestController {
     }
 
     // 테마에 해당하는 모든 아이템 - 전체보기 고정 구현
-    @GetMapping("/api/items/thema/{thema}")
+    @GetMapping("/items/thema/{thema}")
     public ResponseEntity<Page<ResponseItemDto>> getItemsByTheme(
-        @PathVariable String thema,
+        @PathVariable("thema") String thema,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "8") int limit,
         @RequestParam(defaultValue = "default") String sort) {

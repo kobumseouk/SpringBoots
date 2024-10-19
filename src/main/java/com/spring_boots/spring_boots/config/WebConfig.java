@@ -41,7 +41,11 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/categories/how-to").setViewName("forward:/category-how-to/category-how-to.html");
         registry.addViewController("/categories/new-in").setViewName("forward:/category-new-or-best/category-new-or-best.html");
         registry.addViewController("/categories/best").setViewName("forward:/category-new-or-best/category-new-or-best.html");
-        registry.addViewController("/categories/**").setViewName("forward:/category-detail/category-detail.html");
+        // 특정 테마 카테고리 매핑
+        registry.addViewController("/categories/common/**").setViewName("forward:/category-detail/category-detail.html");
+        registry.addViewController("/categories/women/**").setViewName("forward:/category-detail/category-detail.html");
+        registry.addViewController("/categories/men/**").setViewName("forward:/category-detail/category-detail.html");
+        registry.addViewController("/categories/accessories/**").setViewName("forward:/category-detail/category-detail.html");
         // 이벤트 목록 페이지
         registry.addViewController("/events").setViewName("forward:/event-list/event-list.html");
         // 이벤트 관리 페이지

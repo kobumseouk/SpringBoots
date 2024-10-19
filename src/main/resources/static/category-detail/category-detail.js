@@ -13,9 +13,9 @@ async function init() {
   const path = window.location.pathname;
   const pathParts = path.split('/');
 
-  if (pathParts.length >= 4 && pathParts[1] === 'categories') {
+  if (pathParts.length >= 3 && pathParts[1] === 'categories') {
     const englishTheme = pathParts[2];
-    const categoryId = pathParts[3];
+    const categoryId = pathParts[3] || null;  // categoryId가 없으면 null
     await handleThemeClick(englishTheme, categoryId);
   } else {
     window.location.href = '/';
@@ -27,20 +27,21 @@ async function init() {
 async function handleThemeClick(theme, selectedCategoryId = null) {
   try {
     const categories = await Api.get(`/api/categories/themas/${theme}`);
-    displayCategoryButtons(categories, theme);
+    const allViewCategory = createAllViewCategory(categories);
+    const allCategories = [allViewCategory, ...categories];
+
+    displayCategoryButtons(allCategories, theme);
 
     let categoryToDisplay;
     if (selectedCategoryId) {
-      categoryToDisplay = categories.find(c => c.id.toString() === selectedCategoryId);
+      categoryToDisplay = allCategories.find(c => c.id.toString() === selectedCategoryId);
     }
     if (!categoryToDisplay) {
-      categoryToDisplay = categories.reduce((prev, current) =>
-        (prev.displayOrder < current.displayOrder) ? prev : current
-      , categories[0]);
+      categoryToDisplay = allViewCategory;
     }
 
     currentCategoryId = categoryToDisplay.id;
-    await displayCategoryInfo(categoryToDisplay.id);
+    await displayCategoryInfo(categoryToDisplay);
     await fetchCategoryItems(categoryToDisplay.id, currentSort, currentPage);
 
     const koreanTheme = translateEnglishToKorean(theme);
@@ -52,67 +53,89 @@ async function handleThemeClick(theme, selectedCategoryId = null) {
   }
 }
 
-function updateBreadcrumb(theme, category) {
-  const secondBreadcrumb = document.getElementById('second-breadcrumb');
-  const thirdBreadcrumb = document.getElementById('third-breadcrumb');
-
-  secondBreadcrumb.querySelector('a').textContent = theme;
-  secondBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/1`;
-
-  if (category?.displayOrder !== '1') {
-    thirdBreadcrumb.querySelector('a').textContent = category.categoryName;
-    thirdBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/${category.id}`;
-    thirdBreadcrumb.classList.add('is-active');
-    thirdBreadcrumb.style.display = '';
-  } else {
-    thirdBreadcrumb.style.display = 'none';
-  }
+function createAllViewCategory(categories) {
+  const themeContent = categories.length > 0 ? categories[0].categoryContent : '';
+  return {
+    id: 'all',
+    categoryName: '전체보기',
+    categoryThema: categories.length > 0 ? categories[0].categoryThema : '',
+    displayOrder: 0
+  };
 }
 
 function displayCategoryButtons(categories, currentEnglishTheme) {
   const categoryButtons = document.getElementById('category-buttons');
   categoryButtons.innerHTML = '';
 
-  categories.sort((a, b) => a.displayOrder - b.displayOrder).forEach(category => {
-    const button = document.createElement('button');
-    button.textContent = category.categoryName;
-    button.classList.add('button', 'is-primary', 'mr-2', 'mb-2');
-    button.addEventListener('click', () => {
-      currentCategoryId = category.id;
-      currentPage = 0;
-      displayCategoryInfo(category.id);
-      fetchCategoryItems(category.id, currentSort, currentPage);
-      history.pushState(null, '', `/categories/${currentEnglishTheme}/${category.id}`);
+  // 전체보기 카테고리를 찾아 먼저 추가
+  const allViewCategory = categories.find(category => category.categoryName === '전체보기');
+  if (allViewCategory) {
+    addCategoryButton(allViewCategory, currentEnglishTheme, categoryButtons);
+  }
+
+  // 나머지 카테고리들을 정렬하여 추가
+  categories
+    .filter(category => category.categoryName !== '전체보기')
+    .sort((a, b) => a.displayOrder - b.displayOrder)
+    .forEach(category => {
+      addCategoryButton(category, currentEnglishTheme, categoryButtons);
     });
-    categoryButtons.appendChild(button);
-  });
 }
 
-async function displayCategoryInfo(categoryId) {
-  try {
-    const category = await Api.get(`/api/categories/${categoryId}`);
-    document.getElementById('category-title').textContent = category.categoryName;
-    document.getElementById('category-description').textContent = category.categoryContent;
-
-    updateActiveButton(category.categoryName);
-
-    const pathParts = window.location.pathname.split('/');
-    const englishTheme = pathParts[2];
-    const theme = translateEnglishToKorean(englishTheme);
-    updateBreadcrumb(theme, category);
-  } catch (error) {
-    console.error('카테고리 정보를 가져오는 데 실패했습니다:', error);
+function addCategoryButton(category, currentEnglishTheme, container) {
+  const button = document.createElement('button');
+  button.textContent = category.categoryName;
+  button.classList.add('button', 'is-primary', 'mr-2', 'mb-2');
+  if (category.categoryName === '전체보기') {
+    button.classList.add('is-outlined');
   }
+  button.addEventListener('click', () => {
+    currentCategoryId = category.id;
+    currentPage = 0;
+    displayCategoryInfo(category);
+    fetchCategoryItems(category.id, currentSort, currentPage);
+    history.pushState(null, '', `/categories/${currentEnglishTheme}/${category.id}`);
+    updateActiveButton(category.categoryName);
+  });
+  container.appendChild(button);
+}
+
+function displayCategoryInfo(category) {
+  document.getElementById('category-title').textContent = category.categoryName;
+  document.getElementById('category-description').textContent = category.categoryContent;
+
+  updateActiveButton(category.categoryName);
+
+  const pathParts = window.location.pathname.split('/');
+  const englishTheme = pathParts[2];
+  const theme = translateEnglishToKorean(englishTheme);
+  updateBreadcrumb(theme, category);
 }
 
 async function fetchCategoryItems(categoryId, sort, page) {
   try {
-    const response = await Api.get(`/api/items/categories/${categoryId}?sort=${sort}&page=${page}&limit=${ITEMS_PER_PAGE}`);
+    let endpoint;
+    if (categoryId === 'all') {
+      const thema = window.location.pathname.split('/')[2];
+      endpoint = `/api/items/thema/${thema}?sort=${sort}&page=${page}&limit=${ITEMS_PER_PAGE}`;
+    } else {
+      endpoint = `/api/items/categories/${categoryId}?sort=${sort}&page=${page}&limit=${ITEMS_PER_PAGE}`;
+    }
+    console.log('Fetching from endpoint:', endpoint); // 요청 URL 로깅
+    const response = await Api.get(endpoint);
+    console.log('Server response:', response); // 서버 응답 로깅
     displayItems(response.content);
     displayPagination(response);
     document.getElementById('product-count').textContent = `${response.totalElements}개의 상품이 있습니다.`;
   } catch (error) {
     console.error('상품을 가져오는 데 실패했습니다:', error);
+    if (error.response) {
+      console.error('서버 응답:', error.response.status, error.response.data);
+    } else if (error.request) {
+      console.error('응답을 받지 못했습니다. 네트워크 문제일 수 있습니다.');
+    } else {
+      console.error('요청 설정 중 오류 발생:', error.message);
+    }
     document.getElementById('product-count').textContent = '상품을 불러올 수 없습니다.';
   }
 }
@@ -177,8 +200,6 @@ function displayPagination(pageData) {
   }
 }
 
-
-// 정렬 설정
 function setupSortingOptions() {
   const sortSelect = document.getElementById('sort-options');
   sortSelect.addEventListener('change', handleSortChange);
@@ -195,10 +216,31 @@ function updateActiveButton(categoryName) {
   buttons.forEach(button => {
     if (button.textContent === categoryName) {
       button.classList.add('active');
+      button.classList.remove('is-outlined');
     } else {
       button.classList.remove('active');
+      if (button.textContent === '전체보기') {
+        button.classList.add('is-outlined');
+      }
     }
   });
+}
+
+function updateBreadcrumb(theme, category) {
+  const secondBreadcrumb = document.getElementById('second-breadcrumb');
+  const thirdBreadcrumb = document.getElementById('third-breadcrumb');
+
+  secondBreadcrumb.querySelector('a').textContent = theme;
+  secondBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/1`;
+
+  if (category?.categoryName !== '전체보기') {
+    thirdBreadcrumb.querySelector('a').textContent = category.categoryName;
+    thirdBreadcrumb.querySelector('a').href = `/categories/${translateKoreanToEnglish(theme)}/${category.id}`;
+    thirdBreadcrumb.classList.add('is-active');
+    thirdBreadcrumb.style.display = '';
+  } else {
+    thirdBreadcrumb.style.display = 'none';
+  }
 }
 
 function translateEnglishToKorean(englishTheme) {

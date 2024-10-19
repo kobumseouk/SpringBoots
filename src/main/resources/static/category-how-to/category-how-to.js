@@ -2,7 +2,7 @@ import * as Api from "/api.js";
 
 async function loadCategories() {
     try {
-        const categories = await Api.get("/api/categories/themas/HOW TO");
+        const categories = await Api.get("/api/categories/themas/how-to");
         const container = document.getElementById("categories-container");
         const categoryTitle = document.getElementById("category-title");
         const secondBreadcrumb = document.getElementById("second-breadcrumb");
