@@ -129,8 +129,8 @@ async function fetchCategoryData() {
 
     // 테마에 맞는 배치 옵션 업데이트
     const categories = await Api.get(`/api/categories/themas/${category.categoryThema}`);
-    const nonAllViewCategories = categories.filter(c => c.categoryName !== '전체보기');
-    updateDisplayOrderOptions(nonAllViewCategories.length);
+    const nonAllViewCategories = categories.filter(c => c.categoryName !== '전체보기' && c.id !== category.id);
+    updateDisplayOrderOptions(nonAllViewCategories.length + 1);  // +1 to include the current category
 
     // 전체보기가 아닌 경우에만 displayOrder 설정
     if (category.categoryName !== '전체보기') {
