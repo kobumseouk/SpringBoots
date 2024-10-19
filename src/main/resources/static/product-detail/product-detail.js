@@ -7,7 +7,7 @@ import { addToDb, putToDb } from "../indexed-db.js";
 // URL에서 id 파라미터를 추출하는 함수
 function getUrlParams() {
   const urlParams = new URLSearchParams(window.location.search);
-  return { id: urlParams.get('id') };
+  return { id: urlParams.get('itemId') };
 }
 
 // 요소 선택
