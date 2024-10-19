@@ -107,7 +107,7 @@ function createItemElement(item) {
   // 상품 전체를 클릭 가능하게 만들기
   itemDiv.style.cursor = 'pointer';
   itemDiv.addEventListener('click', () => {
-    window.location.href = `/items?item_id=${item.id}`;
+    window.location.href = `/items?itemId=${item.id}`;
   });
 
   return itemDiv;
