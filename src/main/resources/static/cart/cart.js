@@ -343,6 +343,8 @@ function updateOrderTotal() {
 
 // 페이지 로드 시 장바구니 아이템 카드 표시
 document.addEventListener('DOMContentLoaded', () => {
+  // 장바구니 페이지 로드 시 purchase 로컬 스토리지 초기화
+  localStorage.removeItem('purchase');
   updateOrderTotal();
   renderCartItems(); // 장바구니 아이템 표시 함수 호출
 });

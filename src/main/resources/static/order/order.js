@@ -8,8 +8,13 @@ document.addEventListener("DOMContentLoaded", async function() {
         const data = await response.text();
         document.getElementById("header-placeholder").innerHTML = data;
 
+        // 페이지 언로드 시 purchase 값 삭제
+        window.addEventListener('beforeunload', function () {
+            localStorage.removeItem('purchase');
+        });
         // Load cart items from local storage
         loadCartSummary();
+
     } catch (error) {
         console.error("헤더를 로드할 수 없습니다:", error);
     }
@@ -49,7 +54,13 @@ document.addEventListener("DOMContentLoaded", async function() {
 // 로컬 스토리지에서 장바구니 정보 로드 후 결제 정보 출력
 async function loadCartSummary() {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const purchase = JSON.parse(localStorage.getItem('purchase')) || [];
+    let purchase = JSON.parse(localStorage.getItem('purchase')) || [];
+
+    // purchase가 배열이 아니면 배열로 변환
+    if (!Array.isArray(purchase)) {
+        purchase = [purchase];
+    }
+
     let itemsHtml = '';
     let totalPrice = 0;
 
@@ -156,7 +167,13 @@ function copyBuyerInfo() {
 
 async function placeOrder() {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const purchase = JSON.parse(localStorage.getItem('purchase')) || [];
+    let purchase = JSON.parse(localStorage.getItem('purchase')) || [];
+
+
+    // purchase가 배열이 아니면 배열로 변환
+    if (!Array.isArray(purchase)) {
+        purchase = [purchase];
+    }
 
     // cart와 purchase 모두 비어있으면 주문 불가
     if (cart.length === 0 && purchase.length === 0) {
