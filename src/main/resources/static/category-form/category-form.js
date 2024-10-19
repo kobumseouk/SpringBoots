@@ -66,7 +66,7 @@ async function handleThemeChange() {
   if (selectedTheme) {
     try {
       const categories = await Api.get(`/api/categories/themas/${selectedTheme}`);
-      const nonAllViewCategories = categories.filter(c => c.categoryName !== '전체보기');
+      const nonAllViewCategories = categories.filter(c => c.categoryName !== '전체보기' && (!isEditMode || c.id !== categoryId));
       updateDisplayOrderOptions(nonAllViewCategories.length);
     } catch (err) {
       console.error("Error fetching categories:", err);
