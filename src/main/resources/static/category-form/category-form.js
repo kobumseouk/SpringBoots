@@ -66,7 +66,8 @@ async function handleThemeChange() {
   if (selectedTheme) {
     try {
       const categories = await Api.get(`/api/categories/themas/${selectedTheme}`);
-      updateDisplayOrderOptions(categories.length);
+      const nonAllViewCategories = categories.filter(c => c.categoryName !== '전체보기');
+      updateDisplayOrderOptions(nonAllViewCategories.length);
     } catch (err) {
       console.error("Error fetching categories:", err);
       alert('카테고리 정보를 불러오는데 실패했습니다: ' + err.message);
@@ -80,6 +81,15 @@ async function handleThemeChange() {
 
 function updateDisplayOrderOptions(count) {
   displaySelectBox.innerHTML = '<option value="">배치할 위치를 골라주세요.</option>';
+
+  if (titleInput.value.trim().toLowerCase() === '전체보기') {
+    displaySelectBox.disabled = true;
+    return;
+  }
+
+  displaySelectBox.disabled = false;
+
+  // 가능한 모든 위치에 대한 옵션 추가
   for (let i = 1; i <= count + 1; i++) {
     const option = document.createElement('option');
     option.value = i;
@@ -87,6 +97,14 @@ function updateDisplayOrderOptions(count) {
     displaySelectBox.appendChild(option);
   }
 }
+
+// 카테고리 이름 입력 필드에 이벤트 리스너 추가
+titleInput.addEventListener('input', function() {
+  const selectedTheme = themeSelectBox.value;
+  if (selectedTheme) {
+    handleThemeChange();
+  }
+});
 
 async function fetchCategoryData() {
   try {
@@ -102,8 +120,13 @@ async function fetchCategoryData() {
 
     // 테마에 맞는 배치 옵션 업데이트
     const categories = await Api.get(`/api/categories/themas/${category.categoryThema}`);
-    updateDisplayOrderOptions(categories.length);
-    displaySelectBox.value = category.displayOrder;
+    const nonAllViewCategories = categories.filter(c => c.categoryName !== '전체보기');
+    updateDisplayOrderOptions(nonAllViewCategories.length);
+
+    // 전체보기가 아닌 경우에만 displayOrder 설정
+    if (category.categoryName !== '전체보기') {
+      displaySelectBox.value = category.displayOrder;
+    }
 
     if (category.imageUrl) {
       fileNameSpan.innerText = category.imageUrl.split('/').pop();
@@ -129,10 +152,10 @@ async function handleSubmit(e) {
   const title = titleInput.value;
   const description = descriptionInput.value;
   const theme = themeSelectBox.value;
-  const displayOrder = parseInt(displaySelectBox.value, 10);
+  const displayOrder = title === '전체보기' ? 0 : parseInt(displaySelectBox.value, 10);
   const image = imageInput.files[0];
 
-  if (!title || !theme || isNaN(displayOrder)) {
+  if (!title || !theme || (title !== '전체보기' && isNaN(displayOrder))) {
     return alert("카테고리 이름, 테마, 배치 위치는 필수 입력 항목입니다.");
   }
 
