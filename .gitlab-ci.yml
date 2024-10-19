@@ -17,7 +17,6 @@ before_script:
   - echo "$SERVER_PORT $SERVER_HOST" >> ~/.ssh/known_hosts
   - chmod 644 ~/.ssh/known_hosts
   - sudo chmod 644 ~/.ssh/known_hosts
-  - apt-get update && apt-get install -y gradle
 
 cache:
   paths:
