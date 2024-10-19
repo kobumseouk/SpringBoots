@@ -43,7 +43,7 @@ INSERT INTO item_keywords (item_id, keyword) VALUES
 (101, '24SS SUMMER RECOMMEND STYLING');
 
 INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (102, 2, 'Walking Shoes', 7000, 'Comfortable walking shoes', 'Brand B', 'Blue', NOW(), NOW(), 'https://example.com/walking_shoes.jpg', 240);
+VALUES (102, 2, 'Walking Shoes', 7000, 'Comfortable walking shoes', 'Brand B', 'Blue', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/202410191209001928034094', 240);
 INSERT INTO item_keywords (item_id, keyword) VALUES
 (102, 'Walking Shoes'),
 (102, 'common'),
