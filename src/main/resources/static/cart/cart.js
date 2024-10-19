@@ -13,7 +13,7 @@ function addItemToCart(itemId, itemQuantity, itemColor, itemSize) {
 
 
   // 장바구니에 아이템 추가 (중복 체크)
-  const existingItem = cart.find(item => item.itemId === itemId && item.itemSize === itemSize);
+  const existingItem = cart.find(item => item.itemId === itemId && item.itemSize === itemSize && item.itemColor === itemColor);
   if (existingItem) {
     // 이미 존재하는 아이템이면 수량만 증가
     existingItem.itemQuantity += itemQuantity;
@@ -26,11 +26,12 @@ function addItemToCart(itemId, itemQuantity, itemColor, itemSize) {
   localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-function deleteItemFromCart(itemId, itemSize) {
+function deleteItemFromCart(itemId, itemSize, itemColor) {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
   // 해당 itemId와 itemSize가 아닌 아이템들만 남기기
-  const newCart = cart.filter(item => !(item.itemId === itemId && item.itemSize === itemSize));
+  const newCart = cart.filter(item =>
+      !(item.itemId === itemId && item.itemSize === itemSize && item.itemColor === itemColor));
 
   if (newCart.length !== cart.length) {
     // 업데이트된 장바구니 저장
