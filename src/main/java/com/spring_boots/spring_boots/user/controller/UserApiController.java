@@ -47,6 +47,10 @@ public class UserApiController {
     //개인 정보 조회
     @GetMapping("/users-info")
     public ResponseEntity<UserResponseDto> getUser(UserDto user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.OK).body(UserResponseDto.builder()
+                    .message("사용자 정보없음.").build());
+        }
         try {
             Users authUser = userService.findById(user.getUserId());
 

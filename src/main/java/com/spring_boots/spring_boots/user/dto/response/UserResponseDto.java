@@ -19,4 +19,5 @@ public class UserResponseDto {
     private Provider provider;
     private LocalDateTime createdAt;
     private List<UsersInfoResponseDto> userInfoList;
+    private String message;
 }
