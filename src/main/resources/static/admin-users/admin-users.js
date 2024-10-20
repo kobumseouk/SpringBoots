@@ -110,10 +110,19 @@ async function insertUsers() {
     const deleteButton = document.querySelector(`#deleteButton-${id}`);
 
     // 권한 변경 시 모달 띄우기
-    roleSelectBox.addEventListener("change", () => {
+    roleSelectBox.addEventListener("change", async () => {
       // 선택된 userId와 roleSelectBox를 전역 변수에 할당
+      const principalUser = await Api.get("/api/admin/user/principal");
+
       selectedUserId = id;
       selectedRoleSelectBox = roleSelectBox;
+
+      //관리자가 본인이면 변경 불가능
+      if(principalUser.userId === id){
+        alert("관리자 본인은 권한상태를 변경할 수 없습니다.");
+        window.location.href = "/admin/users";  //리다이렉트 url
+        return;
+      }
 
       const selectedOption = selectedRoleSelectBox.options[selectedRoleSelectBox.selectedIndex];
       if (selectedOption.value === "ADMIN") {
