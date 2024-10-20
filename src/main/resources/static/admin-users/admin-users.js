@@ -146,10 +146,19 @@ let selectedRoleSelectBox = null;
 // adminCodeConfirmButton을 한 번만 등록
 adminCodeConfirmButton.addEventListener("click", async () => {
   const adminCode = adminCodeInput.value;
-  const response = await Api.post("/api/users/grant", adminCode);
+//  const response = await Api.post("/api/users/grant", adminCode);
+  const response = await fetch("/api/users/grant",{
+    method: "Post",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify(adminCode),
+  });
+
+  const json = await response.json();
 
   // 관리자 코드 확인
-  if (response.message === 'success') {
+  if (json.message === 'success') {
     const newRole = selectedRoleSelectBox.value;
     const data = { roles: newRole };
 
@@ -160,12 +169,15 @@ adminCodeConfirmButton.addEventListener("click", async () => {
     // API 요청 (권한 변경)
     await Api.patch("/api/admin/grant",selectedUserId, data);
 
+    alert("해당 유저의 권한상태를 변경하였습니다.");
+
     // 모달 닫기
     adminCodeModal.classList.remove("is-active");
 
     window.location.href = "/admin/users";  //리다이렉트 url
   } else {
     alert("관리자 코드가 올바르지 않습니다.");
+    adminCodeInput.value = "";
   }
 });
 
