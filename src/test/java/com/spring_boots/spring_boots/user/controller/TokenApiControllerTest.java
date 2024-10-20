@@ -1,5 +1,6 @@
 package com.spring_boots.spring_boots.user.controller;
 
+import com.spring_boots.spring_boots.user.exception.UserNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
@@ -17,8 +18,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("test")
@@ -98,7 +98,7 @@ class TokenApiControllerTest {
 
 
         // Mock 동작 설정
-        when(userService.login(any(JwtTokenLoginRequest.class))).thenThrow(new IllegalArgumentException("가입되지 않은 실제 ID 입니다."));
+        when(userService.login(any(JwtTokenLoginRequest.class))).thenThrow(new UserNotFoundException("가입되지 않은 실제 ID 입니다."));
 
         // API 호출
         ResponseEntity<JwtTokenResponse> responseEntity = tokenApiController.jwtLogin(
@@ -110,9 +110,10 @@ class TokenApiControllerTest {
         // 리프레시 토큰,엑세스 토큰 두개  삭제했으므로 2번 실행
         verify(response, times(0)).addCookie(any(Cookie.class));
 
-        // 응답 상태 코드가 401 Unauthorized인지 검증
-        assertEquals(401, responseEntity.getStatusCodeValue());
-        assertNull(responseEntity.getBody());  // 로그인 실패 시 응답 본문이 null인지 검증
+        // 응답 상태 코드가 404 NOT_FOUND 검증
+        assertEquals(404, responseEntity.getStatusCodeValue());
+        assertNotNull(responseEntity.getBody());  // 로그인 실패 시 응답 본문이 null 이 아님 검증
+        assertEquals("가입되지 않은 실제 ID 입니다.",responseEntity.getBody().getMessage());
 
     }
 
