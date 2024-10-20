@@ -29,7 +29,7 @@ public class S3BucketService {
     // 파일 기본 경로 업로드
     public String uploadFile(MultipartFile file) throws IOException {
         String fileName = makeHashedFileName(file);
-        String fileUrl = "https://" +  bucketName+ "s3.amazonaws.com/" + fileName;
+        String fileUrl = "https://" +  bucketName+ ".s3.amazonaws.com/" + fileName;
         ObjectMetadata metadata = createFileMetadata(file);
         try {
             s3Config.amazonS3Client().putObject(bucketName, fileName, file.getInputStream(), metadata);
@@ -42,7 +42,7 @@ public class S3BucketService {
     // 파일 사용자 지정 경로 업로드
     public String uploadFile(MultipartFile file, String path) throws IOException {
         String fileName = (path.endsWith("/") ? path : path + "/") + makeHashedFileName(file);
-        String fileUrl = "https://" +  bucketName+ "s3.amazonaws.com/" + fileName;
+        String fileUrl = "https://" +  bucketName+ ".s3.amazonaws.com/" + fileName;
         ObjectMetadata metadata =  createFileMetadata(file);
         try {
             s3Config.amazonS3Client().putObject(bucketName, fileName, file.getInputStream(), metadata);

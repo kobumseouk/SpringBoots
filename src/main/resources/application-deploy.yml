@@ -26,6 +26,17 @@ spring:
     init:
       mode: never
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 737842434086-u62st38eoe0bgottlt38iga0ink4aejh.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - email
+              - profile
+
 jwt:
   issuer: test@example.com
   secret_key: spring-boots

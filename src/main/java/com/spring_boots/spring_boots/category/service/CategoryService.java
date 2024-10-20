@@ -123,7 +123,7 @@ public class CategoryService {
         s3BucketService.deleteFile(imageKey);
       }
       // 각 아이템과 연관된 주문 아이템 삭제
-      orderItemsRepository.deleteAllByItem_ItemId(item.getItemId());
+      orderItemsRepository.deleteAllByItem_Id(item.getId());
       // 아이템 삭제
       itemRepository.delete(item);
     }
@@ -179,4 +179,8 @@ public class CategoryService {
   }
 
 
+  // displayOrder가 1이 아닌 카테고리를 반환
+  public List<Category> getCategoriesExcludingDisplayOrder(int displayOrder) {
+    return categoryRepository.findByDisplayOrderNot(displayOrder);
+  }
 }

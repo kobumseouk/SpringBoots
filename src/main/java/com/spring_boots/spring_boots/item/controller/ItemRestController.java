@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -37,6 +38,7 @@ public class ItemRestController {
             if (file != null && Objects.requireNonNull(file.getContentType()).startsWith("image")) {
                 String imageUrl = s3BucketService.uploadFile(file);
                 requestItemDto.setImageUrl(imageUrl);
+
             }
             ResponseItemDto responseDto = itemRestService.createItem(requestItemDto, file);
             return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
