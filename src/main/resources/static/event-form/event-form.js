@@ -80,18 +80,50 @@ async function fetchEventData() {
     }
 }
 
+// 날짜 포맷팅 함수 추가
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}.${month}.${day}.`;
+}
+
+// 현재 날짜 구하기
+function getCurrentDate() {
+    return formatDate(new Date());
+}
+
+// 1년 후 날짜 구하기
+function getOneYearLater() {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
+    return formatDate(date);
+}
+
 async function handleSubmit(e) {
     e.preventDefault();
 
     const title = titleInput.value;
     const content = contentInput.value;
-    const startDate = startDateInput.value;
-    const endDate = endDateInput.value;
+    let startDate = startDateInput.value;
+    let endDate = endDateInput.value;
     const thumbnailImage = thumbnailInput.files[0];
     const contentImages = contentImageInput.files;
 
     if (!title || !content) {
         return alert("모든 필드를 입력해주세요.");
+    }
+
+    // 시작일이 비어있으면 현재 날짜로 설정
+    if (!startDate) {
+        startDate = getCurrentDate();
+        startDateInput.value = startDate;
+    }
+
+    // 종료일이 비어있으면 1년 후로 설정
+    if (!endDate) {
+        endDate = getOneYearLater();
+        endDateInput.value = endDate;
     }
 
     if (thumbnailImage && thumbnailImage.size > 3e6) {
