@@ -36,6 +36,8 @@ jwt:
     refresh-expires: 604800000  # 7일
     access-expires: 900000      # 15분
 
+admin:
+  code: "springboots" #관리자코드
 
 aws:
   s3:

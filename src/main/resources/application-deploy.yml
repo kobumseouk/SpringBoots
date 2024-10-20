@@ -33,3 +33,6 @@ jwt:
   token:
     refresh-expires: 604800000
     access-expires: 900000
+
+admin:
+  code: "springboots" #관리자코드

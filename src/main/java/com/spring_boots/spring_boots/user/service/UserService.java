@@ -16,6 +16,7 @@ import com.spring_boots.spring_boots.user.repository.UserInfoRepository;
 import com.spring_boots.spring_boots.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,8 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtProviderImpl jwtProvider;
     private final UserInfoRepository userInfoRepository;
+    @Value("${admin.code}")
+    private String adminCode;
 
     //일반 회원가입
     public Users save(UserSignupRequestDto dto) {
@@ -180,7 +183,7 @@ public class UserService {
     //관리자코드체크
     public boolean checkAdminCode(AdminCodeRequestDto adminCodeDto) {
         //임의 토큰 만들기
-        String tempAdminCode = bCryptPasswordEncoder.encode("admin");
+        String tempAdminCode = bCryptPasswordEncoder.encode(adminCode);
         String adminCode = adminCodeDto.getAdminCode();
         if (bCryptPasswordEncoder.matches(adminCode, tempAdminCode)) {
             return true;
