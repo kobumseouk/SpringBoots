@@ -6,11 +6,15 @@ import com.spring_boots.spring_boots.user.dto.request.JwtTokenLoginRequest;
 import com.spring_boots.spring_boots.user.dto.request.RefreshTokenRequest;
 import com.spring_boots.spring_boots.user.dto.response.JwtTokenResponse;
 import com.spring_boots.spring_boots.user.dto.response.RefreshTokenResponse;
+import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
+import com.spring_boots.spring_boots.user.exception.UserDeletedException;
+import com.spring_boots.spring_boots.user.exception.UserNotFoundException;
 import com.spring_boots.spring_boots.user.service.TokenService;
 import com.spring_boots.spring_boots.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +25,7 @@ import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOK
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+@Slf4j
 public class TokenApiController {
 
     private final UserService userService;
@@ -48,9 +53,18 @@ public class TokenApiController {
                     .accessToken(jwtTokenResponse.getAccessToken())
                     .refreshToken(jwtTokenResponse.getRefreshToken())
                     .isAdmin(jwtTokenResponse.getRole().equals(UserRole.ADMIN))
+                    .message("로그인 성공")
                     .build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (UserNotFoundException | UserDeletedException e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(JwtTokenResponse.builder()
+                            .message(e.getMessage()).build());
+        } catch (PasswordNotMatchException e) {
+            log.info(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(JwtTokenResponse.builder()
+                            .message(e.getMessage()).build());
         }
     }
 
