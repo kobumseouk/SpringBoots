@@ -73,18 +73,28 @@ function createEventElement(event) {
   figure.appendChild(img);
   cardImage.appendChild(figure);
 
-  const cardContent = document.createElement('div');
+const cardContent = document.createElement('div');
   cardContent.className = 'card-content';
 
+  const titleContainer = document.createElement('div');
+  titleContainer.className = 'is-flex is-justify-content-space-between is-align-items-center';
+
   const title = document.createElement('p');
-  title.className = 'title';
+  title.className = 'title is-5';
   title.textContent = event.eventTitle;
 
+  const status = document.createElement('span');
+  status.className = 'tag is-light';
+  status.textContent = event.status;  // 상태 표시
+
+  titleContainer.appendChild(title);
+  titleContainer.appendChild(status);
+
   const date = document.createElement('p');
-  date.className = 'subtitle';
+  date.className = 'subtitle is-6';
   date.textContent = `${formatDate(event.startDate)} ~ ${formatDate(event.endDate)}`;
 
-  cardContent.appendChild(title);
+  cardContent.appendChild(titleContainer);
   cardContent.appendChild(date);
 
   card.appendChild(cardImage);
@@ -94,6 +104,7 @@ function createEventElement(event) {
 
   return column;
 }
+
 
 
 // 날짜 형식을 변환하는 헬퍼 함수
