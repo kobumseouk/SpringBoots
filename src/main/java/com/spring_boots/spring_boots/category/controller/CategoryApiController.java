@@ -40,6 +40,7 @@ public class CategoryApiController {
     return ResponseEntity.ok(category);
   }
 
+  // displayOrder '1'을 제외한 나머지 카테고리 출력
   @GetMapping("/themas/displayOrder/{theme}")
   public List<Category> getCategoriesByTheme(@PathVariable String theme) {
     List<CategoryDto> categories = categoryService.getCategoriesByThema(theme);

@@ -113,9 +113,6 @@ public class ItemRestService {
         Optional.ofNullable(itemDto.getItemColor())
                 .ifPresent(findItem::setItemColor);
 
-        //Item Size 수정
-        Optional.ofNullable(itemDto.getItemSize())
-                .ifPresent(findItem::setItemSize);
 
         //Item Image 수정
         if (itemDto.getFile() != null && !itemDto.getFile().isEmpty()) { // 수정하기 위해 HTML에 등록한 이미지 파일이 null값이 아닌 경우 동작

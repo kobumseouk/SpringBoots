@@ -42,10 +42,8 @@ public class Item extends BaseTimeEntity {
     @Column(name = "item_color")
     private String itemColor;
 
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @Column(name = "image_url")
