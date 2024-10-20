@@ -129,16 +129,24 @@ public class UserApiController {
     @PostMapping("/users/check-password")
     public ResponseEntity<UserPasswordResponseDto> checkPassword(UserDto userDto,
                                                                  @RequestBody UserPasswordRequestDto request) {
+        //일반 회원의 경우
+        if (userDto.getProvider().equals(Provider.NONE)) {
+            if (userService.checkPassword(userDto, request)) {
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        UserPasswordResponseDto.builder()
+                                .id(userDto.getUserId())
+                                .build());
+            }
 
-        if (userService.checkPassword(userDto, request)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    UserPasswordResponseDto.builder().build());
+        } else {
+            //구글 로그인의 경우 비밀번호 인증이 필요없으므로 바로 리턴
             return ResponseEntity.status(HttpStatus.OK).body(
                     UserPasswordResponseDto.builder()
                             .id(userDto.getUserId())
                             .build());
         }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                UserPasswordResponseDto.builder().build());
     }
 
     //로그아웃
@@ -174,9 +182,15 @@ public class UserApiController {
                         .isAvailable(true).message("사용할 수 있는 아이디입니다.").build());
     }
 
+    //해당 유저가 구글인지 일반인지 확인
+    @GetMapping("/provider")
+    public ResponseEntity<UserProviderResponseDto> checkProvider(UserDto userDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(UserProviderResponseDto.builder()
+                        .provider(userDto.getProvider()).build());
+    }
+
     //쿠키 삭제 로직
     private void deleteCookie(String token, HttpServletResponse response) {
-
         Cookie cookie = new Cookie(token, null);
 //        cookie.setHttpOnly(true);
         cookie.setPath("/");
