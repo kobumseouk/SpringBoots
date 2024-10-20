@@ -117,7 +117,7 @@ public class UserService {
     @Transactional
     public void updateNoneUser(UserDto userDto, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
         if (!bCryptPasswordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), userDto.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+            throw new PasswordNotMatchException("잘못된 비밀번호입니다.");
         }
         Users user = findById(userDto.getUserId());
 
