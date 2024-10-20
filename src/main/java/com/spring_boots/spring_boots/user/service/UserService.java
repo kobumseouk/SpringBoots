@@ -36,6 +36,7 @@ public class UserService {
     private final JwtProviderImpl jwtProvider;
     private final UserInfoRepository userInfoRepository;
 
+    //일반 회원가입
     public Users save(UserSignupRequestDto dto) {
         if (userRepository.existsByUserRealId(dto.getUserRealId())) {
             throw new IllegalArgumentException("이미 존재하는 ID 입니다.");
@@ -47,6 +48,7 @@ public class UserService {
                 .email(dto.getEmail())
                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .role(UserRole.USER)
+                .provider(Provider.NONE)
                 .build();
 
         return userRepository.save(user);
