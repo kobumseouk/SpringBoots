@@ -20,9 +20,5 @@ public class UserDto {
     private String email;
     private String password;
     private UserRole role;
-    private boolean isDeleted;
-    private String deleteReason;
     private Provider provider;
-    private List<UsersInfo> usersInfoList;
-    private List<Orders> ordersList;
 }
