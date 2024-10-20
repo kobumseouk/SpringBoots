@@ -47,10 +47,22 @@ public class Event extends BaseTimeEntity {
   @Column(name = "is_active", nullable = false)
   private Boolean isActive = true;  // 기본값을 true로 설정, false인 경우 이벤트 글이 사용자에게 보이지 않게 설정
 
+  // 이벤트 상태 설정
+  public String getEventStatus() {
+    LocalDate now = LocalDate.now();
+    if (now.isBefore(this.startDate)) {
+      return "예정";
+    } else if (now.isAfter(this.endDate)) {
+      return "만료";
+    } else {
+      return "진행중";
+    }
+  }
 
-  // end_date가 지났는지 확인하고 is_Active를 업데이트하는 메서드
+  // end_date가 지났는지 확인하고 is_Active를 업데이트하는 메서드 (예정된 이벤트는 표시)
   public void updateActiveStatus() {
-    this.isActive = this.endDate != null && !LocalDate.now().isAfter(this.endDate);
+    LocalDate now = LocalDate.now();
+    this.isActive = now.isBefore(this.endDate) || now.equals(this.endDate);
   }
 
   // 이벤트 종료일 변경 설정 시 자동으로 상태 업데이트

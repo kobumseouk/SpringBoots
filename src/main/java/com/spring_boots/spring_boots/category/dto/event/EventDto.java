@@ -16,4 +16,5 @@ public class EventDto {
   private String thumbnailImageUrl;
   private LocalDate startDate;
   private LocalDate endDate;
+  private String status;  // 예정, 진행 중, 만료 상태 구분
 }

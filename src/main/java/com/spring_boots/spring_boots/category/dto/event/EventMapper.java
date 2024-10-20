@@ -17,6 +17,7 @@ public interface EventMapper {
 
   EventDetailDto eventToEventDetailDto(Event event);
 
+  @Mapping(target = "status", expression = "java(event.getEventStatus())")
   EventDto eventToEventDto(Event event);
 
   @Mapping(target = "id", ignore = true)
@@ -25,5 +26,7 @@ public interface EventMapper {
   void updateEventFromDto(EventRequestDto eventRequestDto, @MappingTarget Event event);
 
   // event -> eventAdminDto
+  @Mapping(target = "status", expression = "java(event.getEventStatus())")
   EventAdminDto eventToEventAdminDto(Event event);
+
 }

@@ -68,7 +68,7 @@ async function insertEvents(page = 0, size = 10) {
     eventList.className = 'event-list';
 
     for (const event of events) {
-        const { id, eventTitle, startDate, endDate, isActive } = event;
+        const { id, eventTitle, startDate, endDate, status } = event;
 
         eventList.insertAdjacentHTML(
           "beforeend",
@@ -78,8 +78,8 @@ async function insertEvents(page = 0, size = 10) {
               <div class="column is-2 has-text-centered">${new Date(startDate).toLocaleDateString()}</div>
               <div class="column is-2 has-text-centered">${new Date(endDate).toLocaleDateString()}</div>
               <div class="column is-2 has-text-centered">
-                <span class="event-status ${isActive ? 'active' : 'inactive'}">
-                  ${isActive ? '진행중' : '만료'}
+                <span class="event-status ${status.toLowerCase()}">
+                  ${status}
                 </span>
               </div>
               <div class="column is-2 has-text-centered">

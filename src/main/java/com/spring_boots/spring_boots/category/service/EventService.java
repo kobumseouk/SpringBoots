@@ -73,7 +73,7 @@ public class EventService {
   public Page<EventDto> getActiveEvents(int page, int limit) {
     PageRequest pageRequest = PageRequest.of(page, limit);
     LocalDate currentDate = LocalDate.now();
-    Page<Event> activePage = eventRepository.findActiveEvents(currentDate, pageRequest);
+    Page<Event> activePage = eventRepository.findByEndDateGreaterThanEqual(currentDate, pageRequest);
     return activePage.map(eventMapper::eventToEventDto);
   }
 
