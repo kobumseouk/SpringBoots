@@ -34,7 +34,6 @@ public class UpdateItemDto {
     @NotBlank(message = "상품 색상은 필수입니다.")
     private String itemColor;
 
-    @NotBlank(message = "상품 사이즈는 필수입니다.")
     private Integer itemSize;
 
     private String imageUrl;

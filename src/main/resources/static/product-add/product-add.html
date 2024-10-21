@@ -1,129 +1,129 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Shopping Mall</title>
-    <!-- 아이콘 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="/common/header.css">
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="/elice-rabbit-favicon.png"
-    />
-    <!-- bulma css 관련 -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
-    />
-    <!-- 폰트 어썸: 아이콘 -->
-    <script
-      defer
-      src="https://kit.fontawesome.com/9daa42bcef.js"
-      crossorigin="anonymous"
-    ></script>
-    <!-- 커스텀 css, js -->
-    <link rel="stylesheet" href="/product-add/product-add.css" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shopping Mall</title>
+  <!-- 아이콘 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/common/header.css">
+  <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/elice-rabbit-favicon.png"
+  />
+  <!-- bulma css 관련 -->
+  <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css"
+  />
+  <!-- 폰트 어썸: 아이콘 -->
+  <script
+          defer
+          src="https://kit.fontawesome.com/9daa42bcef.js"
+          crossorigin="anonymous"
+  ></script>
+  <!-- 커스텀 css, js -->
+  <link rel="stylesheet" href="/product-add/product-add.css" />
 
-  </head>
-  <body>
-    <!-- 헤더 -->
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-      <div class="container mt-3">
-        <div class="navbar-brand">
-          <a class="navbar-item" href="/">
-            <img src="/elice-rabbit.png" width="30" height="30" />
-            <span class="has-text-link">Shopping Mall</span>
-          </a>
+</head>
+<body>
+<!-- 헤더 -->
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="container mt-3">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <img src="/elice-rabbit.png" width="30" height="30" />
+        <span class="has-text-link">Shopping Mall</span>
+      </a>
 
-          <a
-            role="button"
-            class="navbar-burger"
-            aria-label="menu"
-            aria-expanded="false"
-            data-target="navbarBasicExample"
-          >
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
-        </div>
+      <a
+              role="button"
+              class="navbar-burger"
+              aria-label="menu"
+              aria-expanded="false"
+              data-target="navbarBasicExample"
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
 
-        <div id="navbarBasicExample" class="navbar-menu">
-          <div class="navbar-end breadcrumb my-auto" aria-label="breadcrumbs">
-            <ul id="navbar">
-              <li>
-                <a href="/cart" aria-current="page">
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-end breadcrumb my-auto" aria-label="breadcrumbs">
+        <ul id="navbar">
+          <li>
+            <a href="/cart" aria-current="page">
                   <span class="icon">
                     <i class="fas fa-cart-shopping"></i>
                   </span>
-                  <span>카트</span>
-                </a>
-              </li>
-            </ul>
+              <span>카트</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- 제품 추가 폼(Form) -->
+
+<!-- 상품 이름 -->
+<section class="section">
+  <div class="container">
+    <div class="block account-header">
+      <h1 class="subtitle is-4">제품판매</h1>
+    </div>
+    <div class="register-product-form-container">
+      <form class="box register-product-form-box" id="registerProductForm" enctype="multipart/form-data" action="/api/admin/items" method="post">
+        <p class="title is-5 has-text-primary">제품을 판매해 보세요</p>
+        <div class="field">
+          <label class="label" for="titleInput">제품 이름</label>
+          <div class="control">
+            <input
+                    name="itemName"
+                    class="input"
+                    id="titleInput"
+                    type="text"
+                    placeholder="운동화"
+                    autocomplete="on"
+                    required
+            />
           </div>
         </div>
-      </div>
-    </nav>
 
-    <!-- 제품 추가 폼(Form) -->
-
-    <!-- 상품 이름 -->
-    <section class="section">
-      <div class="container">
-        <div class="block account-header">
-          <h1 class="subtitle is-4">제품판매</h1>
+        <!-- 카테고리 -->
+        <div class="field">
+          <label class="label">카테고리</label>
+          <label for="themeSelectBox">테마 선택</label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select id="themeSelectBox" onchange="categoryChang(this)">
+                <option>테마를 선택하세요.</option>
+                <option value="common">공용</option>
+                <option value="women">여성</option>
+                <option value="men">남성</option>
+                <option value="accessories">액세서리</option>
+                <option value="sale">SALE</option>
+                <option value="COLLABORATION">COLLABORATION</option>
+              </select>
+            </div>
+          </div>
         </div>
-        <div class="register-product-form-container">
-          <form class="box register-product-form-box" id="registerProductForm" enctype="multipart/form-data" action="/api/admin/items" method="post">
-            <p class="title is-5 has-text-primary">제품을 판매해 보세요</p>
-            <div class="field">
-              <label class="label" for="titleInput">제품 이름</label>
-              <div class="control">
-                <input
-                  name="itemName"
-                  class="input"
-                  id="titleInput"
-                  type="text"
-                  placeholder="운동화"
-                  autocomplete="on"
-                  required
-                />
-              </div>
+
+
+        <div class="field">
+          <label for="categorySelectBox">카테고리 선택</label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select id="categorySelectBox" name="categoryId" required>
+                <option value="">카테고리를 선택해 주세요.</option>
+              </select>
             </div>
-
-            <!-- 카테고리 -->
-            <div class="field">
-              <label class="label">카테고리</label>
-              <label for="themeSelectBox">테마 선택</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <select id="themeSelectBox" onchange="categoryChang(this)">
-                    <option>테마를 선택하세요.</option>
-                    <option value="common">공용</option>
-                    <option value="women">여성</option>
-                    <option value="men">남성</option>
-                    <option value="accessories">액세서리</option>
-                    <option value="sale">SALE</option>
-                    <option value="COLLABORATION">COLLABORATION</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-
-              <div class="field">
-                <label for="categorySelectBox">카테고리 선택</label>
-                <div class="control">
-                  <div class="select is-fullwidth">
-                  <select id="categorySelectBox" name="categoryId" required>
-                    <option value="">카테고리를 선택해 주세요.</option>
-                  </select>
-                  </div>
-                </div>
-              </div>
+          </div>
+        </div>
 
 
 
@@ -156,56 +156,56 @@
           }
         </script>
 
-            <!-- 제조사 -->
-            <div class="field">
-              <label class="label" for="manufacturerInput">제조사</label>
-              <div class="control">
-                <input
-                  name="itemMaker"
-                  class="input"
-                  id="manufacturerInput"
-                  type="text"
-                  placeholder="OO의류제조(주)"
-                  autocomplete="on"
-                />
-              </div>
-            </div>
+        <!-- 제조사 -->
+        <div class="field">
+          <label class="label" for="manufacturerInput">제조사</label>
+          <div class="control">
+            <input
+                    name="itemMaker"
+                    class="input"
+                    id="manufacturerInput"
+                    type="text"
+                    placeholder="OO의류제조(주)"
+                    autocomplete="on"
+            />
+          </div>
+        </div>
 
-            <div class="field">
-              <label class="label" for="colorInput">색상</label>
-              <div class="control">
-                <input
-                        name="itemColor"
-                        class="input"
-                        id="colorInput"
-                        type="text"
-                        placeholder="검정색"
-                        autocomplete="on"
-                />
-              </div>
-            </div>
+        <div class="field">
+          <label class="label" for="colorInput">색상</label>
+          <div class="control">
+            <input
+                    name="itemColor"
+                    class="input"
+                    id="colorInput"
+                    type="text"
+                    placeholder="검정색"
+                    autocomplete="on"
+            />
+          </div>
+        </div>
 
-            <div class="field">
-              <label class="label" for="detailDescriptionInput"
-                >상세 설명</label
-              >
-              <div class="control">
+        <div class="field">
+          <label class="label" for="detailDescriptionInput"
+          >상세 설명</label
+          >
+          <div class="control">
                 <textarea
-                  class="textarea"
-                  name="itemDescription"
-                  id="detailDescriptionInput"
-                  rows="8"
-                  placeholder="제품에 대한 상세 설명을 적어 주세요."
-                  autocomplete="on"
-                  required
+                        class="textarea"
+                        name="itemDescription"
+                        id="detailDescriptionInput"
+                        rows="8"
+                        placeholder="제품에 대한 상세 설명을 적어 주세요."
+                        autocomplete="on"
+                        required
                 ></textarea>
-              </div>
-            </div>
+          </div>
+        </div>
 
-            <div class="field is-fullwidth">
-              <label class="label">제품 사진</label>
-              <div class="file has-name is-fullwidth">
-                <label class="file-label" for="fileInput">
+        <div class="field is-fullwidth">
+          <label class="label">제품 사진</label>
+          <div class="file has-name is-fullwidth">
+            <label class="file-label" for="fileInput">
                   <span class="file-cta">
                     <span class="file-icon">
                       <i class="fas fa-upload"></i>
@@ -223,159 +223,160 @@
                     </span>
                     <span> 사진 업로드 </span>
                   </span>
-                  <span class="file-name" id="fileNameSpan">
+              <span class="file-name" id="fileNameSpan">
                     사진파일 (png, jpg, jpeg)
                   </span>
-                </label>
-              </div>
-              <div>
-              <img id="imagePreview" src="#" alt="미리보기" style="display: none; max-width: 100%; margin-top: 10px;" />
-                  </div>
-            </div>
-            <script>
-              function showPreviewImage(input) {
-                const file = input.files[0]; // 선택한 파일 가져오기
-                const preview = document.getElementById('imagePreview'); // 미리보기 이미지 요소
-
-                if (file) {
-                  const reader = new FileReader(); // FileReader 객체 생성
-
-                  reader.onload = function (e) {
-                    preview.src = e.target.result; // 파일의 데이터 URL을 미리보기 이미지의 src에 설정
-                    preview.style.display = 'block'; // 이미지를 표시
-                    };
-
-                  reader.readAsDataURL(file); // 파일을 데이터 URL로 읽기
-                } else {
-                preview.src = '#'; // 파일이 없을 경우 초기화
-                preview.style.display = 'none'; // 이미지를 숨김
-                }
-                const fileNameSpan = document.getElementById("fileNameSpan");
-                if (input.files && input.files[0]) {
-                  const fileName = input.files[0].name; // 선택된 파일의 이름 가져오기
-                  fileNameSpan.textContent = fileName; // 파일 이름을 span에 설정
-                } else {
-                  fileNameSpan.textContent = "사진파일 (png, jpg, jpeg)"; // 초기 텍스트로 되돌리기
-                  }
-              }
-
-            </script>
-
-            <div class="field">
-              <label class="label" for="priceInput">가격</label>
-              <div class="field">
-                <div class="control has-icons-right">
-                  <input
-                    class="input"
-                    name="itemPrice"
-                    id="priceInput"
-                    type="number"
-                    placeholder="10000"
-                    autocomplete="on"
-                    required
-                  />
-                  <span class="icon is-small is-right"> 원 </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="field">
-              <label class="label" for="searchKeywordInput">검색 키워드</label>
-              <div class="field has-addons">
-                <div class="control header-search-input is-flex-grow-1">
-                  <input
-                    class="input"
-                    id="searchKeywordInput"
-                    type="text"
-                    placeholder="남자옷"
-                  />
-                </div>
-                <div class="control">
-                  <button type="button" class="button is-primary" id="addKeywordButton">
-                    추가하기
-                  </button>
-                </div>
-              </div>
-              <ul id="keywordList"></ul> <!-- 키워드 리스트를 보여줄 공간 -->
-            </div>
-            <script>
-              let keywords = []; // 키워드 저장 배열
-
-              document.getElementById('addKeywordButton').addEventListener('click', function() {
-                  const input = document.getElementById('searchKeywordInput');
-                  const keyword = input.value.trim();
-
-                  if (keyword) {
-                      if (keywords.length < 5) { // 키워드 개수 제한
-                          keywords.push(keyword); // 키워드 추가
-                          input.value = ''; // 입력 필드 초기화
-                          renderKeywordList(); // 키워드 리스트 갱신
-                      } else {
-                          alert('키워드는 최대 5개까지 추가할 수 있습니다.'); // 최대 개수 알림
-                      }
-                  }
-              });
-
-              function renderKeywordList() {
-                  const keywordList = document.getElementById('keywordList');
-                  keywordList.innerHTML = ''; // 리스트 초기화
-
-                  keywords.forEach((keyword, index) => {
-                      const li = document.createElement('li');
-                      li.textContent = keyword; // 키워드 텍스트 추가
-                      keywordList.appendChild(li);
-                  });
-              }
-            </script>
-
-            <div
-              class="field is-grouped is-grouped-multiline mt-3"
-              id="keywordContainer"
-            ></div>
-
-            <div class="mt-5">
-              <button class="button is-primary is-fullwidth" id="submitButton" type="submit">
-                제품 판매하기
-              </button>
-              <script>
-                document.getElementById('registerProductForm').addEventListener('submit', function(event) {
-                  event.preventDefault(); // 기본 제출 이벤트 방지
-                  if (keywords.length === 0) {
-                    alert('키워드를 추가하세요.');
-                    return;
-                    }
-
-                  const formData = new FormData(this); // 현재 폼의 데이터를 FormData 객체로 생성
-
-                  keywords.forEach((keyword, index) => {
-                    formData.append('keywords', keyword);
-                  });
-
-                  fetch('/api/admin/items', {
-                      method: 'POST',
-                      body: formData,
-                  })
-                  .then(response => {
-                      if (!response.ok) {
-                          throw new Error('Network response was not ok');
-                      }
-                      return response.json();
-                  })
-                  .then(data => {
-                      console.log ('Success', data);
-                      // 성공적으로 추가된 후의 처리
-                      window.location.href = 'http://localhost:3000/admin'; // 페이지 리다이렉트
-                  })
-                  .catch((error) => {
-                      console.error('Error', error);
-                      // 오류 처리
-                  });
-              });
-              </script>
-            </div>
-          </form>
+            </label>
+          </div>
+          <div>
+            <img id="imagePreview" src="#" alt="미리보기" style="display: none; max-width: 100%; margin-top: 10px;" />
+          </div>
         </div>
-      </div>
-    </section>
-  </body>
+        <script>
+          function showPreviewImage(input) {
+            const file = input.files[0]; // 선택한 파일 가져오기
+            const preview = document.getElementById('imagePreview'); // 미리보기 이미지 요소
+
+            if (file) {
+              const reader = new FileReader(); // FileReader 객체 생성
+
+              reader.onload = function (e) {
+                preview.src = e.target.result; // 파일의 데이터 URL을 미리보기 이미지의 src에 설정
+                preview.style.display = 'block'; // 이미지를 표시
+                };
+
+              reader.readAsDataURL(file); // 파일을 데이터 URL로 읽기
+            } else {
+            preview.src = '#'; // 파일이 없을 경우 초기화
+            preview.style.display = 'none'; // 이미지를 숨김
+            }
+            const fileNameSpan = document.getElementById("fileNameSpan");
+            if (input.files && input.files[0]) {
+              const fileName = input.files[0].name; // 선택된 파일의 이름 가져오기
+              fileNameSpan.textContent = fileName; // 파일 이름을 span에 설정
+            } else {
+              fileNameSpan.textContent = "사진파일 (png, jpg, jpeg)"; // 초기 텍스트로 되돌리기
+              }
+          }
+
+        </script>
+
+        <div class="field">
+          <label class="label" for="priceInput">가격</label>
+          <div class="field">
+            <div class="control has-icons-right">
+              <input
+                      class="input"
+                      name="itemPrice"
+                      id="priceInput"
+                      type="number"
+                      placeholder="10000"
+                      autocomplete="on"
+                      required
+              />
+              <span class="icon is-small is-right"> 원 </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label" for="searchKeywordInput">검색 키워드</label>
+          <div class="field has-addons">
+            <div class="control header-search-input is-flex-grow-1">
+              <input
+                      class="input"
+                      id="searchKeywordInput"
+                      type="text"
+                      placeholder="남자옷"
+              />
+            </div>
+            <div class="control">
+              <button type="button" class="button is-primary" id="addKeywordButton">
+                추가하기
+              </button>
+            </div>
+          </div>
+          <ul id="keywordList"></ul> <!-- 키워드 리스트를 보여줄 공간 -->
+        </div>
+        <script>
+          let keywords = []; // 키워드 저장 배열
+
+          document.getElementById('addKeywordButton').addEventListener('click', function() {
+              const input = document.getElementById('searchKeywordInput');
+              const keyword = input.value.trim();
+
+              if (keyword) {
+                  if (keywords.length < 5) { // 키워드 개수 제한
+                      keywords.push(keyword); // 키워드 추가
+                      input.value = ''; // 입력 필드 초기화
+                      renderKeywordList(); // 키워드 리스트 갱신
+                  } else {
+                      alert('키워드는 최대 5개까지 추가할 수 있습니다.'); // 최대 개수 알림
+                  }
+              }
+          });
+
+          function renderKeywordList() {
+              const keywordList = document.getElementById('keywordList');
+              keywordList.innerHTML = ''; // 리스트 초기화
+
+              keywords.forEach((keyword, index) => {
+                  const li = document.createElement('li');
+                  li.textContent = keyword; // 키워드 텍스트 추가
+                  keywordList.appendChild(li);
+              });
+          }
+        </script>
+
+        <div
+                class="field is-grouped is-grouped-multiline mt-3"
+                id="keywordContainer"
+        ></div>
+
+        <div class="mt-5">
+          <button class="button is-primary is-fullwidth" id="submitButton" type="submit">
+            제품 판매하기
+          </button>
+          <script>
+            document.getElementById('registerProductForm').addEventListener('submit', function(event) {
+              event.preventDefault(); // 기본 제출 이벤트 방지
+              if (keywords.length === 0) {
+                alert('키워드를 추가하세요.');
+                return;
+                }
+
+              const formData = new FormData(this); // 현재 폼의 데이터를 FormData 객체로 생성
+
+              keywords.forEach((keyword, index) => {
+                formData.append('keywords', keyword);
+              });
+
+              fetch('/api/admin/items', {
+                  method: 'POST',
+                  body: formData,
+              })
+              .then(response => {
+                  if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                  }
+                  return response.json();
+              })
+              .then(data => {
+                  console.log ('Success', data);
+                  // 성공적으로 추가된 후의 처리
+                  alert('상품이 성공적으로 추가되었습니다.'); // 알림 메시지 추가
+                  window.location.href = 'http://localhost:3000/admin/items/list'; // 페이지 리다이렉트
+              })
+              .catch((error) => {
+                  console.error('Error', error);
+                  // 오류 처리
+              });
+          });
+          </script>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+</body>
 </html>
