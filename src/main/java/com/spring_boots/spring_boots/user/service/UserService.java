@@ -8,6 +8,7 @@ import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.domain.UsersInfo;
 import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.dto.request.*;
+import com.spring_boots.spring_boots.user.dto.response.UserDeleteResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
 import com.spring_boots.spring_boots.user.exception.UserDeletedException;
@@ -114,10 +115,11 @@ public class UserService {
     }
 
     @Transactional
-    public void updateNoneUser(Users user, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
-        if (!bCryptPasswordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), user.getPassword())) {
+    public void updateNoneUser(UserDto userDto, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
+        if (!bCryptPasswordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), userDto.getPassword())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
+        Users user = findById(userDto.getUserId());
 
         UsersInfo usersInfo = userInfoRepository.findById(userInfoId).orElse(null);
         //회원정보가 이미 있다면 업데이트, 그렇지않다면 생성
@@ -146,11 +148,12 @@ public class UserService {
     }
 
     @Transactional
-    public void softDeleteUser(Users authUser) {
-        authUser.deleteUser();  //소프트 딜리트
+    public UserDeleteResponseDto softDeleteUser(UserDto userDto) {
+        Users user = findById(userDto.getUserId());
+        return user.deleteUser();
     }
 
-    public boolean checkPassword(Users authUser, UserPasswordRequestDto request) {
+    public boolean checkPassword(UserDto authUser, UserPasswordRequestDto request) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (encoder.matches(request.getPassword(), authUser.getPassword())) {
             return true;    //비밀번호가 맞으면 true
@@ -206,8 +209,10 @@ public class UserService {
     }
 
     @Transactional
-    public void updateGoogleUser(Users user, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
+    public void updateGoogleUser(UserDto userDto, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
         UsersInfo usersInfo = userInfoRepository.findById(userInfoId).orElse(null);
+        Users user = findById(userDto.getUserId());
+
         //회원정보가 이미 있다면 업데이트, 그렇지않다면 생성
         if (usersInfo != null) {
             usersInfo.updateUserInfo(userUpdateRequestDto);

@@ -29,7 +29,6 @@ import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOK
 public class TokenApiController {
 
     private final UserService userService;
-    private final TokenService tokenService;
 
     //jwt 로그인
     @PostMapping("/login")

@@ -7,4 +7,5 @@ import lombok.Getter;
 @Getter
 public class UserDeleteResponseDto {
     private String message;
+    private boolean isDeleted;
 }
