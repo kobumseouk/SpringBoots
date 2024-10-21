@@ -43,7 +43,7 @@ public class CategoryApiController {
   @GetMapping("/themas/displayOrder/{theme}")
   public List<Category> getCategoriesByTheme(@PathVariable String theme) {
     List<CategoryDto> categories = categoryService.getCategoriesByThema(theme);
-    return categoryService.getCategoriesExcludingDisplayOrder(1);
+    return categoryService.getCategoriesExcludingDisplayOrder(0);
   }
 
 }
