@@ -421,3 +421,54 @@ async function getData(itemId) {
     return null; // 오류가 발생한 경우 null 반환
   }
 }
+
+document.getElementById('deleteAllButton').addEventListener('click', () => {
+  const confirmed = confirm('모든 장바구니 아이템을 삭제하시겠습니까?');
+
+  if (confirmed) {
+    // 로컬 스토리지 전체 삭제
+    localStorage.clear();
+    // 장바구니 아이템을 다시 렌더링 (빈 상태로)
+    renderCartItems();
+    // 총 가격 업데이트
+    updateOrderTotal();
+    console.log('All items have been deleted.');
+  }
+});
+
+
+document.getElementById('purchaseButton').addEventListener('click', () => {
+  const selectedItems = [];
+
+  // 모든 장바구니 아이템들 가져오기
+  const cart = JSON.parse(localStorage.getItem('cart'));
+
+  cart.forEach(item => {
+    // 각 아이템의 id와 size에 맞는 체크박스를 찾아서 확인
+    const checkbox = document.querySelector(`.item-checkbox[data-item-id="${item.itemId}"][data-item-size="${item.itemSize}"]`);
+
+    if (checkbox && checkbox.checked) {
+      // 체크된 아이템의 정보를 추출
+      const { itemId, itemSize, itemColor, itemQuantity } = item;
+
+      selectedItems.push({
+        itemId,
+        itemSize,
+        itemColor,
+        itemQuantity
+      });
+    }
+  });
+
+  // 선택된 상품이 있는지 확인
+  if (selectedItems.length > 0) {
+    // 선택된 상품들을 localStorage에 저장
+    localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+
+    // 주문 페이지로 이동
+    location.href = '../order/order.html';
+  } else {
+    alert('상품을 선택해주세요.');
+  }
+});
+
