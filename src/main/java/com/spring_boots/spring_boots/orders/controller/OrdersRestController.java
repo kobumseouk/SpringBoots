@@ -18,10 +18,10 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class OrdersApiController {
+public class OrdersRestController {
 
     private final OrdersService ordersService;
-    private static final Logger log = LoggerFactory.getLogger(OrdersApiController.class);
+    private static final Logger log = LoggerFactory.getLogger(OrdersRestController.class);
 
 
     // 사용자 주문 목록 조회

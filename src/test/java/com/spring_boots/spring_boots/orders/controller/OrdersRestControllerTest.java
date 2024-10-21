@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = true)
 @ActiveProfiles("test")
-class OrdersApiControllerTest {
+class OrdersRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
