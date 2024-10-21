@@ -43,6 +43,7 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
                         .username(username)
                         .provider(Provider.GOOGLE)
                         .role(UserRole.USER)
+                        .isDeleted(false)
                         .build());
 
         return userRepository.save(user);

@@ -119,6 +119,7 @@ public class Users extends BaseTimeEntity implements UserDetails {
                 .userRealId(userRealId)
                 .provider(provider)
                 .role(role)
+                .isDeleted(isDeleted)
                 .createdAt(getCreatedAt())
                 .userInfoList(userInfoDtos)
                 .message("사용자 있음")
@@ -159,6 +160,7 @@ public class Users extends BaseTimeEntity implements UserDetails {
     public Users updateName(String username) {
         this.username = username;
         this.provider = Provider.GOOGLE;
+        this.isDeleted = false;
         return this;
     }
 }

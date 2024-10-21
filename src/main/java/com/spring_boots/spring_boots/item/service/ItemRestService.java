@@ -52,9 +52,10 @@ public class ItemRestService {
 
 
     // Item 전체 보기
-    public List<ResponseItemDto> getAllItems() {
-        List<Item> items = itemRepository.findAll();
-        return items.stream().map(itemMapper::toResponseDto).collect(Collectors.toList());
+    public Page<ResponseItemDto> getAllItems(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Item> itemsPage = itemRepository.findAll(pageable);
+        return itemsPage.map(itemMapper::toResponseDto);
     }
 
     // Item 단일 보기
@@ -113,9 +114,6 @@ public class ItemRestService {
         Optional.ofNullable(itemDto.getItemColor())
                 .ifPresent(findItem::setItemColor);
 
-        //Item Size 수정
-        Optional.ofNullable(itemDto.getItemSize())
-                .ifPresent(findItem::setItemSize);
 
         //Item Image 수정
         if (itemDto.getFile() != null && !itemDto.getFile().isEmpty()) { // 수정하기 위해 HTML에 등록한 이미지 파일이 null값이 아닌 경우 동작

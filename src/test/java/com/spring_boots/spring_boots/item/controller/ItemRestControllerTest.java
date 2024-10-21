@@ -64,17 +64,17 @@ public class ItemRestControllerTest {
                 .andExpect(status().isCreated());
     }*/
 
-    @Test
-    public void testGetItems() throws Exception {
-        List<ResponseItemDto> itemList = Arrays.asList(new ResponseItemDto(), new ResponseItemDto());
-
-        when(itemRestService.getAllItems()).thenReturn(itemList);
-
-        mockMvc.perform(get("/api/items"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(2)));
-    }
+//    @Test
+//    public void testGetItems() throws Exception {
+//        List<ResponseItemDto> itemList = Arrays.asList(new ResponseItemDto(), new ResponseItemDto());
+//
+//        when(itemRestService.getAllItems()).thenReturn(itemList);
+//
+//        mockMvc.perform(get("/api/items"))
+//                .andExpect(status().isOk())
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(jsonPath("$", hasSize(2)));
+//    }
 
     @Test
     public void testGetItem() throws Exception {

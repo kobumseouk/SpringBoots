@@ -221,4 +221,10 @@ public class UserService {
             userInfoRepository.save(newUsersInfo);
         }
     }
+
+    public boolean checkGoogleLoginDeleted(UserDto userDto) {
+        Users user = findById(userDto.getUserId());
+
+        return user.isDeleted();
+    }
 }

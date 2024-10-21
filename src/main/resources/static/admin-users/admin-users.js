@@ -44,7 +44,7 @@ async function insertUsers() {
   };
 
   for (const user of users) {
-    const { userId, email, username, role, createdAt, userRealId } = user;
+    const { userId, email, username, role, createdAt, userRealId, provider, deleted } = user;
 
     //날짜 포맷팅
     const dateStr = createdAt;
@@ -76,11 +76,11 @@ async function insertUsers() {
       "beforeend",
       `
         <div class="columns orders-item" id="user-${id}">
-          <div class="column">${formattedDate}</div>
-          <div class="column">${userRealId}</div>
-          <div class="column">${email}</div>
-          <div class="column">${fullName}</div>
-          <div class="column">
+          <div class="column is-2">${formattedDate}</div>
+          <div class="column is-2">${userRealId}</div>
+          <div class="column is-2">${email}</div>
+          <div class="column is-2">${fullName}</div>
+          <div class="column is-2">
             <div class="select">
               <select id="roleSelectBox-${id}">
                 <option
@@ -97,6 +97,13 @@ async function insertUsers() {
                 </option>
               </select>
             </div>
+          </div>
+          <div class="column is-2">
+          <!-- 삼항 연산자 안에 삼항연산자 -->
+            ${deleted === false ? 'X' : deleted === true ? 'O' : '알수없음'}
+          </div>
+          <div class="column is-2">
+             ${provider === 'NONE' ? '일반' : provider === 'GOOGLE' ? '구글' : provider}
           </div>
           <!-- <div class="column is-2"> -->
           <!--    <button class="button" id="deleteButton-${id}">회원정보 삭제</button>  -->
