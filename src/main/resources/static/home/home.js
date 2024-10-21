@@ -4,9 +4,9 @@ import * as Api from '/api.js';
 // TODO: 이미지 경로 따로 지정 필요
 const KEY_ITEMS = [
     { name: '부츠', image: 'https://project-springboots.s3.amazonaws.com/20241021175145213187597' },
-    { name: '슈즈', image: 'https://project-springboots.s3.amazonaws.com/20241019152356730003297' },
+    { name: '슈즈', image: 'https://project-springboots.s3.amazonaws.com/20241021231840-751640513' },
     { name: '앵클워머', image: 'https://project-springboots.s3.amazonaws.com/20241021175145213187597' },
-    { name: '로퍼', image: 'https://project-springboots.s3.amazonaws.com/20241021175145213187597' },
+    { name: '로퍼', image: 'https://project-springboots.s3.amazonaws.com/20241021231840-751640513' },
     { name: '첼시부츠', image: 'https://project-springboots.s3.amazonaws.com/20241021183850-461603425' },
     { name: '롱부츠', image: 'https://project-springboots.s3.amazonaws.com/20241021183850-461603425' }
 ];
