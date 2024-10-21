@@ -81,7 +81,7 @@ public class CategoryService {
         // 카테고리를 뒤로 이동
         categoryRepository.decrementDisplayOrderForIntermediateCategories(
             category.getCategoryThema(),
-            oldDisplayOrder + 1,
+            oldDisplayOrder,
             newDisplayOrder
         );
       } else {
@@ -89,13 +89,16 @@ public class CategoryService {
         categoryRepository.incrementDisplayOrderForIntermediateCategories(
             category.getCategoryThema(),
             newDisplayOrder,
-            oldDisplayOrder - 1
+            oldDisplayOrder
         );
       }
     }
 
     // 카테고리 정보 업데이트
     categoryMapper.updateCategoryFromDto(requestDto, category);
+    category.setDisplayOrder(newDisplayOrder);  // 새로운 배치 순서 설정
+
+    // 카테고리 정보 업데이트
     Category updatedCategory = categoryRepository.save(category);
 
     return categoryMapper.categoryToCategoryResponseDto(updatedCategory);
