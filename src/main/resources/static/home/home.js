@@ -89,7 +89,7 @@ function displayProducts(products) {
         column.innerHTML = `
             <div class="card product-card">
                 <div class="card-image">
-                    <figure class="image is-4by3">
+                    <figure class="image">
                         <img src="${product.imageUrl}" alt="${product.itemName}">
                     </figure>
                 </div>
@@ -99,6 +99,9 @@ function displayProducts(products) {
                 </div>
             </div>
         `;
+        column.querySelector('.product-card').addEventListener('click', () => {
+            window.location.href = `/items?itemId=${product.id}`;
+        });
         container.appendChild(column);
     });
 }
