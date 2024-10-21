@@ -3,6 +3,7 @@ package com.spring_boots.spring_boots.item.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -19,4 +20,8 @@ public class ResponseItemDto {
     private String itemColor;
     private String imageUrl;
     private List<String> keywords;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 }

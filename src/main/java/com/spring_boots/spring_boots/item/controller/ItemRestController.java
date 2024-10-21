@@ -51,9 +51,10 @@ public class ItemRestController {
 
     // Items 전체보기
     @GetMapping("/items")
-    public ResponseEntity<List<ResponseItemDto>> getItems() {
-        List<ResponseItemDto> result = itemRestService.getAllItems();
-        return new ResponseEntity<>(result, HttpStatus.OK);
+    public ResponseEntity<Page<ResponseItemDto>> getItems(@RequestParam(defaultValue = "0") int page,
+                                                          @RequestParam(defaultValue = "10") int size) {
+        Page<ResponseItemDto> result = itemRestService.getAllItems(page, size);
+        return ResponseEntity.ok(result);
     }
 
 

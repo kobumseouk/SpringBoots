@@ -1,77 +1,52 @@
-.header-search-input {
-  width: 20rem;
+.account-header {
+  display: block;
+  border-bottom: #ddd 1px solid;
+  padding-bottom: 0.7rem;
 }
 
-.navbar-menu .is-info:focus {
-  outline: none;
-  box-shadow: none;
+.register-product-form-container {
+  display: flex;
+  justify-content: center;
 }
 
-.product-detail-card .product-image {
-  padding: 0;
+.register-product-form-box {
+  max-width: 40rem;
+  width: 100%;
 }
 
-.product-detail-card .box {
-  box-shadow: none;
-  max-width: 100%;
+.register-product-form-box .title {
+  text-align: center;
 }
 
-.product-detail {
-  padding-bottom: 0;
-  margin-bottom: 0;
+.register-product-form-box .button {
+  font-weight: bold;
 }
 
-.product-detail .tag {
-  display: inline-block;
-  margin-left: 0.5rem;
-  margin-bottom: 1rem;
-  line-height: 1.5rem;
+.register-product-form-box .input:focus,
+.register-product-form-box .textarea:focus,
+.register-product-form-box select:focus {
+  border-color: #00d1b2;
+  box-shadow: 0 0 0 0.125em rgba(0, 209, 178, 0.25);
+}
+.field {
+    margin-bottom: 1.5rem; /* 각 필드 간의 간격 조정 */
 }
 
-.detail-description {
-  margin-top: 2rem;
-  padding-bottom: 2rem;
+.control {
+    margin-top: 0.5rem; /* 선택 박스 위쪽 여백 추가 */
 }
 
-.detail-description {
-  white-space: pre-line;
+.label {
+    margin-bottom: 0.5rem; /* 라벨과 입력 필드 간의 간격 */
 }
 
-.buttons-container {
-  flex-grow: 0;
-  padding-right: 0;
-  padding-bottom: 0;
+html, body {
+    height: 100%; /* 전체 높이를 100%로 설정 */
+    margin: 0; /* 기본 여백 제거 */
+    overflow: auto; /* 스크롤이 필요할 때만 표시 */
 }
 
-.buttons-container button {
-  font-size: 1.3rem;
-  font-weight: 800;
-  width: 48%;
-  height: 4rem;
-  padding: 0rem;
-}
-
-.buttons-container button.is-warning {
-  line-height: 3rem;
-  padding-top: 0.3rem;
-}
-
-.content p:not(:last-child) {
-  margin-bottom: 0.5rem;
-}
-
-.content h1:not(:first-child) {
-  margin-top: 0;
-}
-
-@media only screen and (max-width: 500px) {
-  .product-detail-card .buttons-container button {
-    font-size: 1.3rem;
-    font-weight: 800;
-    width: 90%;
-    height: 4rem;
-    padding: 0rem;
-    margin: 0.3rem;
-    margin-left: 0 !important;
-  }
+.section {
+    min-height: 100vh; /* 최소 높이를 100vh로 설정하여 화면이 가득 차면 스크롤 발생 */
+    padding: 1rem; /* 패딩 추가 */
 }

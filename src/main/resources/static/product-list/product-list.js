@@ -1,13 +1,5 @@
 import * as Api from "../../api.js";
 import { loadHeader } from "../../common/header.js";
-import {
-  randomId,
-  getUrlParams,
-  addCommas,
-  navigate,
-  checkUrlParams,
-  createNavbar,
-} from "../../useful-functions.js";
 
 // 요소(element), input 혹은 상수
 const productItemContainer = document.querySelector("#producItemContainer");
@@ -18,22 +10,18 @@ const deleteCompleteButton = document.querySelector("#deleteCompleteButton");
 const deleteCancelButton = document.querySelector("#deleteCancelButton");
 const addItemButton = document.querySelector("#addItemButton");
 
-
+let itemIdToDelete;
 
 // 초기 설정
 async function initialize() {
   try {
       await loadHeader();
-      // checkAdmin();
       await insertItems(0);  // 첫 페이지 로드
       addAllEvents();
     } catch (error) {
       console.error('초기화 중 오류 발생:', error);
     }
 }
-
-// 페이지 로드 시 실행
-document.addEventListener('DOMContentLoaded', initialize);
 
 // 이벤트 설정
 function addAllEvents() {
@@ -43,19 +31,24 @@ function addAllEvents() {
   deleteCompleteButton.addEventListener("click", deleteItemData);
   deleteCancelButton.addEventListener("click", cancelDelete);
 
-  if (addItemButton) {
+if (addItemButton) {
     addItemButton.addEventListener("click", () => {
         console.log("Add Item Button Clicked");
       window.location.href = "/admin/items/create";
     });
+  } else {
+        console.error("add Item Button not found");
   }
 }
 
-// 카테고리 데이터를 받아서 테이블에 추가
+
+
+// 상품 데이터를 받아서 테이블에 추가
 async function insertItems(page = 0, size = 10) {
   try {
-    const response = await Api.get(`/api/admin/items?page=${page}&size=${size}`);
+    const response = await Api.get(`/api/items?page=${page}&size=${size}`);
     console.log('API 응답:', response);
+
 
     if (!response || !response.content) {
       throw new Error('예상치 못한 API 응답 형식');
@@ -73,7 +66,7 @@ async function insertItems(page = 0, size = 10) {
     }
 
     // 기존 카테고리 목록만 초기화 (컬럼명은 유지)
-    const existingList = categoriesContainer.querySelector('.item-list');
+    const existingList = itemsContainer.querySelector('.item-list');
     if (existingList) {
       existingList.remove();
     }
@@ -83,18 +76,30 @@ async function insertItems(page = 0, size = 10) {
     itemList.className = 'item-list';
 
     for (const item of items) {
-      const { id, itemName, categoryThema, createdAt, updatedAt } = item;
-      const koreanThema = translateEnglishToKorean(category.categoryThema);
+      const { id, itemName, categoryId, createdAt, updatedAt } = item;
+        const createdDate = new Date(createdAt);
+        const updatedDate = new Date(updatedAt);
+        const options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false // 24시간 형식
+          };
+          const categories = await Api.get(`/api/admin/categories/${categoryId}`);
 
-      categoryList.insertAdjacentHTML(
+
+      itemList.insertAdjacentHTML(
         "beforeend",
         `
           <div class="columns orders-item" id="item-${id}">
-            <div class="column is-2">${itemName}</div>
-            <div class="column is-2">${koreanThema}</div>
-            <div class="column is-2">${new Date(createdAt).toLocaleDateString()}</div>
-            <div class="column is-2">${new Date(updatedAt).toLocaleDateString()}</div>
-            <div class="column is-2">
+            <div class="column is-2 has-text-centered">${itemName}</div>
+            <div class="column is-2 has-text-centered">${translateEnglishToKorean(categories.categoryThema)}</div>
+            <div class="column is-2 has-text-centered">${createdDate.toLocaleDateString('ko-KR', options)}</div>
+            <div class="column is-2 has-text-centered">${updatedDate.toLocaleDateString('ko-KR', options)}</div>
+            <div class="column is-2 has-text-centered">
               <button class="button is-outlined is-small mr-2" id="editButton-${id}">수정</button>
               <button class="button is-outlined is-small" id="deleteButton-${id}">삭제</button>
             </div>
@@ -217,3 +222,5 @@ function cancelDelete() {
   closeModal();
 }
 
+// 페이지 로드 시 실행
+document.addEventListener('DOMContentLoaded', initialize);

@@ -52,9 +52,10 @@ public class ItemRestService {
 
 
     // Item 전체 보기
-    public List<ResponseItemDto> getAllItems() {
-        List<Item> items = itemRepository.findAll();
-        return items.stream().map(itemMapper::toResponseDto).collect(Collectors.toList());
+    public Page<ResponseItemDto> getAllItems(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Item> itemsPage = itemRepository.findAll(pageable);
+        return itemsPage.map(itemMapper::toResponseDto);
     }
 
     // Item 단일 보기
