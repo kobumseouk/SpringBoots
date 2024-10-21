@@ -67,7 +67,8 @@ async function insertEvents(page = 0, size = 10) {
     const eventList = document.createElement('div');
     eventList.className = 'event-list';
 
-    for (const event of events) {
+    // return 값이 있는 경우 map 사용
+    events.forEach(event => {
         const { id, eventTitle, startDate, endDate, status } = event;
 
         eventList.insertAdjacentHTML(
@@ -89,7 +90,7 @@ async function insertEvents(page = 0, size = 10) {
             </div>
           `
         );
-    }
+    });
 
     eventsContainer.appendChild(eventList);
 
