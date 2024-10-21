@@ -113,9 +113,9 @@ function renderOrderSummary(order) {
                 <hr />
 
                 <h5 class="title is-5">결제 금액</h5>
-                <p class="mb-1"><strong>총 상품 금액: </strong>₩${order.ordersTotalPrice}</p>
-                <p class="mb-1"><strong>배송비: </strong>₩${order.deliveryFee}</p>
-                <p><strong>총 결제 금액: </strong>₩${order.ordersTotalPrice + order.deliveryFee}</p>
+                <p class="mb-1"><strong>총 상품 금액: </strong>${addCommas(order.ordersTotalPrice)}원</p>
+                <p class="mb-1"><strong>배송비: </strong>${addCommas(order.deliveryFee)}원</p>
+                <p><strong>총 결제 금액: </strong>${addCommas(order.ordersTotalPrice + order.deliveryFee)}원</p>
             </div>
         </div>
     `;
@@ -177,3 +177,7 @@ function openDaumPostcode() {
         }
     }).open();
 }
+
+const addCommas = (n) => {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};

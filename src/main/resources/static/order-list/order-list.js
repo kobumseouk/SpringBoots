@@ -62,7 +62,7 @@ function renderOrderList(orders) {
                 <td><a href="/order-details?orderId=${order.ordersId}">${order.ordersId}</a></td>
                 <td>${new Date(order.createdAt).toLocaleDateString()}</td>
                 <td>${order.quantity}개</td>
-                <td>₩${order.ordersTotalPrice}</td>
+                <td>${addCommas(order.ordersTotalPrice)}원</td>
                 <td>${order.orderStatus}</td>
                 <td>
                     <a class="button is-small is-link" href="/order-details?orderId=${order.ordersId}">상세 보기</a>
@@ -116,3 +116,7 @@ function cancelOrder(orderId) {
             });
     }
 }
+
+const addCommas = (n) => {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
