@@ -45,7 +45,23 @@ async function insertUsers() {
 
   for (const user of users) {
     const { userId, email, username, role, createdAt, userRealId } = user;
-    const date = createdAt;
+
+    //날짜 포맷팅
+    const dateStr = createdAt;
+    const date =new Date(dateStr);
+
+    // toLocaleString을 사용해 간단히 날짜와 시간을 출력
+    const formattedDate = date.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+//        second: '2-digit',
+    });
+
+    console.log(formattedDate);  // 예: 2024. 10. 20. 오후 4:32:35
+
     const id = userId;
     const fullName = username;
     const roles = role;
@@ -60,7 +76,7 @@ async function insertUsers() {
       "beforeend",
       `
         <div class="columns orders-item" id="user-${id}">
-          <div class="column">${date}</div>
+          <div class="column">${formattedDate}</div>
           <div class="column">${userRealId}</div>
           <div class="column">${email}</div>
           <div class="column">${fullName}</div>
@@ -161,9 +177,9 @@ adminCodeModalCloseButton.addEventListener("click", () => {
 });
 
 // 삭제 모달 닫기 버튼 이벤트 리스너
-deleteModalCloseButton.addEventListener("click", () => {
-  modal.classList.remove("is-active");
-});
+//deleteModalCloseButton.addEventListener("click", () => {
+//  modal.classList.remove("is-active");
+//});
 
 // db에서 회원정보 삭제
 async function deleteUserData(e) {
