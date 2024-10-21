@@ -22,6 +22,13 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  @ExceptionHandler(IllegalStateException.class)
+  public ResponseEntity<ErrorResponseDto> handleIllegalStateException(IllegalStateException ex) {
+    log.error("잘못된 상태: {}", ex.getMessage(), ex);
+    ErrorResponseDto errorResponse = new ErrorResponseDto("잘못된_상태", ex.getMessage());
+    return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+  }
+
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(ResourceNotFoundException ex) {
     log.error("리소스를 찾을 수 없음: {}", ex.getMessage(), ex);

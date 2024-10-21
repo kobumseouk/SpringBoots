@@ -165,7 +165,7 @@ async function submitShippingUpdate() {
         closeShippingModal();
         await loadOrderSummary(currentOrder.ordersId); // 업데이트된 주문 정보 다시 로드
     } catch (error) {
-        alert(error.message);
+        alert(`오류 발생: ${error.message}`);
     }
 }
 
