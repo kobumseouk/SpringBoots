@@ -11,6 +11,7 @@ const deleteCancelButton = document.querySelector("#deleteCancelButton");
 
 addAllElements();
 addAllEvents();
+checkProvider();
 
 // html에 요소를 추가하는 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 async function addAllElements() {
@@ -27,6 +28,14 @@ function addAllEvents() {
   deleteCancelButton.addEventListener("click", closeModal);
 }
 
+async function checkProvider(){
+  const isProvider = await Api.get("/api/provider");
+  if(isProvider.provider === "GOOGLE"){
+    alert("구글 계정은 비밀번호를 입력하지않아도 회원정보를 삭제할수있습니다.");
+    passwordInput.disabled = true;
+  }
+}
+
 // db에서 회원정보 삭제
 async function deleteUserData(e) {
   e.preventDefault();
@@ -41,14 +50,6 @@ async function deleteUserData(e) {
 
     // 삭제 진행
     const response =await Api.delete("/api/users-soft",id);
-//    const response = await fetch(`/api/users-soft/${id}`, {
-//      method: 'DELETE',
-//      headers: {
-//        'Content-Type': 'application/json',
-//        // 쿠키에 저장된 토큰은 자동으로 서버로 전송됨
-//      },
-//      credentials: 'include' // 쿠키를 포함하여 요청을 보냄
-//    });
 
     if (!response.message) {
       throw new Error('서버와의 통신에서 문제가 발생했습니다.');
