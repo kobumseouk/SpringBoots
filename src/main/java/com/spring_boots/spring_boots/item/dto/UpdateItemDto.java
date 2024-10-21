@@ -11,6 +11,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Positive;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -39,4 +40,7 @@ public class UpdateItemDto {
     private String imageUrl;
 
     private MultipartFile file;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
