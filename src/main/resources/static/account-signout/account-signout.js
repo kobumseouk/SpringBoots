@@ -62,7 +62,7 @@ async function deleteUserData(e) {
 
     window.location.href = "/";
   } catch (err) {
-    alert(`회원정보 삭제 과정에서 오류가 발생하였습니다: ${err}`);
+    alert(`비밀번호가 올바르지 않습니다. 다시 입력해주세요`);
 
     closeModal();
   }

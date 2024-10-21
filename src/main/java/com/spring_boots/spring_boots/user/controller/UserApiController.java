@@ -7,6 +7,7 @@ import com.spring_boots.spring_boots.user.dto.request.UserPasswordRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.*;
+import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
 import com.spring_boots.spring_boots.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -80,8 +81,8 @@ public class UserApiController {
 
             return ResponseEntity.status(HttpStatus.OK).body(UserUpdateResponseDto
                     .builder().message("정상적으로 수정되었습니다.").build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserUpdateResponseDto
+        } catch (PasswordNotMatchException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserUpdateResponseDto
                     .builder().message("잘못된 데이터 요청입니다.").build());        }
     }
 
