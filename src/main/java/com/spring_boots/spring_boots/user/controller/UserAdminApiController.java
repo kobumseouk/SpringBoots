@@ -1,12 +1,10 @@
 package com.spring_boots.spring_boots.user.controller;
 
 import com.spring_boots.spring_boots.user.domain.Users;
+import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.dto.request.AdminCodeRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.AdminGrantTokenRequestDto;
-import com.spring_boots.spring_boots.user.dto.response.AdminCodeResponseDto;
-import com.spring_boots.spring_boots.user.dto.response.AdminGrantTokenResponseDto;
-import com.spring_boots.spring_boots.user.dto.response.UserCheckAdminResponseDto;
-import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
+import com.spring_boots.spring_boots.user.dto.response.*;
 import com.spring_boots.spring_boots.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.Response;
@@ -32,6 +30,15 @@ public class UserAdminApiController {
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
         List<UserResponseDto> users = userService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(users);
+    }
+
+    //관리자 본인인지아닌지
+    @PreAuthorize(("hasRole('ADMIN')"))
+    @GetMapping("/admin/user/principal")
+    public ResponseEntity<UserPrincipalAdminResponseDto> checkPrincipalAdmin(UserDto userDto) {
+        Long userId = userDto.getUserId();
+        return ResponseEntity.status(HttpStatus.OK).body(
+                UserPrincipalAdminResponseDto.builder().userId(userId).build());
     }
 
     //특정 회원 정보 조회(관리자)

@@ -110,10 +110,19 @@ async function insertUsers() {
     const deleteButton = document.querySelector(`#deleteButton-${id}`);
 
     // 권한 변경 시 모달 띄우기
-    roleSelectBox.addEventListener("change", () => {
+    roleSelectBox.addEventListener("change", async () => {
       // 선택된 userId와 roleSelectBox를 전역 변수에 할당
+      const principalUser = await Api.get("/api/admin/user/principal");
+
       selectedUserId = id;
       selectedRoleSelectBox = roleSelectBox;
+
+      //관리자가 본인이면 변경 불가능
+      if(principalUser.userId === id){
+        alert("관리자 본인은 권한상태를 변경할 수 없습니다.");
+        window.location.href = "/admin/users";  //리다이렉트 url
+        return;
+      }
 
       const selectedOption = selectedRoleSelectBox.options[selectedRoleSelectBox.selectedIndex];
       if (selectedOption.value === "ADMIN") {
@@ -146,10 +155,19 @@ let selectedRoleSelectBox = null;
 // adminCodeConfirmButton을 한 번만 등록
 adminCodeConfirmButton.addEventListener("click", async () => {
   const adminCode = adminCodeInput.value;
-  const response = await Api.post("/api/users/grant", adminCode);
+//  const response = await Api.post("/api/users/grant", adminCode);
+  const response = await fetch("/api/users/grant",{
+    method: "Post",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: JSON.stringify(adminCode),
+  });
+
+  const json = await response.json();
 
   // 관리자 코드 확인
-  if (response.message === 'success') {
+  if (json.message === 'success') {
     const newRole = selectedRoleSelectBox.value;
     const data = { roles: newRole };
 
@@ -160,12 +178,15 @@ adminCodeConfirmButton.addEventListener("click", async () => {
     // API 요청 (권한 변경)
     await Api.patch("/api/admin/grant",selectedUserId, data);
 
+    alert("해당 유저의 권한상태를 변경하였습니다.");
+
     // 모달 닫기
     adminCodeModal.classList.remove("is-active");
 
     window.location.href = "/admin/users";  //리다이렉트 url
   } else {
     alert("관리자 코드가 올바르지 않습니다.");
+    adminCodeInput.value = "";
   }
 });
 
