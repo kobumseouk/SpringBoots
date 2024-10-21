@@ -30,6 +30,8 @@
         const urlParams = new URLSearchParams(window.location.search);
         const itemId = urlParams.get('id');
 
+        console.log('test', itemIt);
+
         fetch('/api/items/${itemId}')
             .then(response => response.json())
             .then(data => {
@@ -39,7 +41,7 @@
                 document.getElementById('colorInput').value = data.itemColor;
                 document.getElementById('detailDescriptionInput').value = data.itemDescription;
                 document.getElementById('priceInput').value = data.itemPrice;
-                document.getElementById('searchKeywordInput').value = data.keywords;
+                document.getElementById('searchKeywordInput').value = data.keywords.join(', ');
                 // document.getElementById('').value =
         })
         .catch(error => console.error('Error fetching item', error));
