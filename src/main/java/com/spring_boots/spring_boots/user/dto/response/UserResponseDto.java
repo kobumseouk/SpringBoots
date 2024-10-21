@@ -18,6 +18,7 @@ public class UserResponseDto {
     private UserRole role;
     private Provider provider;
     private LocalDateTime createdAt;
+    private boolean isDeleted;
     private List<UsersInfoResponseDto> userInfoList;
     private String message;
 }

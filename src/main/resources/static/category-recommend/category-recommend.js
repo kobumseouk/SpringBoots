@@ -2,15 +2,15 @@ import * as Api from "/api.js";
 
 async function loadCategories() {
     try {
-        const categories = await Api.get("/api/categories/themas/how-to");
+        const categories = await Api.get("/api/categories/themas/recommend");
         const container = document.getElementById("categories-container");
         const categoryTitle = document.getElementById("category-title");
         const secondBreadcrumb = document.getElementById("second-breadcrumb");
 
         // 제목 및 브레드크럼 설정
-        categoryTitle.textContent = "HOW TO";
-        secondBreadcrumb.querySelector('a').textContent = "HOW TO";
-        secondBreadcrumb.querySelector('a').href = "/categories/how-to";
+        categoryTitle.textContent = "RECOMMEND";
+        secondBreadcrumb.querySelector('a').textContent = "RECOMMEND";
+        secondBreadcrumb.querySelector('a').href = "/categories/recommend";
         secondBreadcrumb.classList.add('is-active');
 
         categories.forEach(category => {

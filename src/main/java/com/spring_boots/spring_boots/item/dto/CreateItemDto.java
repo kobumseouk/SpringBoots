@@ -7,8 +7,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.cglib.core.Local;
 
 import javax.validation.constraints.Positive;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -39,8 +41,11 @@ public class CreateItemDto {
 
     private List<String> keywords;
 
+    // 사용하지 않음
     private int itemSize;
 
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
 
     public Item toEntity() {
@@ -53,6 +58,11 @@ public class CreateItemDto {
         item.setImageUrl(imageUrl);
         item.setKeywords(keywords);
         item.setItemSize(itemSize);
+
+        LocalDateTime now = LocalDateTime.now();
+        item.setCreatedAt(now); // 엔티티에 createdAt 설정
+        item.setUpdatedAt(now); // 엔티티에 updatedAt 설정
+
         return item;
     }
 }
