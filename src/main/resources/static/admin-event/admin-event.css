@@ -74,14 +74,16 @@
   font-weight: bold;
 }
 
-/* 진행 중인 이벤트 색상 */
-.event-status.active {
-  color: #48c774;
+.event-status.예정 {
+  color: #ffd700;
 }
 
-/* 만료된 이벤트 색상 */
-.event-status.inactive {
-  color: #ff3860;
+.event-status.진행중 {
+  color: #32cd32;
+}
+
+.event-status.만료 {
+  color: #ff6347;
 }
 
 .modal .box {

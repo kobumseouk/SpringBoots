@@ -11,7 +11,6 @@ import java.time.LocalDate;
 
 
 public interface EventRepository extends JpaRepository<Event, Long> {
-  @Query("SELECT e FROM Event e WHERE e.isActive = true AND e.endDate >= :currentDate")
-  Page<Event> findActiveEvents(LocalDate currentDate, Pageable pageable);
+  Page<Event> findByEndDateGreaterThanEqual(LocalDate date, Pageable pageable);
 
 }
