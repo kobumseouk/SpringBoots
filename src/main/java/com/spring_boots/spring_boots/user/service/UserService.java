@@ -9,6 +9,9 @@ import com.spring_boots.spring_boots.user.domain.UsersInfo;
 import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.dto.request.*;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
+import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
+import com.spring_boots.spring_boots.user.exception.UserDeletedException;
+import com.spring_boots.spring_boots.user.exception.UserNotFoundException;
 import com.spring_boots.spring_boots.user.repository.UserInfoRepository;
 import com.spring_boots.spring_boots.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -61,14 +64,14 @@ public class UserService {
 
     public JwtTokenDto login(JwtTokenLoginRequest request) {
         Users user = userRepository.findByUserRealId(request.getUserRealId())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 실제 ID 입니다."));
+                .orElseThrow(() -> new UserNotFoundException("가입되지 않은 ID 입니다."));
 
         if (user.isDeleted()) {
-            throw new IllegalArgumentException("정보가 삭제된 회원입니다.");
+            throw new UserDeletedException("회원 정보가 삭제된 상태입니다.");
         }
 
         if (!bCryptPasswordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+            throw new PasswordNotMatchException("잘못된 비밀번호입니다.");
         }
 
         Map<String, Object> claims = Map.of(

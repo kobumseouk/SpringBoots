@@ -44,20 +44,20 @@ public class UserAdminApiController {
     }
 
 //    //관리자 부여
-//    @PatchMapping("/admin/grant/{userId}")
-//    public ResponseEntity<AdminGrantTokenResponseDto> grantAdmin(@PathVariable("userId") Long userId,
-//                                                                 @RequestBody AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
-//        Users authUser = userService.findById(userId);
-//
-//        if (authUser == null) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                    .body(AdminGrantTokenResponseDto.builder()
-//                            .message("인증되지 않은 사용자입니다. 로그인해주세요").build());
-//        }
-//        userService.grantRole(authUser, adminGrantTokenRequestDto);
-//        return ResponseEntity.status(HttpStatus.OK).body(AdminGrantTokenResponseDto.builder()
-//                .message("권한부여 성공!").build());
-//    }
+    @PatchMapping("/admin/grant/{userId}")
+    public ResponseEntity<AdminGrantTokenResponseDto> grantAdmin(@PathVariable("userId") Long userId,
+                                                                 @RequestBody AdminGrantTokenRequestDto adminGrantTokenRequestDto) {
+        Users authUser = userService.findById(userId);
+
+        if (authUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(AdminGrantTokenResponseDto.builder()
+                            .message("인증되지 않은 사용자입니다. 로그인해주세요").build());
+        }
+        userService.grantRole(authUser, adminGrantTokenRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(AdminGrantTokenResponseDto.builder()
+                .message("권한부여 성공!").build());
+    }
 
     //관리자 확인 API
     @PreAuthorize("hasRole('ADMIN')")

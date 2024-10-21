@@ -39,7 +39,7 @@ async function handleSubmit(e) {
 
   if (!isPasswordValid) {
     return alert(
-      "비밀번호가 4글자 이상인지, 이메일 형태가 맞는지 확인해 주세요."
+      "비밀번호가 4글자 이상인지 확인해주세요"
     );
   }
 
@@ -49,15 +49,28 @@ async function handleSubmit(e) {
     const password=passwordInput.value;
     const data = { userRealId, password };
 
-    const result = await Api.post("/api/login", data);
-//    const { accessToken } = result;
+//    const result = await Api.post("/api/login", data);
+    const result = await fetch("/api/login",{
+      method: "POST",
+      headers : { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+      credentials: "include"
+    });
 
-    // 로그인 성공, 토큰을 세션 스토리지에 저장
-//    sessionStorage.setItem("token", token);
-
-    alert(`정상적으로 로그인되었습니다.`);
+    const resultData = await result.json(); // JSON 형식으로 응답을 파싱
 
     // 로그인 성공
+    if(result.ok){
+      alert('정상적으로 로그인하였습니다.');
+    }else if(result.status ===401){
+      alert('비밀번호를 잘못입력하셨습니다. 다시 입력해주세요');
+      window.location.href = "/login";
+      return;
+    }else if(result.status ===404){
+      alert('삭제된 유저거나 유저정보를 확인할수없습니다. 아이디를 다시입력해주세요.');
+      window.location.href = "/login";
+      return;
+    }
 
     // admin(관리자) 일 경우, sessionStorage 에 기록함
     if (result.admin) {

@@ -43,7 +43,7 @@ async function updateUserMenu() {
     let menuHTML = '';
 
     // 사용자가 로그인한 경우
-    if (userInfo) {
+    if (userInfo.message === '사용자 있음') {
       // 사용자 역할 확인
       if (userInfo.role === 'ADMIN') {
         menuHTML += '<a class="navbar-item" href="/admin">관리자 페이지</a>';

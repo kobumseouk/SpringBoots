@@ -119,6 +119,7 @@ public class Users extends BaseTimeEntity implements UserDetails {
                 .role(role)
                 .createdAt(getCreatedAt())
                 .userInfoList(userInfoDtos)
+                .message("사용자 있음")
                 .build();
     }
 
