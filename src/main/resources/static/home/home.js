@@ -1,6 +1,5 @@
 import { loadHeader } from "../../common/header.js";
 import * as Api from "../api.js";
-import { getImageUrl } from "../aws-s3.js";
 import { navigate, createNavbar } from "../useful-functions.js";
 // import {attach} from "bulma-carousel/src/js";
 
