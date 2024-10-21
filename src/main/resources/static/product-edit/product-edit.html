@@ -30,21 +30,41 @@
         const urlParams = new URLSearchParams(window.location.search);
         const itemId = urlParams.get('id');
 
-        console.log('test', itemIt);
 
-        fetch('/api/items/${itemId}')
+
+        fetch(`/api/items/${itemId}`)
             .then(response => response.json())
             .then(data => {
             // 풀 필드에 데이터 채우기
-                document.getElementById('titleInput').value = data.ItemName;
+                document.getElementById('titleInput').value = data.itemName;
                 document.getElementById('manufacturerInput').value = data.itemMaker;
                 document.getElementById('colorInput').value = data.itemColor;
                 document.getElementById('detailDescriptionInput').value = data.itemDescription;
                 document.getElementById('priceInput').value = data.itemPrice;
-                document.getElementById('searchKeywordInput').value = data.keywords.join(', ');
-                // document.getElementById('').value =
-        })
-        .catch(error => console.error('Error fetching item', error));
+
+                const imagePreview = document.getElementById('imagePreview');
+                const fileNameSpan = document.getElementById('fileNameSpan');
+                if (data.imageUrl) {
+                    imagePreview.src = data.imageUrl; // 이미지 미리보기 설정
+                    imagePreview.style.display = "block"; // 이미지를 표시
+                    fileNameSpan.textContent = data.imageUrl.split('/').pop(); // 파일 이름 표시
+                }
+
+                keywords = data.keywords; // API에서 받은 키워드를 배열에 저장
+                renderKeywordList(); // 키워드 리스트 렌더링
+            })
+            .catch(error => console.error('Error fetching item', error));
+
+            function renderKeywordList() {
+            const keywordList = document.getElementById('keywordList');
+            keywordList.innerHTML = ''; // 리스트 초기화
+
+            keywords.forEach((keyword) => {
+                const li = document.createElement('li');
+                li.textContent = keyword; // 키워드 텍스트 추가
+                keywordList.appendChild(li);
+            });
+            }
     </script>
 </head>
 <body>
@@ -178,7 +198,7 @@
                     }
 
                     function fetchCategories(theme) {
-                        fetch(`/api/categories/themas/displayOrder/${theme}`) // 선택한 테마에 따라 카테고리 API 호출
+                        fetch(`/api/categories/themas/${theme}`) // 선택한 테마에 따라 카테고리 API 호출
                             .then(response => response.json())
                             .then(categories => {
                                 const selectBox = document.getElementById('categorySelectBox');
@@ -401,6 +421,7 @@
                           .then(data => {
                               console.log ('Success', data);
                               // 성공적으로 추가된 후의 처리
+                              alert('상품이 성공적으로 수정되었습니다.'); // 알림 메시지 추가
                               window.location.href = 'http://localhost:3000/admin'; // 페이지 리다이렉트
                           })
                           .catch((error) => {
