@@ -4,6 +4,11 @@
     transition: transform 0.3s ease;
 }
 
+.key-item-card p {
+    font-weight: bold;
+    font-size: 18px;
+}
+
 .key-item-card:hover {
     transform: scale(1.05);
 }
