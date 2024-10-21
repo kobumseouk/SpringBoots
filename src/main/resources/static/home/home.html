@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shopping Mall</title>
+  <title>Spring Boots</title>
   <!-- 아이콘 -->
   <link
           rel="icon"
@@ -47,26 +47,43 @@
   </script>
 </head>
 <body>
-<!-- 헤더 -->
-<div id="header-placeholder" class="header-container"></div>
-<!-- 슬라이드 이미지 -->
-<section class="section">
-  <div class="container is-clipped">
-    <div class="slider-arrow-container">
-      <button class="slider-arrow slider-arrow-left" id="sliderArrowLeft">
-            <span class="icon is-large">
-              <i class="fas fa-chevron-left fa-2x"></i>
-            </span>
-      </button>
-      <button class="slider-arrow slider-arrow-right" id="sliderArrowRight">
-            <span class="icon is-large">
-              <i class="fas fa-chevron-right fa-2x"></i>
-            </span>
-      </button>
-    </div>
+  <!-- 헤더 -->
+  <div id="header-placeholder" class="header-container"></div>
 
-    <div id="slider"></div>
-  </div>
-</section>
+  <main>
+    <section id="key-items" class="section">
+      <div class="container">
+        <h2 class="title is-2">KEY ITEMS</h2>
+        <div class="columns is-multiline" id="key-items-container"></div>
+      </div>
+    </section>
+
+    <section id="product-filter" class="section">
+      <div class="container">
+        <div class="buttons is-centered">
+          <button class="button is-large custom-button is-selected" data-filter="new">NEW</button>
+          <button class="button is-large custom-button" data-filter="best">BEST</button>
+        </div>
+        <div class="buttons is-centered">
+          <button class="button is-large custom-button is-selected" data-category="common">공용</button>
+          <button class="button is-large custom-button" data-category="women">여성</button>
+          <button class="button is-large custom-button" data-category="men">남성</button>
+          <button class="button is-large custom-button" data-category="accessories">액세서리</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="product-list" class="section">
+      <div class="container">
+        <div class="columns is-multiline" id="products-container"></div>
+        <div class="pagination-buttons">
+          <button id="prev-button" class="button">&lt;</button>
+          <button id="next-button" class="button">&gt;</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
 </body>
 </html>

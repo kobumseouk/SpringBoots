@@ -1,53 +1,57 @@
-/* 헤더  */
-.header-search-input {
-  width: 20rem;
+/* home.css */
+.key-item-card {
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
 
-.navbar-menu .is-info:focus {
-  outline: none;
-  box-shadow: none;
+.key-item-card:hover {
+    transform: scale(1.05);
 }
 
-/* 이미지 슬라이드  */
-.slider-arrow-container {
-  position: relative;
-}
-.slider-arrow {
-  position: absolute;
-  top: 500px;
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-  z-index: 1;
-}
-.slider-arrow:hover {
-  opacity: 0.6;
-}
-.slider-arrow-left {
-  left: 0;
-}
-.slider-arrow-right {
-  right: 0;
-}
-.slider-navigation-previous {
-  display: none;
-}
-.slider-navigation-next {
-  display: none;
+.key-item-image {
+    border-radius: 50%;
+    overflow: hidden;
 }
 
-#slider .card {
-  outline: none;
-  border: white 1px solid;
-  box-shadow: none;
-  cursor: pointer;
+.pagination-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
 }
-#slider .title:not(:last-child) {
-  margin-bottom: 0.5rem;
+
+.product-card {
+    height: 100%;
 }
-#slider .notification:not(:last-child) {
-  margin-bottom: 0;
+
+.product-card .card-image {
+    height: 200px;
+    overflow: hidden;
 }
-#slider .column {
-  padding: 0;
+
+.product-card .card-image img {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+}
+
+
+.buttons.is-centered {
+    justify-content: center;
+}
+
+.custom-button {
+    min-width: 150px;
+    margin: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.custom-button:hover,
+.custom-button.is-selected {
+    background-color: black !important;
+    color: white !important;
+    border-color: black !important;
+}
+
+#product-filter .buttons:not(:last-child) {
+    margin-bottom: 1.5rem;
 }
