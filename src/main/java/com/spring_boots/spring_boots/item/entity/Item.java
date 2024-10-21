@@ -47,6 +47,12 @@ public class Item extends BaseTimeEntity {
 
     private LocalDateTime updatedAt;
 
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+
     @Column(name = "image_url")
     private String imageUrl;
 
