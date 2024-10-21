@@ -299,7 +299,8 @@ async function saveUserData(e) {
     disableForm();
     closeModal();
   } catch (err) {
-    alert(`회원정보 저장 과정에서 오류가 발생하였습니다: ${err}`);
+    alert(`비밀번호를 잘못입력하셨습니다. 현재 비밀번호를 다시 입력해주세요`);
+    document.getElementById("currentPasswordInput").value = "";
   }
 }
 

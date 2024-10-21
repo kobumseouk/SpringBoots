@@ -24,16 +24,15 @@ INSERT INTO users_info (
 INSERT INTO category (
     category_name, category_thema, category_content, display_order, created_at, updated_at, image_url
 ) VALUES
-    ('전체보기', 'common', 'All types', 1, NOW(), NOW(), NULL),
-    ('Shoes', 'common', 'All types of shoes', 2, NOW(), NOW(), NULL),
-    ('전체보기', 'women', 'All types', 1, NOW(), NOW(), NULL),
-    ('전체보기', 'men', 'All types', 1, NOW(), NOW(), NULL),
-    ('전체보기', 'accessories', 'All types', 1, NOW(), NOW(), NULL),
-    ('24SS SUMMER RECOMMEND STYLING', 'how-to', 'Styling Guide', 1, NOW(), NOW(), 'https://example.com/summer_styling_guide.jpg');
+    ('Shoes', 'common', 'All types of shoes', 1, NOW(), NOW(), NULL),
+    ('Shoes', 'women', 'All types of shoes', 1, NOW(), NOW(), NULL),
+    ('Shoes', 'men', 'All types of shoes', 1, NOW(), NOW(), NULL),
+    ('Socks', 'accessories', 'All types of socks', 1, NOW(), NOW(), NULL),
+    ('24SS SUMMER RECOMMEND STYLING', 'how-to', 'Styling Guide', 1, NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/202410191209001928034094');
 
 -- Item 테이블에 테스트 데이터 삽입
 INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (101, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://example.com/shoes.jpg', 230);
+VALUES (101, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/202410191209001928034094', 230);
 -- 아이템 키워드 리스트
 INSERT INTO item_keywords (item_id, keyword) VALUES
 (101, 'Running Shoes'),
@@ -44,7 +43,7 @@ INSERT INTO item_keywords (item_id, keyword) VALUES
 (101, '24SS SUMMER RECOMMEND STYLING');
 
 INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (102, 2, 'Walking Shoes', 7000, 'Comfortable walking shoes', 'Brand B', 'Blue', NOW(), NOW(), 'https://example.com/walking_shoes.jpg', 240);
+VALUES (102, 2, 'Walking Shoes', 7000, 'Comfortable walking shoes', 'Brand B', 'Blue', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241019152356730003297', 240);
 INSERT INTO item_keywords (item_id, keyword) VALUES
 (102, 'Walking Shoes'),
 (102, 'common'),
@@ -107,13 +106,13 @@ INSERT INTO event_content_images (event_id, content_image_url)
 SELECT 1, 'https://example.com/summer_sale_content2.jpg';
 
 INSERT INTO event (event_title, event_content, thumbnail_image_url, start_date, end_date, is_active, created_at, updated_at)
-VALUES ('새 학기 특별전', '학생들을 위한 신발 특별 할인. 새 학기를 새 신발과 함께 시작하세요!', 'https://example.com/back_to_school_thumb.jpg', '2024-08-15', '2024-09-15', true, NOW(), NOW());
+VALUES ('새 학기 특별전', '학생들을 위한 신발 특별 할인. 새 학기를 새 신발과 함께 시작하세요!', 'https://example.com/back_to_school_thumb.jpg', '2024-12-31', '2025-03-15', true, NOW(), NOW());
 -- 개별 이미지 URL을 각각의 레코드로 삽입
 INSERT INTO event_content_images (event_id, content_image_url)
 SELECT 2, 'https://example.com/back_to_school_content.jpg';
 
 INSERT INTO event (event_title, event_content, thumbnail_image_url, start_date, end_date, is_active, created_at, updated_at)
-VALUES ('겨울 부츠 프리뷰', '다가오는 겨울 시즌 부츠 미리보기. 따뜻하고 스타일리시한 겨울을 준비하세요.', 'https://example.com/winter_preview_thumb.jpg', '2024-10-01', '2024-10-31', true, NOW(), NOW());
+VALUES ('가을 부츠 프리뷰', '다가오는 가을 시즌 부츠 미리보기. 따뜻하고 스타일리시한 가을을 준비하세요.', 'https://example.com/fall_preview_thumb.jpg', '2024-10-01', '2024-11-11', true, NOW(), NOW());
 -- 개별 이미지 URL을 각각의 레코드로 삽입
 INSERT INTO event_content_images (event_id, content_image_url)
 SELECT 3, 'https://example.com/winter_preview_content.jpg';

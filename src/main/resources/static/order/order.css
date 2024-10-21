@@ -3,9 +3,44 @@
 }
 
 .box {
-    padding: 20px;
+    padding: 10px;
 }
 
 #order-items-box {
     margin-bottom: 20px;
 }
+/* 이미지 크기를 고정하고 비율을 유지 */
+.media-left .image {
+    width: 120px; /* 이미지 너비 고정 */
+    height: 120px; /* 이미지 높이 고정 */
+}
+
+/* 이미지 크기를 고정하고 비율을 유지 */
+.media-left .image img {
+    width: 100%; /* 부모 크기에 맞춰 이미지 크기 설정 */
+    height: 100%; /* 부모 크기에 맞춰 이미지 크기 설정 */
+    object-fit: contain; /* 비율을 유지하면서 이미지가 잘리지 않도록 설정 */
+    display: block;
+    margin: 0 auto;
+}
+
+/* 이미지 및 텍스트 정렬 */
+.media {
+    align-items: flex-start; /* 이미지와 텍스트를 수직 중앙 정렬 */
+}
+
+.media-left {
+    margin-right: 10px; /* 이미지와 텍스트 사이 간격 추가 */
+}
+
+.media-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 텍스트를 이미지와 동일한 중앙 위치로 조정 */
+}
+
+.media-content .content p {
+    font-size: 14px; /* 텍스트 크기 조정 */
+    margin: 5px 0; /* 텍스트와 텍스트 간의 간격 조정 */
+}
+

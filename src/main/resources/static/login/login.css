@@ -16,3 +16,26 @@
 .login-form-box .button {
   font-weight: bold;
 }
+
+/* 버튼 색상 및 문구 색상 설정 */
+.custom-button {
+    background-color: black;
+    color: white; /* 버튼 문구 색상 흰색 */
+}
+
+.custom-button:hover {
+    background-color: #333; /* 버튼 hover 시 어두운 회색 */
+}
+
+.custom-title {
+    color: black; /* "어서오세요!" 문구 색상 검정 */
+}
+
+.google{
+    background-color: red;
+    color: white; /* 버튼 문구 색상 흰색 */
+}
+
+.button-spacing {
+    margin: 0 20px; /* 버튼 간의 좌우 간격을 설정합니다. */
+}

@@ -2,11 +2,13 @@ package com.spring_boots.spring_boots.user.service;
 
 import com.spring_boots.spring_boots.config.jwt.impl.AuthTokenImpl;
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
+import com.spring_boots.spring_boots.user.domain.Provider;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.domain.UsersInfo;
 import com.spring_boots.spring_boots.user.dto.request.*;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
+import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
 import com.spring_boots.spring_boots.user.repository.UserRepository;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -99,16 +101,19 @@ public class UserServiceTest {
                 .userRealId(request.getUserRealId())
                 .password("encodedPassword")
                 .role(UserRole.USER)
+                .provider(Provider.NONE)    //일반회원가입
                 .build();
 
         when(userRepository.findByUserRealId(request.getUserRealId())).thenReturn(Optional.of(user));
         when(bCryptPasswordEncoder.matches(request.getPassword(), user.getPassword())).thenReturn(true);
 
         Map<String, Object> claims = Map.of(
-                "accountId", user.getUserId(),
-                "role", user.getRole(),
-                "userRealId", user.getUserRealId()
+                "accountId", user.getUserId(),  //JWT 클래임에 accountId
+                "role", user.getRole(),  //JWT 클래임에 role
+                "provider",user.getProvider(),
+                "userRealId", user.getUserRealId()   //JWT 클래임에 실제 ID 추가
         );
+
         /* powershell 에서 Base64 HS512 자동생성
         * # 64 바이트의 랜덤 키 생성
             $randBytes = New-Object byte[] 64
@@ -149,7 +154,7 @@ public class UserServiceTest {
         when(userRepository.findByUserRealId(request.getUserRealId())).thenReturn(Optional.of(user));
         when(bCryptPasswordEncoder.matches(request.getPassword(), user.getPassword())).thenReturn(false);
 
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = assertThrows(PasswordNotMatchException.class, () -> {
             userService.login(request);
         });
 

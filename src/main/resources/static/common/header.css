@@ -44,19 +44,19 @@
   font-size: 0.9rem;
   margin-left: 1rem;
   text-decoration: none;
-  background-color: transparent; /* 배경색을 투명하게 설정 */
-  transition: text-decoration 0.3s ease; /* 부드러운 밑줄 효과를 위한 transition */
+  background-color: transparent;
+  transition: text-decoration 0.3s ease;
 }
 
 .header-container #user-menu a:hover {
   text-decoration: underline;
-  background-color: transparent !important; /* hover 시에도 배경색이 변하지 않도록 설정 */
+  background-color: transparent !important;
 }
 
 /* 검색 컨테이너 스타일 */
 .header-container .search-container {
-  width: 300px;  /* 원하는 너비로 조정 */
-  margin-bottom: 0.15rem;  /* 아래 여백을 줄임 */
+  width: 300px;
+  margin-bottom: 0.15rem;
 }
 
 .header-container .search-input {
@@ -91,14 +91,15 @@
 .header-container .secondary-navbar .navbar-menu {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .header-container .secondary-navbar .navbar-item {
    color: white !important;
    position: relative;
- }
+}
 
- .header-container .secondary-navbar .navbar-item::after {
+.header-container .secondary-navbar .navbar-item::after {
    content: '';
    position: absolute;
    width: 100%;
@@ -109,31 +110,40 @@
    visibility: hidden;
    transform: scaleX(0);
    transition: all 0.3s ease-in-out;
- }
+}
 
- .header-container .secondary-navbar .navbar-item:hover::after,
- .header-container .secondary-navbar .navbar-item.is-active::after {
-   visibility: visible;
-   transform: scaleX(1);
- }
+.header-container .secondary-navbar .navbar-item:hover::after,
+.header-container .secondary-navbar .navbar-item.is-active::after {
+  visibility: visible;
+  transform: scaleX(1);
+}
 
- .header-container .secondary-navbar .navbar-item:hover,
- .header-container .secondary-navbar .navbar-item.is-active {
-   background-color: transparent !important;
-   color: #4caf50 !important;
- }
+.header-container .secondary-navbar .navbar-item:hover,
+.header-container .secondary-navbar .navbar-item.is-active {
+  background-color: transparent !important;
+  color: #4caf50 !important;
+}
 
- .header-container .secondary-navbar .sale-item::after {
-   background-color: red;
- }
+.header-container .secondary-navbar .sale-item::after {
+  background-color: red;
+}
 
- .header-container .secondary-navbar .sale-item:hover,
- .header-container .secondary-navbar .sale-item.is-active {
-   color: red !important;
- }
+.header-container .secondary-navbar .sale-item:hover,
+.header-container .secondary-navbar .sale-item.is-active {
+  color: red !important;
+}
 
 .header-container .secondary-navbar .navbar-end {
   margin-left: auto;
+}
+
+/* 카테고리 테마 구분선 스타일 */
+.navbar-divider {
+  height: 1.4rem;
+  width: 1px;
+  background-color: #e0e0e0;
+  margin: 0.5rem 0.75rem;
+  align-self: center;
 }
 
 /* 반응형 디자인을 위한 미디어 쿼리 */

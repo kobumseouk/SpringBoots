@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class UserDeleteResponseDto {
-    private String message;
-    private boolean isDeleted;
+public class UserPrincipalAdminResponseDto {
+    private Long userId;
 }

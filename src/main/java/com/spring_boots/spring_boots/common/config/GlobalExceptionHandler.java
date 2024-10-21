@@ -24,6 +24,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
   public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(ResourceNotFoundException ex) {
+    log.error("리소스를 찾을 수 없음: {}", ex.getMessage(), ex);
     ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getErrorCode(), ex.getMessage());
     return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
   }
@@ -31,6 +32,7 @@ public class GlobalExceptionHandler {
   // 인증 예외 처리
   @ExceptionHandler(AuthenticationException.class)
   public ResponseEntity<ErrorResponseDto> handleAuthenticationException(AuthenticationException ex) {
+    log.error("인증 실패: {}", ex.getMessage(), ex);
     ErrorResponseDto errorResponse = new ErrorResponseDto("인증_실패", "인증에 실패했습니다.");
     return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
   }
@@ -38,19 +40,21 @@ public class GlobalExceptionHandler {
   // 권한 예외 처리
   @ExceptionHandler(AccessDeniedException.class)
   public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(AccessDeniedException ex) {
+    log.error("접근 거부: {}", ex.getMessage(), ex);
     ErrorResponseDto errorResponse = new ErrorResponseDto("접근_거부", "접근 권한이 없습니다.");
     return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
   }
 
   @ExceptionHandler(BadRequestException.class)
   public ResponseEntity<ErrorResponseDto> handleBadRequestException(BadRequestException ex) {
+    log.error("잘못된 요청: {}", ex.getMessage(), ex);
     ErrorResponseDto errorResponse = new ErrorResponseDto(ex.getErrorCode(), ex.getMessage());
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponseDto> handleGeneralException(Exception ex) {
-    log.error("Unexpected error occurred", ex);
+    log.error("예상치 못한 오류 발생: {}", ex.getMessage(), ex);
     ErrorResponseDto errorResponse = new ErrorResponseDto("서버_오류", "서버에서 오류가 발생했습니다.");
     return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
   }
@@ -59,6 +63,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponseDto> handleValidationExceptions(
       MethodArgumentNotValidException ex) {
+    log.error("유효성 검사 실패: {}", ex.getMessage(), ex);
     Map<String, String> errors = new HashMap<>();
     ex.getBindingResult().getAllErrors().forEach((error) -> {
       String fieldName = ((FieldError) error).getField();
@@ -76,7 +81,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(IOException.class)
   public ResponseEntity<ErrorResponseDto> handleIOException(IOException ex) {
-    log.error("IOException occurred", ex);
+    log.error("입출력 예외 발생: {}", ex.getMessage(), ex);
     ErrorResponseDto errorResponse = new ErrorResponseDto("파일_처리_오류", "파일 처리 중 오류가 발생했습니다.");
     return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
   }

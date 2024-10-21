@@ -1,21 +1,4 @@
 // 로컬 스토리지에 저장하는 함수
-
-const itemData = {
-  itemId: 101,
-  itemQuantity: 2,
-  itemSize: 280,
-  itemColor: 'black'
-};
-
-const itemData1 = {
-  itemId: 102,
-  itemQuantity: 5,
-  itemSize: 270,
-  itemColor: 'white'
-};
-
-
-
 function addItemToCart(itemId, itemQuantity, itemColor, itemSize) {
   // 장바구니에 담긴 아이템을 로컬 스토리지에서 가져오기
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -30,7 +13,7 @@ function addItemToCart(itemId, itemQuantity, itemColor, itemSize) {
 
 
   // 장바구니에 아이템 추가 (중복 체크)
-  const existingItem = cart.find(item => item.itemId === itemId && item.itemSize === itemSize);
+  const existingItem = cart.find(item => item.itemId === itemId && item.itemSize === itemSize && item.itemColor === itemColor);
   if (existingItem) {
     // 이미 존재하는 아이템이면 수량만 증가
     existingItem.itemQuantity += itemQuantity;
@@ -43,11 +26,12 @@ function addItemToCart(itemId, itemQuantity, itemColor, itemSize) {
   localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-function deleteItemFromCart(itemId, itemSize) {
+function deleteItemFromCart(itemId, itemSize, itemColor) {
   const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
   // 해당 itemId와 itemSize가 아닌 아이템들만 남기기
-  const newCart = cart.filter(item => !(item.itemId === itemId && item.itemSize === itemSize));
+  const newCart = cart.filter(item =>
+      !(item.itemId === itemId && item.itemSize === itemSize && item.itemColor === itemColor));
 
   if (newCart.length !== cart.length) {
     // 업데이트된 장바구니 저장
@@ -359,6 +343,8 @@ function updateOrderTotal() {
 
 // 페이지 로드 시 장바구니 아이템 카드 표시
 document.addEventListener('DOMContentLoaded', () => {
+  // 장바구니 페이지 로드 시 purchase 로컬 스토리지 초기화
+  localStorage.removeItem('purchase');
   updateOrderTotal();
   renderCartItems(); // 장바구니 아이템 표시 함수 호출
 });
@@ -435,10 +421,3 @@ async function getData(itemId) {
     return null; // 오류가 발생한 경우 null 반환
   }
 }
-
-
-
-
-// 장바구니에 아이템 추가
-addItemToCart(itemData.itemId, itemData.itemQuantity, itemData.itemColor, itemData.itemSize);
-addItemToCart(itemData1.itemId, itemData1.itemQuantity, itemData1.itemColor, itemData1.itemSize);

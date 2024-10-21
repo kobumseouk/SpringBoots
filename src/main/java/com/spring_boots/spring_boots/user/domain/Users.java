@@ -5,6 +5,7 @@ import com.spring_boots.spring_boots.orders.entity.Orders;
 import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.dto.request.AdminGrantTokenRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
+import com.spring_boots.spring_boots.user.dto.response.UserDeleteResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UsersInfoResponseDto;
 import jakarta.persistence.*;
@@ -100,8 +101,9 @@ public class Users extends BaseTimeEntity implements UserDetails {
         return !isDeleted;
     }
 
-    public void deleteUser() {
+    public UserDeleteResponseDto deleteUser() {
         this.isDeleted = true;
+        return UserDeleteResponseDto.builder().isDeleted(this.isDeleted).build();
     }
 
     public UserResponseDto toResponseDto() {
@@ -117,8 +119,10 @@ public class Users extends BaseTimeEntity implements UserDetails {
                 .userRealId(userRealId)
                 .provider(provider)
                 .role(role)
+                .isDeleted(isDeleted)
                 .createdAt(getCreatedAt())
                 .userInfoList(userInfoDtos)
+                .message("사용자 있음")
                 .build();
     }
 
@@ -144,15 +148,11 @@ public class Users extends BaseTimeEntity implements UserDetails {
         return UserDto.builder()
                 .userId(this.userId)
                 .username(this.username)
-                .userRealId(this.userRealId)
-                .email(this.email)
+                .userRealId(userRealId)
+                .email(email)
                 .password(this.password)
-                .isDeleted(this.isDeleted)
-                .deleteReason(this.deleteReason)
                 .role(this.role)
                 .provider(this.provider)
-                .usersInfoList(this.usersInfoList)
-                .ordersList(this.ordersList)
                 .build();
     }
 
@@ -160,6 +160,7 @@ public class Users extends BaseTimeEntity implements UserDetails {
     public Users updateName(String username) {
         this.username = username;
         this.provider = Provider.GOOGLE;
+        this.isDeleted = false;
         return this;
     }
 }

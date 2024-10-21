@@ -42,7 +42,11 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/categories/how-to/**").setViewName("forward:/category-how-to/category-how-to-detail.html");
         registry.addViewController("/categories/new-in").setViewName("forward:/category-new-or-best/category-new-or-best.html");
         registry.addViewController("/categories/best").setViewName("forward:/category-new-or-best/category-new-or-best.html");
-        registry.addViewController("/categories/**").setViewName("forward:/category-detail/category-detail.html");
+        // 특정 테마 카테고리 매핑
+        registry.addViewController("/categories/common/**").setViewName("forward:/category-detail/category-detail.html");
+        registry.addViewController("/categories/women/**").setViewName("forward:/category-detail/category-detail.html");
+        registry.addViewController("/categories/men/**").setViewName("forward:/category-detail/category-detail.html");
+        registry.addViewController("/categories/accessories/**").setViewName("forward:/category-detail/category-detail.html");
         // 이벤트 목록 페이지
         registry.addViewController("/events").setViewName("forward:/event-list/event-list.html");
         // 이벤트 관리 페이지
@@ -59,6 +63,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/admin/items/create").setViewName(("forward:/product-add/product-add.html"));
         registry.addViewController("/admin/items/list").setViewName(("forward:/product-list/product-list.html"));
         registry.addViewController("/admin/items/edit").setViewName(("forward:/product-edit/product-edit.html"));
+        registry.addViewController("/items").setViewName("forward:/product-detail/product-detail.html");
     }
 
     @Override

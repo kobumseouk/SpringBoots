@@ -86,7 +86,6 @@ public class ItemRestController {
     @PutMapping("/items/{itemId}")
     public ResponseEntity<ResponseItemDto> updateItem (@PathVariable("itemId") Long id, @ModelAttribute UpdateItemDto updateItemDto) {
         try {
-
             ResponseItemDto responseDto = itemRestService.updateItem(id, updateItemDto);
             return new ResponseEntity<>(responseDto, HttpStatus.OK);
         } catch (Exception e) {
@@ -94,18 +93,34 @@ public class ItemRestController {
         }
     }
 
-    // CategoryId로 Item 조회하기
+    // CategoryId로 Items 조회하기 (페이지 네이션, 정렬 추가)
     @GetMapping("/items/categories/{category_id}")
-    public ResponseEntity<List<ResponseItemDto>> getItemsByCategory(@PathVariable("category_id") Long category_id) {
+    public ResponseEntity<Page<ResponseItemDto>> getItemsByCategory(
+        @PathVariable("category_id") Long categoryId,
+        @RequestParam(required = false, defaultValue = "default") String sort,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "8") int limit) {
         try {
-            List<ResponseItemDto> result = itemRestService.getItemsByCategory(category_id);
+            Page<ResponseItemDto> result = itemRestService.getItemsByCategoryWithSorting(categoryId, sort, page, limit);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    // 키워드와 정렬 - Item 조회
+    // 테마에 해당하는 모든 아이템 - 전체보기 고정 구현
+    @GetMapping("/items/thema/{thema}")
+    public ResponseEntity<Page<ResponseItemDto>> getItemsByTheme(
+        @PathVariable("thema") String thema,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "8") int limit,
+        @RequestParam(defaultValue = "default") String sort) {
+
+        Page<ResponseItemDto> result = itemRestService.getItemsByCategoryThemaWithSorting(thema, sort, page, limit);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    // 키워드와 정렬 - Items 조회
     @GetMapping("/items/search")
     public ResponseEntity<Page<ResponseItemDto>> searchItems(
         @RequestParam String keyword,

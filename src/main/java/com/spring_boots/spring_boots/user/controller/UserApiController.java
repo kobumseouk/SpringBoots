@@ -7,6 +7,7 @@ import com.spring_boots.spring_boots.user.dto.request.UserPasswordRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserSignupRequestDto;
 import com.spring_boots.spring_boots.user.dto.request.UserUpdateRequestDto;
 import com.spring_boots.spring_boots.user.dto.response.*;
+import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
 import com.spring_boots.spring_boots.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,6 +48,10 @@ public class UserApiController {
     //개인 정보 조회
     @GetMapping("/users-info")
     public ResponseEntity<UserResponseDto> getUser(UserDto user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.OK).body(UserResponseDto.builder()
+                    .message("사용자 정보없음.").build());
+        }
         try {
             Users authUser = userService.findById(user.getUserId());
 
@@ -63,22 +68,21 @@ public class UserApiController {
 
     //회원 정보 수정(이름, 아이디는 변경 불가능)
     @PatchMapping("/users/{userInfoId}")
-    public ResponseEntity<UserUpdateResponseDto> updateUser(@AuthenticationPrincipal Users user,
+    public ResponseEntity<UserUpdateResponseDto> updateUser(UserDto userDto,
                                                             @PathVariable("userInfoId") Long userInfoId,
                                                             @RequestBody UserUpdateRequestDto request) {
         try {
-            Users authUser = userService.findById(user.getUserId());    //인증객체 가져올시 영속성컨텍스트에서 가져와야함
 
-            if (authUser.getProvider().equals(Provider.NONE)) {
-                userService.updateNoneUser(authUser, request, userInfoId);
+            if (userDto.getProvider().equals(Provider.NONE)) {
+                userService.updateNoneUser(userDto, request, userInfoId);
             } else {
-                userService.updateGoogleUser(authUser, request, userInfoId);
+                userService.updateGoogleUser(userDto, request, userInfoId);
             }
 
             return ResponseEntity.status(HttpStatus.OK).body(UserUpdateResponseDto
                     .builder().message("정상적으로 수정되었습니다.").build());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserUpdateResponseDto
+        } catch (PasswordNotMatchException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserUpdateResponseDto
                     .builder().message("잘못된 데이터 요청입니다.").build());        }
     }
 
@@ -104,13 +108,12 @@ public class UserApiController {
 
     //회원 탈퇴(soft delete)
     @DeleteMapping("/users-soft/{id}")
-    public ResponseEntity<UserDeleteResponseDto> softDeleteUser(@AuthenticationPrincipal Users user,
+    public ResponseEntity<UserDeleteResponseDto> softDeleteUser(UserDto userDto,
                                                                 @PathVariable Long id,
                                                                 HttpServletResponse response) {
-        Users authUser = userService.findById(user.getUserId());
-        userService.softDeleteUser(authUser);
+        UserDeleteResponseDto userDeleteResponseDto = userService.softDeleteUser(userDto);
 
-        if (authUser.isDeleted()) {
+        if (userDeleteResponseDto.isDeleted()) {
             deleteCookie(REFRESH_TOKEN_TYPE_VALUE, response);
             deleteCookie(ACCESS_TOKEN_TYPE_VALUE, response);
 
@@ -124,27 +127,33 @@ public class UserApiController {
 
     //비밀번호 확인
     @PostMapping("/users/check-password")
-    public ResponseEntity<UserPasswordResponseDto> checkPassword(@AuthenticationPrincipal Users user,
+    public ResponseEntity<UserPasswordResponseDto> checkPassword(UserDto userDto,
                                                                  @RequestBody UserPasswordRequestDto request) {
-        Users authUser = userService.findById(user.getUserId());
+        //일반 회원의 경우
+        if (userDto.getProvider().equals(Provider.NONE)) {
+            if (userService.checkPassword(userDto, request)) {
+                return ResponseEntity.status(HttpStatus.OK).body(
+                        UserPasswordResponseDto.builder()
+                                .id(userDto.getUserId())
+                                .build());
+            }
 
-        if (userService.checkPassword(authUser, request)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    UserPasswordResponseDto.builder().build());
+        } else {
+            //구글 로그인의 경우 비밀번호 인증이 필요없으므로 바로 리턴
             return ResponseEntity.status(HttpStatus.OK).body(
                     UserPasswordResponseDto.builder()
-                            .id(authUser.getUserId())
+                            .id(userDto.getUserId())
                             .build());
         }
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                UserPasswordResponseDto.builder().build());
     }
 
     //로그아웃
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response,
-                                       @AuthenticationPrincipal Users user) {
-        Users authUser = userService.findById(user.getUserId());
-        if (authUser == null) {
+                                       UserDto user) {
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
@@ -173,9 +182,15 @@ public class UserApiController {
                         .isAvailable(true).message("사용할 수 있는 아이디입니다.").build());
     }
 
+    //해당 유저가 구글인지 일반인지 확인
+    @GetMapping("/provider")
+    public ResponseEntity<UserProviderResponseDto> checkProvider(UserDto userDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(UserProviderResponseDto.builder()
+                        .provider(userDto.getProvider()).build());
+    }
+
     //쿠키 삭제 로직
     private void deleteCookie(String token, HttpServletResponse response) {
-
         Cookie cookie = new Cookie(token, null);
 //        cookie.setHttpOnly(true);
         cookie.setPath("/");
