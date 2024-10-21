@@ -1,5 +1,7 @@
-// home.js
-import * as Api from '/api.js';
+import { loadHeader } from "../../common/header.js";
+import * as Api from "../api.js";
+import { navigate, createNavbar } from "../useful-functions.js";
+// import {attach} from "bulma-carousel/src/js";
 
 // TODO: 이미지 경로 따로 지정 필요
 const KEY_ITEMS = [

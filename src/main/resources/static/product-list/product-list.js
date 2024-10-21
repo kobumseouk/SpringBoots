@@ -1,4 +1,4 @@
-import * as Api from "../../api.js";
+import * as Api from "../api.js";
 import { loadHeader } from "../../common/header.js";
 
 // 요소(element), input 혹은 상수
