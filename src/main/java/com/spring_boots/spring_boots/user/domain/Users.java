@@ -159,6 +159,7 @@ public class Users extends BaseTimeEntity implements UserDetails {
     public Users updateName(String username) {
         this.username = username;
         this.provider = Provider.GOOGLE;
+        this.isDeleted = false;
         return this;
     }
 }
