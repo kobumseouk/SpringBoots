@@ -62,7 +62,7 @@ public class WebSecurityConfig {
                                 "/api/**","/login/**","/static/**","/home/**",
                                 "/","/register/**",
                                 "/login-resource/**","api.js","elice-rabbit.png",
-                                "useful-functions.js","elice-rabbit-favicon.png",
+                                "useful-functions.js","elice-rabbit-favicon.png", "leaf.png",
                                 "navbar.js", "/common/**","google.png"
                                 //todo 배포시 api 에 대한 접근 권한 조정
                         ).permitAll()  // 모든 요청에 대해 요청 허가
