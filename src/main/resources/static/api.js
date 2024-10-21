@@ -191,15 +191,8 @@ async function patchFormData(endpoint, formData) {
     });
 
     if (!res.ok) {
-      const contentType = res.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "서버 오류가 발생했습니다.");
-      } else {
-        const errorText = await res.text();
-        console.error("서버 응답:", errorText);
-        throw new Error("서버 오류가 발생했습니다.");
-      }
+      const errorData = await res.json();
+      throw new Error(errorData.message || "서버 오류가 발생했습니다.");
     }
 
     return await res.json();

@@ -183,7 +183,7 @@ function translateEnglishToKorean(englishTheme) {
     'women': '여성',
     'men': '남성',
     'accessories': '액세서리',
-    'how-to': 'HOW TO'
+    'recommend': 'RECOMMEND'
   };
 
   return themeMap[englishTheme];
