@@ -1,10 +1,7 @@
 spring:
-  config:
-    activate:
-      on-profile: release
   profiles:
     group:
-      deploy: release, s3Bucket
+      deploy: s3Bucket
 
   application:
     name: Spring_boots
