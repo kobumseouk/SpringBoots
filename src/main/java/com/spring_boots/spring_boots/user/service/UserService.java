@@ -8,11 +8,16 @@ import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.domain.UsersInfo;
 import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.dto.request.*;
+import com.spring_boots.spring_boots.user.dto.response.UserDeleteResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
+import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
+import com.spring_boots.spring_boots.user.exception.UserDeletedException;
+import com.spring_boots.spring_boots.user.exception.UserNotFoundException;
 import com.spring_boots.spring_boots.user.repository.UserInfoRepository;
 import com.spring_boots.spring_boots.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -32,7 +37,10 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtProviderImpl jwtProvider;
     private final UserInfoRepository userInfoRepository;
+    @Value("${admin.code}")
+    private String adminCode;
 
+    //일반 회원가입
     public Users save(UserSignupRequestDto dto) {
         if (userRepository.existsByUserRealId(dto.getUserRealId())) {
             throw new IllegalArgumentException("이미 존재하는 ID 입니다.");
@@ -44,6 +52,7 @@ public class UserService {
                 .email(dto.getEmail())
                 .password(bCryptPasswordEncoder.encode(dto.getPassword()))
                 .role(UserRole.USER)
+                .provider(Provider.NONE)
                 .build();
 
         return userRepository.save(user);
@@ -61,14 +70,14 @@ public class UserService {
 
     public JwtTokenDto login(JwtTokenLoginRequest request) {
         Users user = userRepository.findByUserRealId(request.getUserRealId())
-                .orElseThrow(() -> new IllegalArgumentException("가입되지 않은 실제 ID 입니다."));
+                .orElseThrow(() -> new UserNotFoundException("가입되지 않은 ID 입니다."));
 
         if (user.isDeleted()) {
-            throw new IllegalArgumentException("정보가 삭제된 회원입니다.");
+            throw new UserDeletedException("회원 정보가 삭제된 상태입니다.");
         }
 
         if (!bCryptPasswordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+            throw new PasswordNotMatchException("잘못된 비밀번호입니다.");
         }
 
         Map<String, Object> claims = Map.of(
@@ -106,10 +115,11 @@ public class UserService {
     }
 
     @Transactional
-    public void updateNoneUser(Users user, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
-        if (!bCryptPasswordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+    public void updateNoneUser(UserDto userDto, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
+        if (!bCryptPasswordEncoder.matches(userUpdateRequestDto.getCurrentPassword(), userDto.getPassword())) {
+            throw new PasswordNotMatchException("잘못된 비밀번호입니다.");
         }
+        Users user = findById(userDto.getUserId());
 
         UsersInfo usersInfo = userInfoRepository.findById(userInfoId).orElse(null);
         //회원정보가 이미 있다면 업데이트, 그렇지않다면 생성
@@ -138,11 +148,12 @@ public class UserService {
     }
 
     @Transactional
-    public void softDeleteUser(Users authUser) {
-        authUser.deleteUser();  //소프트 딜리트
+    public UserDeleteResponseDto softDeleteUser(UserDto userDto) {
+        Users user = findById(userDto.getUserId());
+        return user.deleteUser();
     }
 
-    public boolean checkPassword(Users authUser, UserPasswordRequestDto request) {
+    public boolean checkPassword(UserDto authUser, UserPasswordRequestDto request) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         if (encoder.matches(request.getPassword(), authUser.getPassword())) {
             return true;    //비밀번호가 맞으면 true
@@ -175,7 +186,7 @@ public class UserService {
     //관리자코드체크
     public boolean checkAdminCode(AdminCodeRequestDto adminCodeDto) {
         //임의 토큰 만들기
-        String tempAdminCode = bCryptPasswordEncoder.encode("admin");
+        String tempAdminCode = bCryptPasswordEncoder.encode(adminCode);
         String adminCode = adminCodeDto.getAdminCode();
         if (bCryptPasswordEncoder.matches(adminCode, tempAdminCode)) {
             return true;
@@ -198,8 +209,10 @@ public class UserService {
     }
 
     @Transactional
-    public void updateGoogleUser(Users user, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
+    public void updateGoogleUser(UserDto userDto, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
         UsersInfo usersInfo = userInfoRepository.findById(userInfoId).orElse(null);
+        Users user = findById(userDto.getUserId());
+
         //회원정보가 이미 있다면 업데이트, 그렇지않다면 생성
         if (usersInfo != null) {
             usersInfo.updateUserInfo(userUpdateRequestDto);

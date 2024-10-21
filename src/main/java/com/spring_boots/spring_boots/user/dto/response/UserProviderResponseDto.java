@@ -6,6 +6,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class UserPasswordResponseDto {
-    private long id;
+public class UserProviderResponseDto {
+    private Provider provider;
 }
