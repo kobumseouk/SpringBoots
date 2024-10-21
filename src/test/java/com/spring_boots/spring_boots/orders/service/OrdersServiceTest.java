@@ -12,6 +12,7 @@ import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -86,8 +87,9 @@ class OrdersServiceTest {
         mockOrderItem.setRecipientName("엘리스");
         mockOrderItem.setRecipientContact("010-1234-5678");
     }
-    // 사용자 주문 목록 조회 테스트
+
     @Test
+    @DisplayName("사용자 주문 목록 조회 성공")
     void getUserOrders() {
         // Mock 데이터 설정
         when(ordersRepository.findByUser_UserIdAndIsCanceledFalse(1L)).thenReturn(List.of(mockOrder));
@@ -101,9 +103,9 @@ class OrdersServiceTest {
 
     }
 
-    // 사용자 주문 목록 조회 실패 테스트
     @Test
-    void getUserOrdersFailure() {
+    @DisplayName("사용자 주문 목록 조회 실패")
+    void getUserOrdersFail() {
         // 주문 목록이 비어있는 경우를 Mock으로 설정
         when(ordersRepository.findByUser_UserIdAndIsCanceledFalse(1L)).thenReturn(List.of());
 
@@ -115,9 +117,8 @@ class OrdersServiceTest {
         verify(ordersRepository, times(1)).findByUser_UserIdAndIsCanceledFalse(1L);
     }
 
-
-    // 특정 주문 상세 조회 테스트
     @Test
+    @DisplayName("특정 주문 상세 조회 성공")
     void getOrderDetails() {
         // 리포지토리 Mock 설정
         when(ordersRepository.findById(anyLong())).thenReturn(Optional.of(mockOrder));
@@ -142,9 +143,9 @@ class OrdersServiceTest {
         verify(orderItemsRepository, times(1)).findByOrders(any(Orders.class));
     }
 
-    //특정 주문 상세 조회 실패 테스트
     @Test
-    void getOrderDetailsFailure() {
+    @DisplayName("특정 주문 상세 조회 실패 (주문 번호 없음)")
+    void getOrderDetailsFail() {
         // 주문을 찾을 수 없는 경우 Mock 설정
         when(ordersRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -156,9 +157,8 @@ class OrdersServiceTest {
         verify(ordersRepository, times(1)).findById(anyLong());
     }
 
-
-    // 사용자 주문 생성 테스트
     @Test
+    @DisplayName("사용자 주문 생성 성공")
     void createOrder() {
         // 주문 아이템 DTO 생성
         OrderRequestDto.OrderItemDto orderItemDto = new OrderRequestDto.OrderItemDto();
@@ -208,9 +208,9 @@ class OrdersServiceTest {
         verify(orderItemsRepository, times(1)).saveAll(anyList());
     }
 
-    // 사용자 주문 생성 실패 테스트 (필수 데이터 누락 시)
     @Test
-    void createOrderFailure_MissingFields() {
+    @DisplayName("사용자 주문 생성 실패 (필수 데이터 누락)")
+    void createOrderFail_MissingFields() {
         // 필수 데이터가 없는 주문 요청 DTO 생성
         OrderRequestDto request = new OrderRequestDto();
         request.setRecipientName(""); // 빈 이름
@@ -227,8 +227,8 @@ class OrdersServiceTest {
     }
 
 
-    // 사용자 주문 수정 테스트
     @Test
+    @DisplayName("사용자 주문 수정 성공")
     void updateOrder() {
         // Mock 데이터 설정
         Orders mockOrder = new Orders();
@@ -253,9 +253,9 @@ class OrdersServiceTest {
         verify(ordersRepository, times(1)).findById(anyLong());
     }
 
-    //사용자 주문 수정 실패 테스트 (권한 없음)
     @Test
-    void updateOrderFailure_NotAuthorized() {
+    @DisplayName("사용자 주문 수정 실패 (권한 없음)")
+    void updateOrderFail_NotAuthorized() {
         // 다른 사용자가 만든 주문을 Mock으로 설정
         Users otherUser = Users.builder().userId(2L).build();
         Orders mockOrder = new Orders();
@@ -280,8 +280,8 @@ class OrdersServiceTest {
 
 
 
-    // 사용자 주문 취소 테스트
     @Test
+    @DisplayName("사용자 주문 취소 성공")
     void cancelOrder() {
         // Mock 데이터 설정
         Orders mockOrder = new Orders();
@@ -301,9 +301,9 @@ class OrdersServiceTest {
         verify(ordersRepository, times(1)).findById(anyLong());
     }
 
-    //사용자 주문 취소 실패 테스트 (이미 취소된 주문)
     @Test
-    void cancelOrderFailure_AlreadyCanceled() {
+    @DisplayName("사용자 주문 취소 실패 (이미 취소된 주문)")
+    void cancelOrderFail_AlreadyCanceled() {
         // 이미 취소된 주문 Mock 설정
         Orders mockOrder = new Orders();
         mockOrder.setOrdersId(1L);
@@ -321,8 +321,8 @@ class OrdersServiceTest {
     }
 
 
-    // 관리자 주문 취소 테스트
     @Test
+    @DisplayName("관리자 주문 취소 성공")
     void adminCancelOrder() {
         // Mock 데이터 설정
         Orders mockOrder = new Orders();
@@ -341,9 +341,9 @@ class OrdersServiceTest {
         verify(ordersRepository, times(1)).findById(anyLong());
     }
 
-    //관리자 주문 취소 실패 테스트 (이미 취소된 주문)
     @Test
-    void adminCancelOrderFailure_AlreadyCanceled() {
+    @DisplayName("관리자 주문 취소 실패 (이미 취소된 주문)")
+    void adminCancelOrderFail_AlreadyCanceled() {
         // 이미 취소된 주문 Mock 설정
         Orders mockOrder = new Orders();
         mockOrder.setOrdersId(1L);
@@ -359,8 +359,8 @@ class OrdersServiceTest {
         verify(ordersRepository, times(1)).findById(anyLong());
     }
 
-    // 관리자 주문 상태 수정 테스트
     @Test
+    @DisplayName("관리자 주문 상태 수정 성공")
     void updateOrderStatus() {
         // Mock 데이터 설정
         Orders mockOrder = new Orders();
@@ -380,9 +380,9 @@ class OrdersServiceTest {
         verify(ordersRepository, times(1)).findById(anyLong());
     }
 
-    // 관리자 주문 상태 수정 실패 테스트(주문번호를 찾을 수 없는 경우))
     @Test
-    void updateOrderStatusFailure_OrderNotFound() {
+    @DisplayName("관리자 주문 상태 수정 실패 (주문번호 없음)")
+    void updateOrderStatusFail_OrderNotFound() {
         // 주문을 찾을 수 없는 경우 Mock 설정
         when(ordersRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -398,8 +398,8 @@ class OrdersServiceTest {
     }
 
 
-    // 관리자 모든 주문 조회 테스트
     @Test
+    @DisplayName("관리자 모든 주문 조회 성공")
     void getAllOrders() {
         // Mock 데이터 설정 (필드 값들을 설정)
         Orders mockOrder = new Orders();
@@ -426,7 +426,8 @@ class OrdersServiceTest {
 
     // 관리자 모든 주문 조회 실패 테스트 (주문이 없는 경우)
     @Test
-    void getAllOrdersFailure_NoOrders() {
+    @DisplayName("관리자 모든 주문 조회 실패 (주문 없음)")
+    void getAllOrdersFail_NoOrders() {
         // 빈 주문 목록을 반환하는 Mock 설정
         when(ordersRepository.findByIsCanceledFalse()).thenReturn(List.of());
 

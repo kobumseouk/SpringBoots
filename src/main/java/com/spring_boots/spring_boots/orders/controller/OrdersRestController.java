@@ -18,28 +18,20 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class OrdersApiController {
+public class OrdersRestController {
 
     private final OrdersService ordersService;
-    private static final Logger log = LoggerFactory.getLogger(OrdersApiController.class);
+    private static final Logger log = LoggerFactory.getLogger(OrdersRestController.class);
 
 
     // 사용자 주문 목록 조회
     @GetMapping("/api/orders")
-    public ResponseEntity<?> getUserOrders(UserDto currentUser) {
-        try {
-            List<OrderDto> orders = ordersService.getUserOrders(currentUser.getUserId());
-            if (orders.isEmpty()) {
-                throw new ResourceNotFoundException("주문을 찾을 수 없습니다.");
-            }
-            return ResponseEntity.ok(orders);
-        } catch (ResourceNotFoundException e) {
-            log.error("주문을 찾을 수 없습니다: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("주문을 찾을 수 없습니다.");
-        } catch (Exception e) {
-            log.error("사용자 주문을 가져오는 도중 오류 발생: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("내부 서버 오류가 발생했습니다.");
+    public ResponseEntity<List<OrderDto>> getUserOrders(UserDto currentUser) {
+        List<OrderDto> orders = ordersService.getUserOrders(currentUser.getUserId());
+        if (orders.isEmpty()) {
+            throw new ResourceNotFoundException("주문을 찾을 수 없습니다.");
         }
+        return ResponseEntity.ok(orders);
     }
 
 
@@ -85,15 +77,9 @@ public class OrdersApiController {
             @RequestBody UpdateOrderRequest request,
             UserDto currentUser) {
 
-        try {
-            // 서비스에 주문 업데이트 요청을 전달, 소유자 검증도 포함됨
-            return ordersService.updateOrder(orders_id, request, currentUser)
-                    .map(ResponseEntity::ok)
-                    .orElseThrow(() -> new ResourceNotFoundException("주문번호를 찾을 수 없습니다: " + orders_id));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new OrderResponseDto(orders_id, e.getMessage()));
-        }
+        return ordersService.updateOrder(orders_id, request, currentUser)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResourceNotFoundException("주문번호를 찾을 수 없습니다: " + orders_id));
     }
 
 
@@ -103,14 +89,9 @@ public class OrdersApiController {
             @PathVariable Long orders_id,
             UserDto currentUser) {
 
-        try {
-            return ordersService.cancelOrder(orders_id, currentUser)
-                    .map(ResponseEntity::ok)
-                    .orElseThrow(() -> new ResourceNotFoundException("주문번호를 찾을 수 없습니다: " + orders_id));
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new OrderResponseDto(orders_id, e.getMessage()));
-        }
+        return ordersService.cancelOrder(orders_id, currentUser)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResourceNotFoundException("주문번호를 찾을 수 없습니다: " + orders_id));
     }
 
 
