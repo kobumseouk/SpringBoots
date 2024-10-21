@@ -9,3 +9,6 @@
 .button.is-dark {
     margin: 10px;
 }
+.content figure {
+    margin-left: 0px;
+}
