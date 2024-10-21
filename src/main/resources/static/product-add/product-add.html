@@ -35,7 +35,7 @@
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
         <img src="/elice-rabbit.png" width="30" height="30" />
-        <span class="has-text-link">Shopping Mall</span>
+        <span class="has-text-link">Spring Boots</span>
       </a>
 
       <a
@@ -141,7 +141,7 @@
           }
 
           function fetchCategories(theme) {
-              fetch(`/api/categories/themas/displayOrder/${theme}`) // 선택한 테마에 따라 카테고리 API 호출
+              fetch(`/api/categories/themas/${theme}`) // 선택한 테마에 따라 카테고리 API 호출
                   .then(response => response.json())
                   .then(categories => {
                       const selectBox = document.getElementById('categorySelectBox');
