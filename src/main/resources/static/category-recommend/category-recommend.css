@@ -76,6 +76,15 @@
 
 .card-content .button {
   align-self: flex-start;
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.card-content .button:hover {
+  align-self: flex-start;
   background-color: #6DB33F;
   color: white;
   border: none;
