@@ -75,3 +75,12 @@
     margin-left: 0 !important;
   }
 }
+
+.size-option.is-black {
+  background-color: black !important;
+  color: yellow !important;
+}
+
+.size-option {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
