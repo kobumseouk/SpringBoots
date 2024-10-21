@@ -10,6 +10,7 @@ import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = true)
 @ActiveProfiles("test")
-class OrdersApiControllerTest {
+class OrdersRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -97,8 +98,8 @@ class OrdersApiControllerTest {
                 .thenReturn(createdOrder);  // 주문 생성시 Orders 반환
     }
 
-    // 사용자 주문 목록 조회 테스트
     @Test
+    @DisplayName("사용자 주문 목록 조회 성공")
     @WithMockUser(username = "user", roles = {"USER"})
     void getUserOrders() throws Exception {
 
@@ -128,10 +129,10 @@ class OrdersApiControllerTest {
         System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
-    // 사용자 주문 목록 조회 실패 테스트
     @Test
+    @DisplayName("사용자 주문 목록 조회 실패")
     @WithMockUser(username = "user", roles = {"USER"})
-    void getUserOrdersFailure() throws Exception {
+    void getUserOrdersFail() throws Exception {
 
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(mockUser, null,
@@ -148,9 +149,8 @@ class OrdersApiControllerTest {
                 .andReturn();
     }
 
-
-    // 특정 주문 상세 조회 테스트
     @Test
+    @DisplayName("특정 주문 상세 조회 성공")
     @WithMockUser(username = "user", roles = {"USER"})
     void getOrderDetails() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(
@@ -193,10 +193,10 @@ class OrdersApiControllerTest {
         System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
-    // 특정 주문 상세 조회 실패 테스트 (주문 번호가 없을 때)
     @Test
+    @DisplayName("특정 주문 상세 조회 실패 (주문 번호 없음)")
     @WithMockUser(username = "user", roles = {"USER"})
-    void getOrderDetailsFailure() throws Exception {
+    void getOrderDetailsFail() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(mockUser, null,
                         List.of(new SimpleGrantedAuthority("ROLE_USER")))
@@ -212,8 +212,8 @@ class OrdersApiControllerTest {
                 .andReturn();
     }
 
-    // 사용자 주문 수정 테스트
     @Test
+    @DisplayName("사용자 주문 수정 성공")
     @WithMockUser(username = "user", roles = {"USER"})
     void updateOrder() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(
@@ -244,10 +244,10 @@ class OrdersApiControllerTest {
         System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
-    // 사용자 주문 수정 실패 테스트 (주문 번호가 없을 때)
     @Test
+    @DisplayName("사용자 주문 수정 실패 (주문 번호 없음)")
     @WithMockUser(username = "user", roles = {"USER"})
-    void updateOrderFailure() throws Exception {
+    void updateOrderFail() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(mockUser, null,
                         List.of(new SimpleGrantedAuthority("ROLE_USER")))
@@ -270,6 +270,7 @@ class OrdersApiControllerTest {
 
     // 사용자 주문 생성 테스트
     @Test
+    @DisplayName("사용자 주문 생성 성공")
     @WithMockUser(username = "user", roles = {"USER"})
     void createOrder() throws Exception {
 
@@ -314,10 +315,10 @@ class OrdersApiControllerTest {
         System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
-    // 사용자 주문 생성 실패 테스트 (필수 데이터 누락 시)
     @Test
+    @DisplayName("사용자 주문 생성 실패 (필수 데이터 누락)")
     @WithMockUser(username = "user", roles = {"USER"})
-    void createOrderFailure() throws Exception {
+    void createOrderFail() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(mockUser, null,
                         List.of(new SimpleGrantedAuthority("ROLE_USER")))
@@ -347,10 +348,10 @@ class OrdersApiControllerTest {
                 .andReturn();
     }
 
-    // 사용자 주문 생성 실패 테스트 (주문할 상품이 없을 때)
     @Test
+    @DisplayName("사용자 주문 생성 실패 (주문할 상품 없음)")
     @WithMockUser(username = "user", roles = {"USER"})
-    void createOrderNoItemsFailure() throws Exception {
+    void createOrderNoItemsFail() throws Exception {
 
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(mockUser, null,
@@ -382,8 +383,8 @@ class OrdersApiControllerTest {
                 .andReturn();
     }
 
-    // 사용자 주문 취소 테스트
     @Test
+    @DisplayName("사용자 주문 취소 성공")
     @WithMockUser(username = "user", roles = {"USER"})
     void cancelOrder() throws Exception {
 
@@ -411,10 +412,10 @@ class OrdersApiControllerTest {
         System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
-    // 사용자 주문 취소 실패 테스트 (주문 번호가 없을 때)
     @Test
+    @DisplayName("사용자 주문 취소 실패 (주문 번호 없음)")
     @WithMockUser(username = "user", roles = {"USER"})
-    void cancelOrderFailure() throws Exception {
+    void cancelOrderFail() throws Exception {
 
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(mockUser, null,
@@ -432,8 +433,8 @@ class OrdersApiControllerTest {
                 .andReturn();
     }
 
-    // 관리자 모든 주문 조회 테스트
     @Test
+    @DisplayName("관리자 모든 주문 조회 성공")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void getAllOrders() throws Exception {
         SecurityContextHolder.getContext().setAuthentication(
@@ -457,10 +458,10 @@ class OrdersApiControllerTest {
         System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
-    // 관리자 모든 주문 조회 실패 테스트 (주문이 없을 때)
     @Test
+    @DisplayName("관리자 모든 주문 조회 실패 (주문 없음)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void getAllOrdersFailure() throws Exception {
+    void getAllOrdersFail() throws Exception {
 
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(mockUser2, null,
@@ -478,8 +479,8 @@ class OrdersApiControllerTest {
     }
 
 
-    // 관리자 주문 상태 수정 테스트
     @Test
+    @DisplayName("관리자 주문 상태 수정 성공")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void updateOrderStatus() throws Exception {
 
@@ -512,10 +513,10 @@ class OrdersApiControllerTest {
         System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
-    // 관리자 주문 상태 수정 실패 테스트 (주문 번호가 없을 때)
     @Test
+    @DisplayName("관리자 주문 상태 수정 실패 (주문 번호 없음)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void updateOrderStatusFailure() throws Exception {
+    void updateOrderStatusFail() throws Exception {
 
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(mockUser2, null,
@@ -537,8 +538,8 @@ class OrdersApiControllerTest {
                 .andReturn();
     }
 
-    // 관리자 주문 삭제 테스트
     @Test
+    @DisplayName("관리자 주문 삭제 성공")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void adminCancelOrder() throws Exception {
 
@@ -566,10 +567,10 @@ class OrdersApiControllerTest {
         System.out.println("정렬된 응답 본문: " + prettyJson);
     }
 
-    // 관리자 주문 삭제 실패 테스트 (주문 번호가 없을 때)
     @Test
+    @DisplayName("관리자 주문 삭제 실패 (주문 번호 없음)")
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void adminCancelOrderFailure() throws Exception {
+    void adminCancelOrderFail() throws Exception {
 
         SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(mockUser2, null,

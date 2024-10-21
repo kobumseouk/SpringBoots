@@ -118,9 +118,9 @@ async function loadCartSummary() {
     }
 
     const summaryHtml = `
-        <p><strong>총 상품 금액: </strong>₩${totalPrice}</p>
-        <p><strong>배송비: </strong>₩0</p>
-        <p><strong>총 결제 금액: </strong>₩${totalPrice}</p>
+       <p><strong>총 상품 금액: </strong>${addCommas(totalPrice)}원</p>
+        <p><strong>배송비: </strong>0원</p>
+        <p><strong>총 결제 금액: </strong>${addCommas(totalPrice)}원</p>
     `;
 
     document.getElementById('order-items').innerHTML = itemsHtml;
@@ -249,3 +249,7 @@ function openDaumPostcode() {
         }
     }).open();
 }
+
+const addCommas = (n) => {
+    return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};

@@ -82,6 +82,4 @@ secrets.yml
 .sts4-cache
 .git-hooks/
 node_modules
-
 *MapperImpl.java          // 매퍼 클래스는자동 생성되므로 불필요
-application-s3Bucket.yml

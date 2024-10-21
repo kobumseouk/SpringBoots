@@ -1,0 +1,16 @@
+server:
+  port: 3000
+
+aws:
+  s3:
+    bucket:
+      credentials:
+        accessKey: AKIAWOOXT2P2HYJJ4352
+        secretAccessKey: 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
+      region: ap-northeast-2
+      name: project-springboots
+
+spring:
+  config:
+    activate:
+      on-profile: s3Bucket
