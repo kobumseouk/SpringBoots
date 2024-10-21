@@ -2,6 +2,7 @@ package com.spring_boots.spring_boots.item.entity;
 
 import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.common.BaseTimeEntity;
+import com.spring_boots.spring_boots.orders.entity.OrderItems;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,7 +24,7 @@ public class Item extends BaseTimeEntity {
     @Column(name = "item_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
@@ -56,4 +57,7 @@ public class Item extends BaseTimeEntity {
     @CollectionTable(name = "item_keywords", joinColumns = @JoinColumn(name = "item_id"))
     @Column(name = "keyword")
     private List<String> keywords = new ArrayList<>();
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<OrderItems> orderItems = new ArrayList<>();
 }
