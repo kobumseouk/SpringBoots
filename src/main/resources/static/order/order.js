@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 // 로컬 스토리지에서 장바구니 정보 로드 후 결제 정보 출력
 async function loadCartSummary() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cart = JSON.parse(localStorage.getItem('selectedItems')) || [];
     let purchase = JSON.parse(localStorage.getItem('purchase')) || [];
 
     // purchase가 배열이 아니면 배열로 변환
