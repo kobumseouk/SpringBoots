@@ -3,7 +3,7 @@ import * as Api from "../api.js";
 import { navigate, createNavbar } from "../useful-functions.js";
 // import {attach} from "bulma-carousel/src/js";
 
-// TODO: 이미지 경로 따로 지정 필요
+// 키워드 단위 아이템들
 const KEY_ITEMS = [
     { name: '부츠', image: 'https://project-springboots.s3.amazonaws.com/20241021175145213187597' },
     { name: '슈즈', image: 'https://project-springboots.s3.amazonaws.com/20241021231840-751640513' },
