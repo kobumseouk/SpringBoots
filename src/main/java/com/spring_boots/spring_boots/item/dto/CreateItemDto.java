@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.cglib.core.Local;
 
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
