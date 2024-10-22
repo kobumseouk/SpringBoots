@@ -166,7 +166,7 @@ function copyBuyerInfo() {
 }
 
 async function placeOrder() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cart = JSON.parse(localStorage.getItem('selectedItems')) || [];
     let purchase = JSON.parse(localStorage.getItem('purchase')) || [];
 
 
@@ -230,6 +230,7 @@ async function placeOrder() {
         alert("주문이 성공적으로 처리되었습니다!");
         localStorage.removeItem('purchase'); // 주문 완료 후 바로 구매한 항목 제거
         localStorage.removeItem('cart'); // 주문 완료 후 바로 구매한 항목 제거
+        localStorage.removeItem('selectedItems'); // 주문 완료 후 바로 구매한 항목 제거
         const orderId = data.ordersId;
 
         window.location.href = `/order-summary?orderId=${orderId}`; // 주문 내역 페이지로 이동
