@@ -8,8 +8,8 @@ spring:
   datasource:
     driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://spring-boots-db.c62sszsbm7i4.ap-northeast-2.rds.amazonaws.com:3306/spring-boots-db
-    username: admin
-    password: springboots
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
   jpa:
     #defer-datasource-initialization: true
     show-sql: false
@@ -28,21 +28,21 @@ spring:
       client:
         registration:
           google:
-            client-id: 737842434086-u62st38eoe0bgottlt38iga0ink4aejh.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope:
               - email
               - profile
-            redirect-uri: "https://jnfnrgyjnymezkmx.tunnel-pt.elice.io/login/oauth2/code/google"
+            redirect-uri: "https://xsadxbhpffmfhfsx.tunnel-pt.elice.io/login/oauth2/code/google"
 
 
 jwt:
   issuer: test@example.com
   secret_key: spring-boots
-  secret: "zJf3VY8whF9OGkNhdMjf3Lx6jqFwG6kLcv3zjX3FSkQ="
+  secret: ${JWT_SECRET_KEY}
   token:
     refresh-expires: 604800000
     access-expires: 900000
 
 admin:
-  code: "springboots" #관리자코드
+  code: ${ADMIN_CODE} #관리자코드

@@ -5,8 +5,8 @@ aws:
   s3:
     bucket:
       credentials:
-        accessKey: AKIAWOOXT2P2HYJJ4352
-        secretAccessKey: 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
+        accessKey: ${S3_ACCESS_KEY}
+        secretAccessKey: ${S3_SECRET_KEY}
       region: ap-northeast-2
       name: project-springboots
 
