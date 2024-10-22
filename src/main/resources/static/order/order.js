@@ -166,6 +166,20 @@ function copyBuyerInfo() {
 }
 
 async function placeOrder() {
+
+    // 필수 입력값 가져오기
+    const buyerContact = document.getElementById('buyerContact').value.trim();
+    const recipientName = document.getElementById('recipientName').value.trim();
+    const shippingAddress = document.getElementById('shippingAddress').value.trim();
+    const shippingAddress2 = document.getElementById('shippingAddress2').value.trim();
+    const recipientContact = document.getElementById('recipientContact').value.trim();
+
+    // 필수 입력값 확인
+    if (!buyerContact || !recipientName || !shippingAddress || !shippingAddress2 || !recipientContact) {
+        alert("주문자 정보, 받는 분, 주소, 나머지 주소, 전화번호를 모두 입력해주세요.");
+        return; // 값이 비어있으면 주문 진행 중단
+    }
+
     const cart = JSON.parse(localStorage.getItem('selectedItems')) || [];
     let purchase = JSON.parse(localStorage.getItem('purchase')) || [];
 
