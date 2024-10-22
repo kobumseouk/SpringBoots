@@ -22,6 +22,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
 
@@ -63,10 +66,18 @@ public class WebSecurityConfig {
                                 "/","/register/**",
                                 "/login-resource/**","api.js","elice-rabbit.png",
                                 "useful-functions.js","elice-rabbit-favicon.png", "leaf.png",
-                                "navbar.js", "/common/**","google.png"
+                                "navbar.js", "/common/**","google.png","/admin/**"
                                 //todo 배포시 api 에 대한 접근 권한 조정
                         ).permitAll()  // 모든 요청에 대해 요청 허가
                         .anyRequest().authenticated())
+                .cors(cors -> cors.configurationSource(request -> {
+                    var config = new CorsConfiguration();
+                    config.setAllowedOrigins(List.of("https://xsadxbhpffmfhfsx.tunnel-pt.elice.io/", "http://localhost:3000")); // 허용할 도메인
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH")); // 허용할 메서드
+                    config.setAllowCredentials(true); // 인증 정보 포함 여부
+                    config.setAllowedHeaders(List.of("*")); // 허용할 헤더
+                    return config;
+                }))
 
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

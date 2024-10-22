@@ -3,6 +3,13 @@
 }
 
 /*추가 */
+#deleteAllButton, #deleteSelectedButton {
+  padding: 10px 20px; /* 버튼의 크기 조정 */
+  background-color: #f0f0f0; /* 버튼 배경색 */
+  border: 1px solid #ccc; /* 버튼 테두리 */
+  cursor: pointer; /* 마우스 커서 */
+}
+
 .navbar {
   background-color: black;
 }

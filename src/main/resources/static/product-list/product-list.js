@@ -1,4 +1,4 @@
-import * as Api from "../../api.js";
+import * as Api from "../api.js";
 import { loadHeader } from "../../common/header.js";
 
 // 요소(element), input 혹은 상수
@@ -160,6 +160,11 @@ function createPagination(currentPage, totalPages) {
     existingPagination.remove();
   }
 
+  // 페이지 수가 0일 경우 처리
+  if (totalPages <= 0) {
+    return; // 페이지네이션 생성하지 않음
+  }
+
   const paginationContainer = document.createElement('nav');
   paginationContainer.className = 'pagination is-centered';
   paginationContainer.setAttribute('role', 'navigation');
@@ -179,7 +184,9 @@ function createPagination(currentPage, totalPages) {
       pageLink.className += ' is-current';
       pageLink.setAttribute('aria-current', 'page');
     } else {
-      pageLink.addEventListener('click', () => insertCategories(i));  // 또는 insertEvents(i)
+      pageLink.addEventListener('click', () => {
+        insertItems(i);  // 페이지 클릭 시 insertItems 호출
+      });
     }
 
     pageItem.appendChild(pageLink);
