@@ -165,25 +165,83 @@
                     class="input"
                     id="manufacturerInput"
                     type="text"
-                    placeholder="OO의류제조(주)"
+                    placeholder="OO신발제조(주)"
                     autocomplete="on"
             />
           </div>
         </div>
 
         <div class="field">
-          <label class="label" for="colorInput">색상</label>
-          <div class="control">
-            <input
-                    name="itemColor"
-                    class="input"
-                    id="colorInput"
-                    type="text"
-                    placeholder="검정색"
-                    autocomplete="on"
-            />
+          <label class="label" for="searchColorInput">색상</label>
+          <div class="field has-addons">
+            <div class="control header-search-input is-flex-grow-1">
+              <input
+                      class="input"
+                      id="searchColorInput"
+                      type="text"
+                      placeholder="색상 입력"
+              />
+            </div>
+            <div class="control">
+              <button type="button" class="button is-primary" id="addColorButton">
+                추가하기
+              </button>
+            </div>
           </div>
+          <ul id="colorList"></ul> <!-- 색상 리스트를 보여줄 공간 -->
         </div>
+
+        <script>
+          let colors = []; // 색상 저장 배열
+
+          document.getElementById('addColorButton').addEventListener('click', function() {
+              const input = document.getElementById('searchColorInput');
+              const color = input.value.trim();
+
+              if (color) {
+                  if (colors.length < 5) { // 색상 개수 제한
+                      colors.push(color); // 색상 추가
+                      input.value = ''; // 입력 필드 초기화
+                      renderColorList(); // 색상 리스트 갱신
+                  } else {
+                      alert('색상은 최대 5개까지 추가할 수 있습니다.'); // 최대 개수 알림
+                  }
+              }
+          });
+
+          function renderColorList() {
+              const colorList = document.getElementById('colorList');
+              colorList.innerHTML = ''; // 리스트 초기화
+
+              colors.forEach((color, index) => {
+                  const li = document.createElement('li');
+                  li.style.display = 'flex'; // 플렉스 박스 사용
+                  li.style.justifyContent = 'space-between'; // 양쪽 끝 정렬
+                  li.style.alignItems = 'center'; // 수직 중앙 정렬
+                  li.style.fontWeight = 'bold'; // 글씨체 진하게
+                  li.style.fontSize = '1.1rem'; // 글씨 크기 조정
+                  li.textContent = color; // 색상 텍스트 추가
+
+                  // 삭제 버튼 추가
+                  const deleteButton = document.createElement('button');
+                  deleteButton.textContent = '삭제';
+                  deleteButton.className = 'delete-button'; // 버튼 스타일 클래스 추가
+                  deleteButton.onclick = function() {
+                      deleteColor(index); // 삭제 함수 호출
+                  };
+
+                  // 색상과 삭제 버튼을 리스트 항목에 추가
+                  li.appendChild(deleteButton);
+                  colorList.appendChild(li);
+              });
+          }
+
+          // 색상 삭제 함수
+          function deleteColor(index) {
+              colors.splice(index, 1); // 배열에서 색상 제거
+              renderColorList(); // 리스트 갱신
+          }
+        </script>
 
         <div class="field">
           <label class="label" for="detailDescriptionInput"
@@ -287,7 +345,7 @@
                       class="input"
                       id="searchKeywordInput"
                       type="text"
-                      placeholder="남자옷"
+                      placeholder="신발"
               />
             </div>
             <div class="control">
