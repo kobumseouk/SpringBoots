@@ -21,6 +21,7 @@ public class UpdateItemDto {
     @Length(max = 200)
     private String itemName;
 
+    @NotNull(message = "카테고리 ID는 필수입니다.")
     private Long categoryId;
 
     @NotBlank(message = "가격은 필수입니다.")
