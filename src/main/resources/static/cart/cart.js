@@ -239,6 +239,7 @@ function updateOrderTotal() {
 
 document.addEventListener('DOMContentLoaded', () => {
   localStorage.removeItem('purchase');
+  localStorage.removeItem('selectedItems');
   updateOrderTotal();
   renderCartItems();
 });
