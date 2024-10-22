@@ -26,32 +26,33 @@ function displaySearchInfo(keyword) {
     searchTitle.textContent = `'${keyword}'에 대한 검색 결과`;
 }
 
-// 정렬된 검색 결과 - 페이지네이션
+// 정렬된 검색 결과 - 페이지네이션, 로깅 단순화
 async function fetchSearchResults(keyword, sort = 'default', page = 1) {
     try {
-        currentPage = page;  // 현재 페이지 업데이트
-        const endpoint = `/api/items/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}&page=${page - 1}&limit=${ITEMS_PER_PAGE}`; // page - 1로 수정
+        currentPage = page;
+        const endpoint = `/api/items/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}&page=${page - 1}&limit=${ITEMS_PER_PAGE}`;
         const searchResults = await Api.get(endpoint);
 
         const itemCount = searchResults.totalElements;
-        document.getElementById('product-count').textContent = `${itemCount}개의 상품이 검색되었습니다.`;
+        const productList = document.getElementById('product-list');
+        const productCount = document.getElementById('product-count');
+        const pagination = document.getElementById('pagination');
 
+        // 검색 결과 개수 표시
         if (itemCount === 0) {
-            document.getElementById('product-list').innerHTML = '<p>검색 결과가 없습니다.</p>';
-            document.getElementById('pagination').innerHTML = '';
+            productCount.textContent = '검색 결과가 없습니다.';
+            if (productList) productList.innerHTML = '';
+            if (pagination) pagination.innerHTML = '';
         } else {
+            productCount.textContent = `${itemCount}개의 상품이 검색되었습니다.`;
             displayItems(searchResults.content);
             displayPagination(searchResults);
         }
     } catch (error) {
-        console.error('검색 결과를 가져오는 데 실패했습니다:', error);
-        document.getElementById('product-count').textContent = '검색 결과를 불러올 수 없습니다.';
-        if (error.response) {
-            console.error('서버 응답:', error.response.status, error.response.data);
-        } else if (error.request) {
-            console.error('네트워크 오류: 서버로부터 응답이 없습니다.');
-        } else {
-            console.error('오류:', error.message);
+        console.error('검색 결과를 가져오는 중 문제가 발생했습니다:', error);
+        const productCount = document.getElementById('product-count');
+        if (productCount) {
+            productCount.textContent = '검색 결과를 불러올 수 없습니다.';
         }
     }
 }
