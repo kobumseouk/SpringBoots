@@ -58,7 +58,9 @@ export const checkLogin = () => {
 
     // 로그인 후 다시 지금 페이지로 자동으로 돌아가도록 하기 위한 준비작업임.
     window.location.replace(`/login?previouspage=${pathname + search}`);
+    return false;
   }
+  return true;
 };
 
 // 관리자 여부 확인

@@ -1,7 +1,7 @@
 // 필요한 모듈 및 함수 import
 import { loadHeader } from "../../common/header.js";
 import * as Api from "../api.js";
-import {addCommas} from "../useful-functions.js";
+import { addCommas, checkLogin } from "../useful-functions.js";
 import { addToDb, putToDb } from "../indexed-db.js";
 
 // URL에서 id 파라미터를 추출하는 함수
@@ -105,6 +105,11 @@ function addToCart(product) {
   if (!selectedSize) {
     alert("사이즈를 선택해 주세요.");
     return; // 사이즈가 선택되지 않았을 경우 처리
+  }
+
+  //만약 로그인이 안되어있다면 return
+  if(!checkLogin()){
+    return;
   }
 
   const cartItem = {
