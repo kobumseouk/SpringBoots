@@ -53,27 +53,6 @@ INSERT INTO item_keywords (item_id, keyword) VALUES
 (102, 'leather'),
 (102, '24SS SUMMER RECOMMEND STYLING');
 
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (103, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241022150555211195475', 230);
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (104, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241022150555211195475', 230);
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (105, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241022150555211195475', 230);
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (106, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241022150555211195475', 230);
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (107, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241022150555211195475', 230);
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (108, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241022150555211195475', 230);
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (109, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241022150555211195475', 230);
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (110, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241022150555211195475', 230);
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (111, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241022150555211195475', 230);
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (112, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241022150555211195475', 230);
-
 
 -- Orders 테이블에 테스트 데이터 삽입
 INSERT INTO orders (
