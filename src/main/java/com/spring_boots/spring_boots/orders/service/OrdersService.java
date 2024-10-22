@@ -68,7 +68,7 @@ public class OrdersService {
                                     item.getItem().getItemName(),
                                     item.getOrderItemsQuantity(),
                                     item.getOrderItemsTotalPrice(),
-                                    item.getItem().getItemSize(),
+                                    item.getItemSize(),
                                     item.getItem().getImageUrl() // 이미지 URL 가져오기
                             )).collect(Collectors.toList());
 
@@ -142,6 +142,7 @@ public class OrdersService {
                     return OrderItems.builder()
                             .orders(savedOrder)
                             .item(item)
+                            .itemSize(itemDto.getItemSize()) // itemSize 매핑 추가
                             .orderItemsQuantity(itemDto.getItemQuantity())
                             .orderItemsTotalPrice(itemDto.getItemPrice() * itemDto.getItemQuantity())
                             .shippingAddress(request.getShippingAddress())
