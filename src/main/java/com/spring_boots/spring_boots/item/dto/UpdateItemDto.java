@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Positive;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -39,6 +40,8 @@ public class UpdateItemDto {
     private Integer itemSize;
 
     private String imageUrl;
+
+    private List<String> keywords;
 
     private MultipartFile file;
 

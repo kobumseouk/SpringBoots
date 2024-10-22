@@ -1,9 +1,8 @@
 package com.spring_boots.spring_boots.item.controller;
 
-import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
 import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
-import com.spring_boots.spring_boots.item.service.ItemRestService;
+import com.spring_boots.spring_boots.item.service.ItemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,24 +26,22 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import org.springframework.data.domain.Pageable;
-
 @ActiveProfiles("test")
-public class ItemRestControllerTest {
+public class ItemApiControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Mock
-    private ItemRestService itemRestService;
+    private ItemService itemService;
 
     @InjectMocks
-    private ItemRestController itemRestController;
+    private ItemApiController itemApiController;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(itemRestController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(itemApiController).build();
     }
 
     /*
@@ -80,7 +76,7 @@ public class ItemRestControllerTest {
     public void testGetItem() throws Exception {
         ResponseItemDto responseItemDto = new ResponseItemDto();
 
-        when(itemRestService.getItem(1L)).thenReturn(responseItemDto);
+        when(itemService.getItem(1L)).thenReturn(responseItemDto);
 
         mockMvc.perform(get("/api/items/1"))
                 .andExpect(status().isOk())
@@ -89,7 +85,7 @@ public class ItemRestControllerTest {
 
     @Test
     public void testDeleteItem() throws Exception {
-        doNothing().when(itemRestService).deleteItem(1L);
+        doNothing().when(itemService).deleteItem(1L);
 
         mockMvc.perform(delete("/api/items/1"))
                 .andExpect(status().isNoContent());
@@ -101,7 +97,7 @@ public class ItemRestControllerTest {
 
         ResponseItemDto responseItemDto = new ResponseItemDto();
 
-        when(itemRestService.updateItem(any(Long.class), any(UpdateItemDto.class))).thenReturn(responseItemDto);
+        when(itemService.updateItem(any(Long.class), any(UpdateItemDto.class))).thenReturn(responseItemDto);
 
         mockMvc.perform(put("/api/items/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -117,7 +113,7 @@ public class ItemRestControllerTest {
         Page<ResponseItemDto> page = new PageImpl<>(searchResults, PageRequest.of(0, 8), 3);
 
         // 서비스 메소드 모킹
-        when(itemRestService.searchAndSortItems(anyString(), anyString(), anyInt(), anyInt())).thenReturn(page);
+        when(itemService.searchAndSortItems(anyString(), anyString(), anyInt(), anyInt())).thenReturn(page);
 
         // 테스트 실행
         mockMvc.perform(get("/api/items/search")

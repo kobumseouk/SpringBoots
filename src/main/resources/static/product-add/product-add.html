@@ -322,9 +322,32 @@
 
               keywords.forEach((keyword, index) => {
                   const li = document.createElement('li');
+                  li.style.display = 'flex'; // 플렉스 박스 사용
+                  li.style.justifyContent = 'space-between'; // 양쪽 끝 정렬
+                  li.style.alignItems = 'center'; // 수직 중앙 정렬
+                  li.style.fontWeight = 'bold'; // 글씨체 진하게
+                  li.style.fontSize = '1.1rem'; // 글씨 크기 조정
                   li.textContent = keyword; // 키워드 텍스트 추가
+
+
+                  // 삭제 버튼 추가
+                  const deleteButton = document.createElement('button');
+                  deleteButton.textContent = '삭제';
+                  deleteButton.className = 'delete-button'; // 버튼 스타일 클래스 추가
+                  deleteButton.onclick = function() {
+                      deleteKeyword(index); // 삭제 함수 호출
+                  };
+
+                  // 키워드와 삭제 버튼을 리스트 항목에 추가
+                  li.appendChild(deleteButton);
                   keywordList.appendChild(li);
-              });
+                  });
+          }
+
+          // 키워드 삭제 함수
+          function deleteKeyword(index) {
+              keywords.splice(index, 1); // 배열에서 키워드 제거
+              renderKeywordList(); // 리스트 갱신
           }
         </script>
 

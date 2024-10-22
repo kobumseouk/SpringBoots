@@ -22,12 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
-public class ItemRestService {
+public class ItemService {
     private final ItemMapper itemMapper;
     private final ItemRepository itemRepository;
     private final S3BucketService s3BucketService;
@@ -38,11 +36,11 @@ public class ItemRestService {
     private String bucketName;
 
     @Autowired
-    public ItemRestService(ItemMapper itemMapper,
-                           ItemRepository itemRepository,
-                           S3BucketService s3BucketService,
-                           CategoryRepository categoryRepository,
-                           AmazonS3 amazonS3) {
+    public ItemService(ItemMapper itemMapper,
+                       ItemRepository itemRepository,
+                       S3BucketService s3BucketService,
+                       CategoryRepository categoryRepository,
+                       AmazonS3 amazonS3) {
         this.itemMapper = itemMapper;
         this.itemRepository = itemRepository;
         this.s3BucketService = s3BucketService;
@@ -132,6 +130,12 @@ public class ItemRestService {
             findItem.setImageUrl(newImageUrl);
         } else {
             findItem.setImageUrl(existingImageUrl);
+        }
+
+        //키워드 수정
+        if (itemDto.getKeywords() != null) {
+            findItem.getKeywords().clear(); // 기존 키워드 삭제
+            findItem.getKeywords().addAll(itemDto.getKeywords()); // 새로운 키워드 추가
         }
 
 
