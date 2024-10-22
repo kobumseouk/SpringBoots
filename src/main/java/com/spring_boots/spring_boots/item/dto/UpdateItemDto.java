@@ -35,7 +35,7 @@ public class UpdateItemDto {
     private String itemMaker;
 
     @NotBlank(message = "상품 색상은 필수입니다.")
-    private String itemColor;
+    private List<String> itemColor;
 
     private Integer itemSize;
 
