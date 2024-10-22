@@ -18,11 +18,15 @@ import com.spring_boots.spring_boots.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +37,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService {
 
+    private static final int PAGE_SIZE = 10;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtProviderImpl jwtProvider;
@@ -226,5 +231,12 @@ public class UserService {
         Users user = findById(userDto.getUserId());
 
         return user.isDeleted();
+    }
+
+    public Page<UserResponseDto> getUsersByCreatedAt(int page,int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Users> usersPage = userRepository.findAll(pageable);
+
+        return usersPage.map(Users::toResponseDto);
     }
 }

@@ -21,7 +21,7 @@ addAllEvents();
 // 요소 삽입 함수들을 묶어주어서 코드를 깔끔하게 하는 역할임.
 function addAllElements() {
   createNavbar();
-  insertUsers();
+  insertUsers(0);
 }
 
 // 여러 개의 addEventListener들을 묶어주어서 코드를 깔끔하게 하는 역할임.
@@ -34,16 +34,21 @@ function addAllEvents() {
 
 // 페이지 로드 시 실행, 삭제할 회원 id를 전역변수로 관리함
 let userIdToDelete;
-async function insertUsers() {
-  const users = await Api.get("/api/admin/users");
+async function insertUsers(page = 0, size = 10) {
+  const usersPage = await Api.get(`/api/admin/users?page=${page}&size=${size}`);
+  console.log('API 응답:', usersPage);
+
+  const currentPage = usersPage.number;
+  const totalPages = usersPage.totalPages;
+  const content = usersPage.content;
 
   // 총 요약에 활용
   const summary = {
-    usersCount: 0,
+    usersCount: usersPage.totalElements,
     adminCount: 0,
   };
 
-  for (const user of users) {
+  for (const user of content) {
     const { userId, email, username, role, createdAt, userRealId, provider, deleted } = user;
 
     //날짜 포맷팅
@@ -66,7 +71,7 @@ async function insertUsers() {
     const fullName = username;
     const roles = role;
 
-    summary.usersCount += 1;
+//    summary.usersCount += 1;
 
     if (roles.includes('ADMIN')) {
       summary.adminCount += 1;
@@ -147,6 +152,53 @@ async function insertUsers() {
   // 총 요약에 값 삽입
   usersCount.innerText = addCommas(summary.usersCount);
   adminCount.innerText = addCommas(summary.adminCount);
+
+  // 페이지네이션 UI 생성
+  createPagination(currentPage, totalPages);
+}
+
+function createPagination(currentPage, totalPages) {
+  // 기존 페이지네이션 제거
+  const existingPagination = document.querySelector('.pagination');
+  if (existingPagination) {
+    existingPagination.remove();
+  }
+
+  // 페이지 수가 0일 경우 처리
+  if (totalPages <= 0) {
+    return; // 페이지네이션 생성하지 않음
+  }
+
+  const paginationContainer = document.createElement('nav');
+  paginationContainer.className = 'pagination is-centered';
+  paginationContainer.setAttribute('role', 'navigation');
+  paginationContainer.setAttribute('aria-label', 'pagination');
+
+  const paginationList = document.createElement('ul');
+  paginationList.className = 'pagination-list';
+
+  for (let i = 0; i < totalPages; i++) {
+    const pageItem = document.createElement('li');
+    const pageLink = document.createElement('a');
+    pageLink.className = 'pagination-link';
+    pageLink.setAttribute('aria-label', `Goto page ${i + 1}`);
+    pageLink.textContent = i + 1;
+
+    if (i === currentPage) {
+      pageLink.className += ' is-current';
+      pageLink.setAttribute('aria-current', 'page');
+    } else {
+      pageLink.addEventListener('click', () => {
+        insertUsers(i);  // 페이지 클릭 시 insertItems 호출
+      });
+    }
+
+    pageItem.appendChild(pageLink);
+    paginationList.appendChild(pageItem);
+  }
+
+  paginationContainer.appendChild(paginationList);
+  document.querySelector("#usersContainer").after(paginationContainer);  // 또는 "#eventsContainer"
 }
 
 // 모달 요소 선택 (루프 밖에서 한 번만 선택)
