@@ -19,7 +19,7 @@ async function loadCategories() {
           card.innerHTML = `
             <div class="card-image">
               <figure class="image is-4by3">
-                <img src="${category.imageUrl || '/images/default-category-image.jpg'}" alt="${category.categoryName}" onerror="this.src='/images/default-event-image.jpg'">
+                <img src="${category.imageUrl || '/images/default-event-image.jpg'}" alt="${category.categoryName}" onerror="this.src='/images/default-event-image.jpg'">
               </figure>
             </div>
             <div class="card-content">

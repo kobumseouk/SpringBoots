@@ -53,6 +53,7 @@ INSERT INTO item_keywords (item_id, keyword) VALUES
 (102, 'leather'),
 (102, '24SS SUMMER RECOMMEND STYLING');
 
+
 -- Orders 테이블에 테스트 데이터 삽입
 INSERT INTO orders (
      user_id, quantity, orders_total_price, order_status, is_canceled, created_at, updated_at

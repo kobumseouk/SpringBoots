@@ -124,14 +124,6 @@
   color: #4caf50 !important;
 }
 
-.header-container .secondary-navbar .sale-item::after {
-  background-color: red;
-}
-
-.header-container .secondary-navbar .sale-item:hover,
-.header-container .secondary-navbar .sale-item.is-active {
-  color: red !important;
-}
 
 .header-container .secondary-navbar .navbar-end {
   margin-left: auto;
@@ -144,6 +136,15 @@
   background-color: #e0e0e0;
   margin: 0.5rem 0.75rem;
   align-self: center;
+}
+
+.header-container .secondary-navbar .navbar-end .navbar-item {
+  color: yellow !important;
+}
+
+/* hover 시에도 노란색 유지 */
+.header-container .secondary-navbar .navbar-end .navbar-item:hover {
+  color: #4caf50 !important;
 }
 
 /* 반응형 디자인을 위한 미디어 쿼리 */
