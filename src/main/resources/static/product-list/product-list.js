@@ -23,6 +23,26 @@ async function initialize() {
     }
 }
 
+// Modal 창 관련 함수들
+function openModal() {
+  modal.classList.add("is-active");
+}
+
+function closeModal() {
+  modal.classList.remove("is-active");
+}
+
+function keyDownCloseModal(e) {
+  if (e.keyCode === 27) {
+    closeModal();
+  }
+}
+
+function cancelDelete() {
+  itemIdToDelete = "";
+  closeModal();
+}
+
 // 이벤트 설정
 function addAllEvents() {
   modalBackground.addEventListener("click", closeModal);
@@ -209,25 +229,7 @@ function translateEnglishToKorean(englishTheme) {
   return themeMap[englishTheme];
 }
 
-// Modal 창 관련 함수들
-function openModal() {
-  modal.classList.add("is-active");
-}
 
-function closeModal() {
-  modal.classList.remove("is-active");
-}
-
-function keyDownCloseModal(e) {
-  if (e.keyCode === 27) {
-    closeModal();
-  }
-}
-
-function cancelDelete() {
-  categoryIdToDelete = "";
-  closeModal();
-}
 
 // 페이지 로드 시 실행
 document.addEventListener('DOMContentLoaded', initialize);
