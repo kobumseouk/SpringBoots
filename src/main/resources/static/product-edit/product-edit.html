@@ -38,7 +38,6 @@
             // 풀 필드에 데이터 채우기
                 document.getElementById('titleInput').value = data.itemName;
                 document.getElementById('manufacturerInput').value = data.itemMaker;
-                document.getElementById('colorInput').value = data.itemColor;
                 document.getElementById('detailDescriptionInput').value = data.itemDescription;
                 document.getElementById('priceInput').value = data.itemPrice;
 
@@ -51,20 +50,75 @@
                 }
 
                 keywords = data.keywords; // API에서 받은 키워드를 배열에 저장
+                colors = data.itemColor;
                 renderKeywordList(); // 키워드 리스트 렌더링
+                renderColorList();
             })
             .catch(error => console.error('Error fetching item', error));
 
-            function renderKeywordList() {
-            const keywordList = document.getElementById('keywordList');
-            keywordList.innerHTML = ''; // 리스트 초기화
+        function renderKeywordList() {
+        const keywordList = document.getElementById('keywordList');
+        keywordList.innerHTML = ''; // 리스트 초기화
 
-            keywords.forEach((keyword) => {
-                const li = document.createElement('li');
-                li.textContent = keyword; // 키워드 텍스트 추가
-                keywordList.appendChild(li);
-            });
-            }
+        keywords.forEach((keyword, index) => {
+            const li = document.createElement('li');
+            li.style.display = 'flex'; // 플렉스 박스 사용
+            li.style.justifyContent = 'space-between'; // 양쪽 끝 정렬
+            li.style.alignItems = 'center'; // 수직 중앙 정렬
+            li.style.fontWeight = 'bold'; // 글씨체 진하게
+            li.style.fontSize = '1.1rem'; // 글씨 크기 조정
+            li.textContent = keyword; // 키워드 텍스트 추가
+
+            // 삭제 버튼 추가
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '삭제';
+            deleteButton.className = 'delete-button'; // 버튼 스타일 클래스 추가
+            deleteButton.onclick = function() {
+                deleteKeyword(index); // 삭제 함수 호출
+            };
+
+            // 키워드와 삭제 버튼을 리스트 항목에 추가
+            li.appendChild(deleteButton);
+            keywordList.appendChild(li);
+        });
+    }
+
+    function renderColorList() {
+        const colorList = document.getElementById('colorList');
+        colorList.innerHTML = ''; // 리스트 초기화
+
+        colors.forEach((color, index) => {
+            const li = document.createElement('li');
+            li.style.display = 'flex'; // 플렉스 박스 사용
+            li.style.justifyContent = 'space-between'; // 양쪽 끝 정렬
+            li.style.alignItems = 'center'; // 수직 중앙 정렬
+            li.style.fontWeight = 'bold'; // 글씨체 진하게
+            li.style.fontSize = '1.1rem'; // 글씨 크기 조정
+            li.textContent = color; // 색상 텍스트 추가
+
+            // 삭제 버튼 추가
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '삭제';
+            deleteButton.className = 'delete-button'; // 버튼 스타일 클래스 추가
+            deleteButton.onclick = function() {
+                deleteColor(index); // 삭제 함수 호출
+            };
+
+            // 색상과 삭제 버튼을 리스트 항목에 추가
+            li.appendChild(deleteButton);
+            colorList.appendChild(li);
+        });
+    }
+
+    function deleteKeyword(index) {
+        keywords.splice(index, 1); // 배열에서 키워드 제거
+        renderKeywordList(); // 리스트 갱신
+    }
+
+    function deleteColor(index) {
+        colors.splice(index, 1); // 배열에서 색상 제거
+        renderColorList(); // 리스트 갱신
+    }
     </script>
 </head>
 <body>
@@ -266,38 +320,6 @@
                         }
                     });
 
-                    function renderColorList() {
-                        const colorList = document.getElementById('colorList');
-                        colorList.innerHTML = ''; // 리스트 초기화
-
-                        colors.forEach((color, index) => {
-                            const li = document.createElement('li');
-                            li.style.display = 'flex'; // 플렉스 박스 사용
-                            li.style.justifyContent = 'space-between'; // 양쪽 끝 정렬
-                            li.style.alignItems = 'center'; // 수직 중앙 정렬
-                            li.style.fontWeight = 'bold'; // 글씨체 진하게
-                            li.style.fontSize = '1.1rem'; // 글씨 크기 조정
-                            li.textContent = color; // 색상 텍스트 추가
-
-                            // 삭제 버튼 추가
-                            const deleteButton = document.createElement('button');
-                            deleteButton.textContent = '삭제';
-                            deleteButton.className = 'delete-button'; // 버튼 스타일 클래스 추가
-                            deleteButton.onclick = function() {
-                                deleteColor(index); // 삭제 함수 호출
-                            };
-
-                            // 색상과 삭제 버튼을 리스트 항목에 추가
-                            li.appendChild(deleteButton);
-                            colorList.appendChild(li);
-                        });
-                    }
-
-                    // 색상 삭제 함수
-                    function deleteColor(index) {
-                        colors.splice(index, 1); // 배열에서 색상 제거
-                        renderColorList(); // 리스트 갱신
-                    }
                 </script>
 
 
@@ -431,40 +453,7 @@
                             }
                         }
                     });
-
-                    function renderKeywordList() {
-                        const keywordList = document.getElementById('keywordList');
-                        keywordList.innerHTML = ''; // 리스트 초기화
-
-                        keywords.forEach((keyword, index) => {
-                            const li = document.createElement('li');
-                            li.style.display = 'flex'; // 플렉스 박스 사용
-                            li.style.justifyContent = 'space-between'; // 양쪽 끝 정렬
-                            li.style.alignItems = 'center'; // 수직 중앙 정렬
-                            li.style.fontWeight = 'bold'; // 글씨체 진하게
-                            li.style.fontSize = '1.1rem'; // 글씨 크기 조정
-                            li.textContent = keyword; // 키워드 텍스트 추가
-
-
-                            // 삭제 버튼 추가
-                            const deleteButton = document.createElement('button');
-                            deleteButton.textContent = '삭제';
-                            deleteButton.className = 'delete-button'; // 버튼 스타일 클래스 추가
-                            deleteButton.onclick = function() {
-                                deleteKeyword(index); // 삭제 함수 호출
-                            };
-
-                            // 키워드와 삭제 버튼을 리스트 항목에 추가
-                            li.appendChild(deleteButton);
-                            keywordList.appendChild(li);
-                            });
-                    }
-
-                    // 키워드 삭제 함수
-                    function deleteKeyword(index) {
-                        keywords.splice(index, 1); // 배열에서 키워드 제거
-                        renderKeywordList(); // 리스트 갱신
-                    }
+                    
                 </script>
 
                 <div
@@ -486,8 +475,12 @@
 
                           const formData = new FormData(this); // 현재 폼의 데이터를 FormData 객체로 생성
 
-                          keywords.forEach((keyword, index) => {
+                          keywords.forEach((keyword) => {
                             formData.append('keywords', keyword);
+                          });
+
+                          colors.forEach((color) => {
+                            formData.append('itemColor', color);
                           });
 
                           fetch(`/api/items/${itemId}`, {

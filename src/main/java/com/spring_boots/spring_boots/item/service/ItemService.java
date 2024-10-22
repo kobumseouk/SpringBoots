@@ -109,8 +109,10 @@ public class ItemService {
                 .ifPresent(findItem::setItemMaker);
 
         //Item Color 수정
-        Optional.ofNullable(itemDto.getItemColor())
-                .ifPresent(findItem::setItemColor);
+        if (itemDto.getItemColor() != null) {
+            findItem.getItemColor().clear();
+            findItem.getItemColor().addAll(itemDto.getItemColor());
+        }
 
         // 카테고리 수정
         if (itemDto.getCategoryId() != null) {

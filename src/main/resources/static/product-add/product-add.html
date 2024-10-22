@@ -426,10 +426,19 @@
                 return;
                 }
 
+              if (colors.length === 0) {
+                alert('색상을 추가하세요.');
+                return;
+              }
+
               const formData = new FormData(this); // 현재 폼의 데이터를 FormData 객체로 생성
 
-              keywords.forEach((keyword, index) => {
+              keywords.forEach((keyword) => {
                 formData.append('keywords', keyword);
+              });
+
+              colors.forEach((color) => {
+                formData.append('itemColor', color);
               });
 
               fetch('/api/admin/items', {

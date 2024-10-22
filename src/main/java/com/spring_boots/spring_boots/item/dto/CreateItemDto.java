@@ -34,7 +34,7 @@ public class CreateItemDto {
 
     private String itemMaker;
 
-    private String itemColor;
+    private List<String> itemColor;
 
     private String imageUrl;
 
