@@ -119,15 +119,14 @@ public class ItemRestService {
             Category category = categoryRepository.findById(itemDto.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + itemDto.getCategoryId()));
             findItem.setCategory(category); // 카테고리 설정
+        }
 
-
-        //Item Image 수정
+        // Item Image 수정
         if (itemDto.getFile() != null && !itemDto.getFile().isEmpty()) { // 수정하기 위해 HTML에 등록한 이미지 파일이 null값이 아닌 경우 동작
             if (existingImageUrl != null) { // 기존 저장된 URL이 null인지 아닌지 체크
                 String key = existingImageUrl.substring(existingImageUrl.lastIndexOf("/") + 1);
                 amazonS3.deleteObject(new DeleteObjectRequest(bucketName, key));
             }
-        }
 
             String newImageUrl = s3BucketService.uploadFile(itemDto.getFile());
             findItem.setImageUrl(newImageUrl);

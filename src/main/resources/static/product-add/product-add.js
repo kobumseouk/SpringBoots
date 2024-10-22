@@ -159,7 +159,7 @@ document.getElementById('registerProductForm').addEventListener('submit', functi
       console.log ('Success', data);
       // 성공적으로 추가된 후의 처리
       alert('상품이 성공적으로 추가되었습니다.'); // 알림 메시지 추가
-      window.location.href = 'http://localhost:3000/admin/items/list'; // 페이지 리다이렉트
+      window.location.href = '/admin/items/list'; // 페이지 리다이렉트
   })
   .catch((error) => {
       console.error('Error', error);
