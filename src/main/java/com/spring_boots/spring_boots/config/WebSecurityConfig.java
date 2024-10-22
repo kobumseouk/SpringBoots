@@ -38,21 +38,11 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
-    //        private final TokenProvider tokenProvider;
     private final UserDetailsServiceImpl userDetailsService;
     private final OAuth2UserCustomService oAuth2UserCustomService;
     private final JwtFilter jwtFilter;
-//    private final UserDetailsServiceImpl userDetailsService;    //유저 정보를 인증하는 객체
     private final OAuth2SuccessHandler successHandler;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository cookieRepository;
-//    private final RedisTemplate redisTemplate;    //Redis db 사용
-
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web) -> web.ignoring()
-//                .requestMatchers(toH2Console())
-//                .requestMatchers("/static/**");
-//    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -62,12 +52,21 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(toH2Console()).permitAll()  // H2 콘솔에 대한 요청 허용
                         .requestMatchers(
-                                "/api/**","/login/**","/static/**","/home/**",
-                                "/","/register/**",
-                                "/login-resource/**","api.js","elice-rabbit.png",
-                                "useful-functions.js","elice-rabbit-favicon.png", "leaf.png",
-                                "navbar.js", "/common/**","google.png","/admin/**"
-                                //todo 배포시 api 에 대한 접근 권한 조정
+                                //Api
+                                "/api/**",
+                                //정적경로
+                                "/category-detail/**","/category-form/**", "/category-recommend/**",    //카테고리
+                                "/common/**","/search/**",   //공통헤더
+                                "/event-detail/**","/event-form/**","/event-list/**",   //이벤트
+                                "/home/**","/images/**","/login/**","/register/**", //로그인, 홈, 회원가입
+                                "/product-detail/**","/page-not-found/**",  //상품
+                                "api.js", "useful-functions.js",    //공통 js 파일
+                                "indexed-db.js", "navbar.js",   //공통 js 파일
+                                "elice-rabbit.png","elice-rabbit-favicon.png",  //이미지
+                                "leaf.png","google.png",    //이미지
+                                //url 경로
+                                "/","/login","/register",
+                                "/categories/**","/items/**","/events/**"
                         ).permitAll()  // 모든 요청에 대해 요청 허가
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(request -> {
