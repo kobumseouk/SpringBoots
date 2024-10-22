@@ -47,7 +47,12 @@ async function handleThemeClick(theme, selectedCategoryId = null) {
     const koreanTheme = translateEnglishToKorean(theme);
     updateBreadcrumb(koreanTheme, categoryToDisplay);
 
-    history.pushState(null, '', `/categories/${theme}/${categoryToDisplay.id}`);
+    // 전체보기(id가 0)인 경우와 그 외의 경우 URL을 다르게 처리
+    const newUrl = categoryToDisplay.id === 0
+      ? `/categories/${theme}`
+      : `/categories/${theme}/${categoryToDisplay.id}`;
+
+    history.pushState(null, '', newUrl);
   } catch (error) {
     console.error('테마 카테고리를 가져오는 데 실패했습니다:', error);
   }

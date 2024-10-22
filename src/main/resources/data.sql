@@ -119,7 +119,7 @@ VALUES ('2024 F/W 프리뷰', '다가오는 가을, 겨울 시즌 부츠 미리�
 
 
 INSERT INTO event (event_title, event_content, thumbnail_image_url, start_date, end_date, is_active, created_at, updated_at)
-VALUES ('Spring Boots의 공식몰 혜택', ' ', 'https://project-springboots.s3.amazonaws.com/20241022211709118777626', '2024-11-09', '2025-02-09', true, NOW(), NOW());
+VALUES ('Spring Boots의 공식몰 혜택', 'Spring Boots의 다양한 혜택을 만나보세요!', 'https://project-springboots.s3.amazonaws.com/20241022211709118777626', '2024-11-09', '2025-02-09', true, NOW(), NOW());
 -- 개별 이미지 URL을 각각의 레코드로 삽입
 INSERT INTO event_content_images (event_id, content_image_url)
 SELECT 4, 'https://project-springboots.s3.amazonaws.com/20241022211709-133861261';
