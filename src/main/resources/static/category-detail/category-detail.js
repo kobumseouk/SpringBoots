@@ -56,7 +56,7 @@ async function handleThemeClick(theme, selectedCategoryId = null) {
 function createAllViewCategory(categories) {
   const themeContent = categories.length > 0 ? categories[0].categoryContent : '';
   return {
-    id: 'all',
+    id: '0',
     categoryName: '전체보기',
     categoryThema: categories.length > 0 ? categories[0].categoryThema : '',
     displayOrder: 0
@@ -115,15 +115,17 @@ function displayCategoryInfo(category) {
 async function fetchCategoryItems(categoryId, sort, page) {
   try {
     let endpoint;
-    if (categoryId === 'all') {
-      const thema = window.location.pathname.split('/')[2];
-      endpoint = `/api/items/thema/${thema}?sort=${sort}&page=${page}&limit=${ITEMS_PER_PAGE}`;
+    const thema = window.location.pathname.split('/')[2]; // common, women, men 등의 테마값
+
+    if (categoryId === 0) {  // 전체보기인 경우 id 표기 x
+      endpoint = `/api/categories/themas/${thema}?sort=${sort}&page=${page}&limit=${ITEMS_PER_PAGE}`;
     } else {
       endpoint = `/api/items/categories/${categoryId}?sort=${sort}&page=${page}&limit=${ITEMS_PER_PAGE}`;
     }
-    console.log('Fetching from endpoint:', endpoint); // 요청 URL 로깅
+
+    console.log('Fetching from endpoint:', endpoint);
     const response = await Api.get(endpoint);
-    console.log('Server response:', response); // 서버 응답 로깅
+    console.log('Server response:', response);
     displayItems(response.content);
     displayPagination(response);
     document.getElementById('product-count').textContent = `${response.totalElements}개의 상품이 있습니다.`;
