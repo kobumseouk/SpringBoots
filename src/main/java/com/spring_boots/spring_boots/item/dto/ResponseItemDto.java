@@ -17,7 +17,7 @@ public class ResponseItemDto {
     private Integer itemPrice;
     private String itemDescription;
     private String itemMaker;
-    private String itemColor;
+    private List<String> itemColor;
     private String imageUrl;
     private List<String> keywords;
 
