@@ -140,22 +140,22 @@ async function handleSubmit(e) {
         const formData = new FormData();
 
         // JSON 데이터를 문자열로 변환하여 추가
-        const eventData = JSON.stringify({
+        const eventData = {
             eventTitle: title,
             eventContent: content,
             startDate: startDate,
             endDate: endDate
-        });
-        formData.append('event', new Blob([eventData], {type: 'application/json'}));
+        };
+        formData.append('event', new Blob([JSON.stringify(eventData)], {type: 'application/json'}));
 
-        // 썸네일 이미지 추가
+        // 썸네일 이미지 추가 - 필드명 수정
         if (thumbnailImage) {
-            formData.append('thumbnailImage', thumbnailImage);
+            formData.append('thumbnailFile', thumbnailImage);
         }
 
-        // 내용 이미지들 추가
+        // 내용 이미지들 추가 - 필드명 수정
         for (let i = 0; i < contentImages.length; i++) {
-            formData.append('contentImages', contentImages[i]);
+            formData.append('contentFiles', contentImages[i]);
         }
 
         let response;
@@ -173,6 +173,7 @@ async function handleSubmit(e) {
         alert(`문제가 발생하였습니다. 확인 후 다시 시도해 주세요: ${err.message}`);
     }
 }
+
 
 function handleImageUpload(e, nameSpan, preview, previewContainer) {
     const files = e.target.files;
@@ -205,3 +206,4 @@ function handleCancel() {
 
 // 페이지 로드 시 페이지 초기화 실행
 document.addEventListener('DOMContentLoaded', initializePage);
+
