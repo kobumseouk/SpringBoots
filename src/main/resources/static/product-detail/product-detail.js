@@ -38,6 +38,9 @@ export async function insertProductData() {
     // 상품 정보 구조 분해 할당
     const { itemName, itemDescription, itemPrice, itemMaker, imageUrl, itemColor } = product;
 
+    // 콘솔에 itemColor의 타입과 내용을 확인
+    console.log("itemColor의 값:", itemColor, "타입:", typeof itemColor);
+
     // HTML에 반영
     productImageTag.src = imageUrl;
     titleTag.innerText = itemName;
@@ -45,8 +48,18 @@ export async function insertProductData() {
     manufacturerTag.innerText = `제조사: ${itemMaker}`;
     priceTag.innerText = `${addCommas(itemPrice)}원`;
 
-    // 단일 색상 옵션 설정 (배열이 아니라 단일 값)
-    colorSelect.innerHTML = `<option value="${itemColor}">${itemColor}</option>`;
+    // 색상 선택 옵션 설정
+    if (typeof itemColor === 'string') {
+      const colors = itemColor.split(','); // 쉼표로 구분된 색상을 배열로 분리
+      colorSelect.innerHTML = colors.map(color => `<option value="${color.trim()}">${color.trim()}</option>`).join('');
+    } else if (Array.isArray(itemColor)) {
+      // 만약 itemColor가 배열이라면 바로 사용
+      colorSelect.innerHTML = itemColor.map(color => `<option value="${color.trim()}">${color.trim()}</option>`).join('');
+    } else {
+      // 예상치 못한 경우, 기본적으로 단일 색상 값 사용
+      colorSelect.innerHTML = `<option value="${itemColor}">${itemColor}</option>`;
+    }
+
   } catch (error) {
     console.error("상품 정보를 가져오는 중 오류 발생:", error);
   }
