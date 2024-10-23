@@ -1,3 +1,5 @@
+import * as Api from '/api.js';
+
 // 문자열+숫자로 이루어진 랜덤 5글자 반환
 export const randomId = () => {
   return Math.random().toString(36).substring(2, 7);
@@ -17,6 +19,42 @@ const getCookie = (cookieName) => {
   }
   return null;  // 해당 쿠키가 없을 경우 null 반환
 };
+
+//httpOnly 가 true 일 경우
+async function validateToken() {
+  const endpoint = '/api/protected';
+  try {
+    const response = await fetch(endpoint, {
+      method: 'GET',
+      credentials: 'include', // 쿠키를 포함하여 요청
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.status === 400) {
+//      log.info("현재 로그인상태가아닙니다.");
+      return false;
+    }
+
+    if(response.status === 401){
+//      log.info("토큰 유효성 검증에 실패하셨습니다.");
+      return false;
+    }
+
+    const data = await response.json(); // 응답을 JSON으로 변환
+
+    if (data.message === "success") {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('토큰 확인 중 오류 발생:', error);
+    return false;
+  }
+}
+
 
 // 이메일 형식인지 확인 (true 혹은 false 반환)
 export const validateEmail = (email) => {
@@ -47,11 +85,12 @@ export const addCommas = (n) => {
 };
 
 // 로그인 여부(토큰 존재 여부) 확인
-export const checkLogin = () => {
-  const accessToken = getCookie("accessToken");
-  const refreshToken = getCookie("refreshToken");
+export const checkLogin = async () => {
+//  const accessToken = getCookie("accessToken");
+//  const refreshToken = getCookie("refreshToken");
+  const isValid = await validateToken();
 
-  if (!accessToken && !refreshToken) {
+  if (!isValid) {
     // 현재 페이지의 url 주소 추출하기
     const pathname = window.location.pathname;
     const search = window.location.search;
@@ -66,11 +105,12 @@ export const checkLogin = () => {
 // 관리자 여부 확인
 export const checkAdmin = async () => {
   // 쿠키에서 accessToken을 가져오기
-  const accessToken = getCookie("accessToken");
-  const refreshToken = getCookie("refreshToken");
+//  const accessToken = getCookie("accessToken");
+//  const refreshToken = getCookie("refreshToken");
+  const isValid = await validateToken();
 
   // 토큰 존재 여부 확인
-  if (!accessToken && !refreshToken) {
+  if (!isValid) {
     const pathname = window.location.pathname;
     const search = window.location.search;
     window.location.replace(`/login?previouspage=${pathname + search}`);
@@ -107,24 +147,25 @@ export const checkAdmin = async () => {
 };
 
 // 로그인 상태일 때에는 접근 불가한 페이지로 만듦. (회원가입 페이지 등)
-export const blockIfLogin = () => {
-  const accessToken = getCookie("accessToken");
-  const refreshToken = getCookie("refreshToken");
+export const blockIfLogin = async () => {
+//  const accessToken = getCookie("accessToken");
+//  const refreshToken = getCookie("refreshToken");
 
 
-  if(accessToken){
-    console.log("access Token: ",accessToken);
-  }else{
-    console.log("access 실행안됨");
-  }
+//  if(accessToken){
+//    console.log("access Token: ",accessToken);
+//  }else{
+//    console.log("access 실행안됨");
+//  }
+//
+//  if(refreshToken){
+//    console.log("refresh Token: ",refreshToken)
+//  }else{
+//       console.log("access 실행안됨");
+//  }
+  const isValid = await validateToken();
 
-  if(refreshToken){
-    console.log("refresh Token: ",refreshToken)
-  }else{
-       console.log("access 실행안됨");
-  }
-
-  if (accessToken || refreshToken) {
+  if (isValid) {
     alert("로그인 상태에서는 접근할 수 없는 페이지입니다.");
     window.location.replace("/");
   }
