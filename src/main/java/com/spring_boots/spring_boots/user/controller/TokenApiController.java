@@ -38,6 +38,12 @@ public class TokenApiController {
             HttpServletResponse response,
             @CookieValue(value = "refreshToken", required = false) Cookie existingRefreshTokenCookie
     ) {
+        if (!userService.validateLogin(request)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(JwtTokenResponse.builder()
+                            .message("아이디와 비밀번호를 입력하세요").build());
+        }
+
         // 기존 쿠키 삭제 로직
         if (existingRefreshTokenCookie != null) {
             deleteTokenCookie(response);
