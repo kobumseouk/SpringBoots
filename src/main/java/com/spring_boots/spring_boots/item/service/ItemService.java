@@ -70,6 +70,9 @@ public class ItemService {
         String imageUrl = null;
 
         if (file != null && !file.isEmpty()) { // 이미지 파일 존재 유무 확인
+            if (file.getSize() > 10 * 1024 * 1024) {
+                throw new RuntimeException("이미지 파일 크기는 10MB를 초과할 수 없습니다.");
+            }
             try {
                 imageUrl = s3BucketService.uploadFile(file); // s3에 파일 업로드
             } catch (IOException e) {
@@ -123,6 +126,10 @@ public class ItemService {
 
         // Item Image 수정
         if (itemDto.getFile() != null && !itemDto.getFile().isEmpty()) { // 수정하기 위해 HTML에 등록한 이미지 파일이 null값이 아닌 경우 동작
+            if (itemDto.getFile().getSize() > 10 * 1024 * 1024) {
+                throw new RuntimeException("이미지 파일 크기는 10MB를 초과할 수 없습니다.");
+            }
+
             if (existingImageUrl != null) { // 기존 저장된 URL이 null인지 아닌지 체크
                 String key = existingImageUrl.substring(existingImageUrl.lastIndexOf("/") + 1);
                 amazonS3.deleteObject(new DeleteObjectRequest(bucketName, key));

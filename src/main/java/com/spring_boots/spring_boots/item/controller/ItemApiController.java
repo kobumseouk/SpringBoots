@@ -80,7 +80,7 @@ public class ItemApiController {
 
     // Item 수정하기
     @PutMapping("/items/{itemId}")
-    public ResponseEntity<ResponseItemDto> updateItem (@PathVariable("itemId") Long id, @ModelAttribute UpdateItemDto updateItemDto) {
+    public ResponseEntity<ResponseItemDto> updateItem (@Valid @PathVariable("itemId") Long id, @ModelAttribute UpdateItemDto updateItemDto) {
         try {
             ResponseItemDto responseDto = itemService.updateItem(id, updateItemDto);
             return new ResponseEntity<>(responseDto, HttpStatus.OK);

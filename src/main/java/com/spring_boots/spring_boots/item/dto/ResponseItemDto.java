@@ -14,7 +14,7 @@ public class ResponseItemDto {
     private Long id;
     private String itemName;
     private Long categoryId;
-    private Integer itemPrice;
+    private Long itemPrice;
     private String itemDescription;
     private String itemMaker;
     private List<String> itemColor;
