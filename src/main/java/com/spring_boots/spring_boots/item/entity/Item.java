@@ -41,7 +41,7 @@ public class Item extends BaseTimeEntity {
     private String itemMaker;
 
     @Column(name = "item_color")
-    private List<String> itemColor = new ArrayList<>();;
+    private List<String> itemColor = new ArrayList<>();
 
     private LocalDateTime createdAt;
 
