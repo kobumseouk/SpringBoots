@@ -102,7 +102,7 @@ function renderOrderSummary(order) {
 
                 <div class="mt-4 has-text-centered">
                     <button class="button is-dark" onclick="window.location.href = '/order-details?orderId=${order.ordersId}'">주문내역 바로가기</button>
-                    <button class="button is-outlined is-dark" onclick="window.location.href = '/shop'">쇼핑 계속하기</button>
+                    <button class="button is-outlined is-dark" onclick="window.location.href = '/'">쇼핑 계속하기</button>
                 </div>
             </div>
         </div>
