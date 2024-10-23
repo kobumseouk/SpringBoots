@@ -213,7 +213,7 @@ async function placeOrder() {
         buyerContact: document.getElementById('buyerContact').value,
         recipientName: document.getElementById('recipientName').value,
         recipientContact: document.getElementById('recipientContact').value,
-        shippingAddress: document.getElementById("shippingAddress").value + " " + document.getElementById("shippingAddress2").value,
+        shippingAddress: document.getElementById("shippingAddress").value + ", " + document.getElementById("shippingAddress2").value,
         deliveryMessage: document.getElementById('deliveryMessage').value,
         items: [
             ...await Promise.all(cart.map(async (item) => {
