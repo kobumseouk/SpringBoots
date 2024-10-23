@@ -80,20 +80,23 @@ async function fetchEventData() {
     }
 }
 
-// 날짜 포맷팅 함수 추가
+// 날짜 포맷팅 함수
 function formatDate(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    // 서울 표준시 기준
+    const seoulTime = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+    const year = seoulTime.getFullYear();
+    const month = String(seoulTime.getMonth() + 1).padStart(2, '0');
+    const day = String(seoulTime.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
 
-// 현재 날짜 구하기
+// 현재 날짜
 function getCurrentDate() {
-    return formatDate(new Date());
+    const now = new Date();
+    return formatDate(now);
 }
 
-// 1년 후 날짜 구하기
+// 1년 후 날짜
 function getOneYearLater() {
     const date = new Date();
     date.setFullYear(date.getFullYear() + 1);
@@ -126,14 +129,18 @@ async function handleSubmit(e) {
         endDateInput.value = endDate;
     }
 
-    if (thumbnailImage && thumbnailImage.size > 3e6) {
-        return alert("썸네일 이미지는 최대 2.5MB 크기까지 가능합니다.");
+    // 썸네일 이미지 용량 체크 (500KB)
+    if (thumbnailImage && thumbnailImage.size > 500 * 1024) {
+        return alert("썸네일 이미지의 크기가 최대 500KB 크기를 초과했습니다.");
     }
 
+    // 내용 이미지들의 총 용량 체크 (2.5MB)
+    let totalContentImageSize = 0;
     for (let i = 0; i < contentImages.length; i++) {
-        if (contentImages[i].size > 3e6) {
-            return alert(`내용 이미지 ${i+1}은(는) 최대 2.5MB 크기까지 가능합니다.`);
-        }
+        totalContentImageSize += contentImages[i].size;
+    }
+    if (totalContentImageSize > 2.5 * 1024 * 1024) {
+        return alert("내용 이미지의 총 크기가 최대 2.5MB 크기를 초과했습니다.");
     }
 
     try {

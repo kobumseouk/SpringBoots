@@ -27,12 +27,6 @@
     import { loadHeader } from '/common/header.js';
     document.addEventListener('DOMContentLoaded', loadHeader);
   </script>-->
-  <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/leaf.png"
-  />
 </head>
 <body>
 <!-- 헤더 -->
@@ -49,7 +43,7 @@
         <div class="register-event-form-box">
           <form id="eventForm">
             <div class="field">
-              <label class="label">EVENT 제목</label>
+              <label class="label">EVENT 제목 *</label>
               <input id="titleInput" class="input" type="text" placeholder="EVENT 제목을 입력하세요">
             </div>
 
@@ -58,12 +52,14 @@
                 <div class="field">
                   <label class="label">EVENT 시작일</label>
                   <input id="startDateInput" class="input" type="date">
+                  <p class="help is-danger">시작일 미기입시 현재시간(서울 표준)으로 자동 입력됩니다.</p>
                 </div>
               </div>
               <div class="column">
                 <div class="field">
                   <label class="label">EVENT 종료일</label>
                   <input id="endDateInput" class="input" type="date">
+                  <p class="help is-danger">종료일 미기입시 현재시간(서울 표준)으로부터 1년 뒤로 자동 입력됩니다.</p>
                 </div>
               </div>
             </div>
@@ -74,18 +70,19 @@
                 <label class="file-label">
                   <input id="thumbnailInput" class="file-input" type="file" accept="image/*">
                   <span class="file-cta">
-                                    <span class="file-label">사진 업로드</span>
+                                    <span class="file-label">이미지 업로드</span>
                                 </span>
-                  <span id="thumbnailNameSpan" class="file-name">사진 파일 (png, jpg, jpeg)</span>
+                  <span id="thumbnailNameSpan" class="file-name">이미지 파일 (png, jpg, jpeg)</span>
                 </label>
               </div>
+              <p class="help is-danger">썸네일 이미지는 최대 500KB까지 한 장만 업로드 가능합니다.</p>
               <div id="thumbnailPreviewContainer" class="image-preview-container">
                 <img id="thumbnailPreview" src="#" alt="썸네일 미리보기" class="image-preview">
               </div>
             </div>
 
             <div class="field">
-              <label class="label">게시글 내용</label>
+              <label class="label">게시글 내용 *</label>
               <textarea id="contentInput" class="textarea" placeholder="게시글 내용을 입력하세요"></textarea>
             </div>
 
@@ -95,11 +92,12 @@
                 <label class="file-label">
                   <input id="contentImageInput" class="file-input" type="file" accept="image/*" multiple>
                   <span class="file-cta">
-                <span class="file-label">사진 첨부</span>
+                <span class="file-label">이미지 첨부</span>
             </span>
-                  <span id="contentImageNameSpan" class="file-name">사진 파일 (png, jpg, jpeg)</span>
+                  <span id="contentImageNameSpan" class="file-name">이미지 파일 (png, jpg, jpeg)</span>
                 </label>
               </div>
+              <p class="help is-danger">내용 이미지는 최대 2.5MB까지 여러 장 업로드 가능합니다.</p>
               <div id="contentImagePreviewContainer" class="image-preview-container">
                 <!-- 이미지 미리보기 추가 -->
               </div>
