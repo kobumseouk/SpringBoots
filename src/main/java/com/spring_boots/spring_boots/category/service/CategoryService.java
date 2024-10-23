@@ -81,15 +81,15 @@ public class CategoryService {
         // 카테고리를 뒤로 이동
         categoryRepository.decrementDisplayOrderForIntermediateCategories(
             category.getCategoryThema(),
-            oldDisplayOrder,
-            newDisplayOrder
+            oldDisplayOrder,    // 기존 위치부터
+            newDisplayOrder          //  수정 할 위치까지
         );
       } else {
         // 카테고리를 앞으로 이동
         categoryRepository.incrementDisplayOrderForIntermediateCategories(
             category.getCategoryThema(),
-            newDisplayOrder,
-            oldDisplayOrder
+            newDisplayOrder,   // 수정 할 위치부터
+            oldDisplayOrder     // 기존 위치까지
         );
       }
     }
@@ -111,6 +111,11 @@ public class CategoryService {
     Category category = categoryRepository.findById(categoryId)
         .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
 
+    // 삭제할 카테고리의 theme와 displayOrder 저장
+    String categoryThema = category.getCategoryThema();
+    int deleteDisplayOrder = category.getDisplayOrder();
+    int totalCategories = categoryRepository.countByCategoryThema(categoryThema);  // 테마가 동일한 카테고리의 총 개수
+
     // 카테고리 이미지가 있다면 S3에서 삭제
     if (category.getImageUrl() != null) {
       String imageKey = extractKeyFromUrl(category.getImageUrl());
@@ -131,8 +136,18 @@ public class CategoryService {
       itemRepository.delete(item);
     }
 
+    // 삭제된 카테고리보다 큰 displayOrder를 가진 카테고리들의 순서를 1씩 감소
+    categoryRepository.decrementDisplayOrderForIntermediateCategories(
+        categoryThema,
+        deleteDisplayOrder,  // 삭제된 카테고리의 순서
+        totalCategories            // 해당 테마의 최대 순서값
+    );
+
+
     // 카테고리 삭제
     categoryRepository.delete(category);
+
+
   }
 
   // URL에서 S3 키를 추출

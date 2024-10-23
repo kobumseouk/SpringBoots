@@ -28,7 +28,7 @@
     padding: 2rem 3rem;  /* 버튼 공간 확보를 위한 좌우 패딩 */
 }
 
-/* 페이지네이션 버튼 컨테이너 스타일 수정 */
+/* 페이지네이션 버튼 컨테이너 스타일 */
 .pagination-buttons {
     position: absolute;
     top: 50%;
@@ -45,10 +45,10 @@
 
 /* 페이지네이션 버튼 스타일 */
 .pagination-buttons .custom-button {
-    width: 40px;          /* 버튼 크기 */
+    width: 40px;
     height: 40px;         /* 버튼 크기 */
     min-width: unset;     /* 기존 최소 너비 제거 */
-    padding: 0;           /* 패딩 제거 */
+    padding: 0;
     border-radius: 50%;   /* 둥근 모서리 */
     background-color: white;
     border: 1px solid #ddd;
@@ -75,9 +75,8 @@
     transform: none;
 }
 
-/* 기존 상품 컨테이너 여백 조정 */
 #products-container {
-    margin: 0 2rem;  /* 버튼과의 간격 조정 */
+    margin: 0 2rem;
 }
 
 .product-card {

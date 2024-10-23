@@ -40,7 +40,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
       "WHERE c.categoryThema = :categoryThema AND c.displayOrder >= :start AND c.displayOrder < :end")
   void incrementDisplayOrderForIntermediateCategories(@Param("categoryThema") String categoryThema, @Param("start") int start, @Param("end") int end);
 
-  // 카테고리 이름으로 카테고리 조회 : 중복 확인
-  // Category findByCategoryName(String categoryName);
+  // 카테고리 테마에 속한 카테고리 수 반환
+  int countByCategoryThema(String categoryThema);
 
 }
