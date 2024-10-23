@@ -190,7 +190,8 @@
               </button>
             </div>
           </div>
-          <small class="help">필수 입력란. 반드시 하나 이상의 색상을 추가해주세요.</small>
+          <small class="help">필수 입력란. 반드시 하나 이상의 색상을 추가해주세요. 영어 입력만 가능합니다.</small>
+          <small class="help">색상 추가가 5개까지 가능합니다.</small>
           <ul id="colorList"></ul> <!-- 색상 리스트를 보여줄 공간 -->
         </div>
 
@@ -213,11 +214,12 @@
               // 색상 개수 제한
               if (color) {
                   if (colors.length < 5) {
+                      const upperColor = color.toUpperCase(); // 색상을 대문자로 변환
                       // 색상 중복 검사 (이미 추가된 색상인지 확인)
-                      if (colors.includes(color)) {
+                      if (colors.includes(upperColor)) {
                           alert('이미 추가된 색상입니다.');
                       } else {
-                          colors.push(color); // 색상 추가
+                          colors.push(upperColor); // 색상 추가
                           input.value = ''; // 입력 필드 초기화
                           renderColorList(); // 색상 리스트 갱신
                       }
@@ -274,7 +276,7 @@
                         required
                 ></textarea>
           </div>
-          <small class="help">필수 입력란. 반드시 상세 설명을 작성해주세요.</small>
+          <small class="help">필수 입력란. 반드시 상세 설명을 작성해주세요. 최대 1,000자 입니다.</small>
         </div>
 
         <div class="field is-fullwidth">
@@ -303,6 +305,7 @@
                   </span>
             </label>
           </div>
+          <small class="help">파일 크기는 최대 10MB 이하로 가능합니다.</small>
           <div>
             <img id="imagePreview" src="#" alt="미리보기" style="display: none; max-width: 100%; margin-top: 10px;" />
           </div>
@@ -374,7 +377,7 @@
               </button>
             </div>
           </div>
-          <small class="help">필수 입력란. 반드시 하나 이상의 키워드를 선택해주세요.</small>
+          <small class="help">필수 입력란. 반드시 하나 이상의 키워드를 선택해주세요. 최대 10개 가능합니다.</small>
           <ul id="keywordList"></ul> <!-- 키워드 리스트를 보여줄 공간 -->
         </div>
         <script>
@@ -385,7 +388,7 @@
               const keyword = input.value.trim();
 
               if (keyword) {
-                  if (keywords.length < 5) { // 키워드 개수 제한
+                  if (keywords.length < 10) { // 키워드 개수 제한
                     if (keywords.includes(keyword)) {
                     alert('이미 추가된 키워드입니다.');
                     } else {
@@ -394,7 +397,7 @@
                       renderKeywordList(); // 키워드 리스트 갱신
                       }
                   } else {
-                      alert('키워드는 최대 5개까지 추가할 수 있습니다.'); // 최대 개수 알림
+                      alert('키워드는 최대 10개까지 추가할 수 있습니다.'); // 최대 개수 알림
                   }
               }
           });

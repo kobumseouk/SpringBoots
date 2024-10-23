@@ -144,7 +144,7 @@ function renderCartItems() {
         deleteBtn.addEventListener('click', () => {
           const confirmed = confirm('장바구니에서 상품을 삭제하시겠습니까?');
           if (confirmed) {
-            deleteItemFromCart(item.itemId, item.itemSize);
+            deleteItemFromCart(item.itemId, item.itemSize, item.itemColor);
             location.reload();
           }
         });
