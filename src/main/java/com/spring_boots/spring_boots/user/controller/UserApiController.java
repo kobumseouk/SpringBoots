@@ -83,7 +83,8 @@ public class UserApiController {
                     .builder().message("정상적으로 수정되었습니다.").build());
         } catch (PasswordNotMatchException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserUpdateResponseDto
-                    .builder().message("잘못된 데이터 요청입니다.").build());        }
+                    .builder().message("잘못된 데이터 요청입니다.").build());
+        }
     }
 
 //    //회원 탈퇴(hard delete)
@@ -186,13 +187,15 @@ public class UserApiController {
     @GetMapping("/provider")
     public ResponseEntity<UserProviderResponseDto> checkProvider(UserDto userDto) {
         return ResponseEntity.status(HttpStatus.OK).body(UserProviderResponseDto.builder()
-                        .provider(userDto.getProvider()).build());
+                .provider(userDto.getProvider()).build());
     }
 
     //쿠키 삭제 로직
     private void deleteCookie(String token, HttpServletResponse response) {
         Cookie cookie = new Cookie(token, null);
-//        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite", "Lax");
         cookie.setPath("/");
         cookie.setMaxAge(0); // 쿠키 즉시 만료
         response.addCookie(cookie);
