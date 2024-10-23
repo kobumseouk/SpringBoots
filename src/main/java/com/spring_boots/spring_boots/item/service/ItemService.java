@@ -211,6 +211,12 @@ public class ItemService {
         return PageRequest.of(page, limit, sortOrder);
     }
 
+    // 상품 이름을 이용하여 검색
+    public Page<ResponseItemDto> searchItemsByName(String itemName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Item> itemsPage = itemRepository.findByItemNameContainingIgnoreCase(itemName, pageable);
+        return itemsPage.map(itemMapper::toResponseDto);
+    }
 
 }
 

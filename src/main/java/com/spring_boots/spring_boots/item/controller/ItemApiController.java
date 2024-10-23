@@ -4,10 +4,13 @@ import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundExcepti
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
 import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
+import com.spring_boots.spring_boots.item.entity.Item;
 import com.spring_boots.spring_boots.item.service.ItemService;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -126,5 +129,15 @@ public class ItemApiController {
         Page<ResponseItemDto> result = itemService.searchAndSortItems(keyword, sort, page, limit);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    // 상품 이름으로 조회
+    @GetMapping("/items/list/search/name")
+    public ResponseEntity<Page<ResponseItemDto>> searchItemsByName (@RequestParam String itemName,
+                                                                    @RequestParam(defaultValue = "0") int page,
+                                                                    @RequestParam(defaultValue = "10") int size) {
+        Page<ResponseItemDto> result = itemService.searchItemsByName(itemName, page, size);
+        return ResponseEntity.ok(result);
+    }
+
 
 }
