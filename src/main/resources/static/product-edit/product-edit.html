@@ -322,22 +322,22 @@
                             return;
                         }
 
-                        // 색상 개수 제한
                         if (color) {
-                            if (colors.length < 5) {
-                                // 색상 중복 검사 (이미 추가된 색상인지 확인)
-                                if (colors.includes(color)) {
-                                    alert('이미 추가된 색상입니다.');
-                                } else {
-                                    colors.push(color); // 색상 추가
-                                    input.value = ''; // 입력 필드 초기화
-                                    renderColorList(); // 색상 리스트 갱신
-                                }
-                            } else {
-                                alert('색상은 최대 5개까지 추가할 수 있습니다.'); // 최대 개수 알림
+                          if (colors.length < 5) {
+                              const upperColor = color.toUpperCase(); // 색상을 대문자로 변환
+                              // 색상 중복 검사 (이미 추가된 색상인지 확인)
+                              if (colors.includes(upperColor)) {
+                                  alert('이미 추가된 색상입니다.');
+                              } else {
+                                  colors.push(upperColor); // 색상 추가
+                                  input.value = ''; // 입력 필드 초기화
+                                  renderColorList(); // 색상 리스트 갱신
+                              }
+                          } else {
+                              alert('색상은 최대 5개까지 추가할 수 있습니다.'); // 최대 개수 알림
                             }
-                        }
-                    });
+                          }
+                        });
 
                     function renderColorList() {
                         const colorList = document.getElementById('colorList');
