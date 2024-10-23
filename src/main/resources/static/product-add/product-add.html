@@ -201,12 +201,12 @@
               const input = document.getElementById('searchColorInput');
               const color = input.value.trim();
 
-              // 한글만 입력되도록 정규 표현식 사용
-              const koreanRegex = /^[가-힣]+$/;
+              // 영어 대문자 및 소문자만 입력되도록 정규 표현식 사용
+              const englishRegex = /^[a-zA-Z]+$/;
 
-              // 색상이 한글로만 이루어져 있는지 검사
-              if (!koreanRegex.test(color)) {
-                  alert('색상은 한글로만 입력 가능합니다.');
+              // 색상이 영어로만 이루어져 있는지 검사
+              if (!englishRegex.test(color)) {
+                  alert('색상은 영어로만 입력 가능합니다.');
                   return;
               }
 
