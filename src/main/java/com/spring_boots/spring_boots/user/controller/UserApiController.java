@@ -71,8 +71,9 @@ public class UserApiController {
     public ResponseEntity<UserUpdateResponseDto> updateUser(UserDto userDto,
                                                             @PathVariable("userInfoId") Long userInfoId,
                                                             @RequestBody UserUpdateRequestDto request) {
-        if (userService.validateUpdateUser(request)) {
-
+        if (!userService.validateUpdateUser(request)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserUpdateResponseDto
+                    .builder().message("유효성 검사실패").build());
         }
         try {
 
