@@ -35,8 +35,15 @@ public class UserAdminApiController {
 //            ,@RequestParam(value = "keyword", defaultValue = "") String keyword
     ) {
 //        List<UserResponseDto> users = userService.findAll();
-        Page<UserResponseDto> result=userService.getUsersByCreatedAt(page,size);
+        Page<UserResponseDto> result = userService.getUsersByCreatedAt(page, size);
         return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/count")
+    public ResponseEntity<UserAdminCountResponseDto> countAdmin() {
+        UserAdminCountResponseDto userAdminCountResponseDto = userService.countAdmin();
+        return ResponseEntity.status(HttpStatus.OK).body(userAdminCountResponseDto);
     }
 
     //관리자 본인인지아닌지
@@ -57,7 +64,7 @@ public class UserAdminApiController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-//    //관리자 부여
+    //    //관리자 부여
     @PatchMapping("/admin/grant/{userId}")
     public ResponseEntity<AdminGrantTokenResponseDto> grantAdmin(@PathVariable("userId") Long userId,
                                                                  @RequestBody AdminGrantTokenRequestDto adminGrantTokenRequestDto) {

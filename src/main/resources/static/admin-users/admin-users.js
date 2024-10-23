@@ -42,11 +42,29 @@ async function insertUsers(page = 0, size = 10) {
   const totalPages = usersPage.totalPages;
   const content = usersPage.content;
 
+  const adminCountApi =await Api.get('/api/admin/count');
+
   // 총 요약에 활용
   const summary = {
     usersCount: usersPage.totalElements,
-    adminCount: 0,
+    adminCount: adminCountApi.countAdmin,
   };
+
+  const usersContainer = document.querySelector("#usersContainer");
+  if (!usersContainer) {
+    console.error('usersContainer 요소를 찾을 수 없습니다.');
+    return;
+  }
+
+  // 기존 유저 목록만 초기화 (컬럼며은 유지)
+  const existingList = usersContainer.querySelector('.user-list');
+  if (existingList) {
+    existingList.remove();
+  }
+
+  // 새로운 카테고리 목록 컨테이너 생성
+  const userList = document.createElement('div');
+  userList.className = 'user-list';
 
   for (const user of content) {
     const { userId, email, username, role, createdAt, userRealId, provider, deleted } = user;
@@ -73,11 +91,11 @@ async function insertUsers(page = 0, size = 10) {
 
 //    summary.usersCount += 1;
 
-    if (roles.includes('ADMIN')) {
-      summary.adminCount += 1;
-    }
+//    if (roles.includes('ADMIN')) {
+//      summary.adminCount += 1;
+//    }
 
-    usersContainer.insertAdjacentHTML(
+    userList.insertAdjacentHTML(
       "beforeend",
       `
         <div class="columns orders-item" id="user-${id}">
@@ -117,37 +135,43 @@ async function insertUsers(page = 0, size = 10) {
       `
     );
 
-    // 요소 선택
-    const roleSelectBox = document.querySelector(`#roleSelectBox-${id}`);
-    const deleteButton = document.querySelector(`#deleteButton-${id}`);
+    setTimeout(() => {
+      const roleSelectBox = document.querySelector(`#roleSelectBox-${id}`);
+      if (roleSelectBox) {
+        // 요소 선택
+        roleSelectBox.addEventListener("change", async () => {
+          // 선택된 userId와 roleSelectBox를 전역 변수에 할당
+          const principalUser = await Api.get("/api/admin/user/principal");
 
-    // 권한 변경 시 모달 띄우기
-    roleSelectBox.addEventListener("change", async () => {
-      // 선택된 userId와 roleSelectBox를 전역 변수에 할당
-      const principalUser = await Api.get("/api/admin/user/principal");
+          selectedUserId = id;
+          selectedRoleSelectBox = roleSelectBox;
 
-      selectedUserId = id;
-      selectedRoleSelectBox = roleSelectBox;
+          //관리자가 본인이면 변경 불가능
+          if(principalUser.userId === id){
+            alert("관리자 본인은 권한상태를 변경할 수 없습니다.");
+            window.location.href = "/admin/users";  //리다이렉트 url
+            return;
+          }
 
-      //관리자가 본인이면 변경 불가능
-      if(principalUser.userId === id){
-        alert("관리자 본인은 권한상태를 변경할 수 없습니다.");
-        window.location.href = "/admin/users";  //리다이렉트 url
-        return;
-      }
-
-      const selectedOption = selectedRoleSelectBox.options[selectedRoleSelectBox.selectedIndex];
-      if (selectedOption.value === "ADMIN") {
-        selectedRoleSelectBox.classList.add("has-background-danger-light", "has-text-danger");
-        selectedRoleSelectBox.classList.remove("has-background-link-light", "has-text-link");
+          const selectedOption = selectedRoleSelectBox.options[selectedRoleSelectBox.selectedIndex];
+          if (selectedOption.value === "ADMIN") {
+            selectedRoleSelectBox.classList.add("has-background-danger-light", "has-text-danger");
+            selectedRoleSelectBox.classList.remove("has-background-link-light", "has-text-link");
+          } else {
+            selectedRoleSelectBox.classList.add("has-background-link-light", "has-text-link");
+            selectedRoleSelectBox.classList.remove("has-background-danger-light", "has-text-danger");
+          }
+          // 모달 띄우기
+          adminCodeModal.classList.add("is-active");
+        });
       } else {
-        selectedRoleSelectBox.classList.add("has-background-link-light", "has-text-link");
-        selectedRoleSelectBox.classList.remove("has-background-danger-light", "has-text-danger");
+        console.error(`Element with id roleSelectBox-${id} not found`);
       }
-      // 모달 띄우기
-      adminCodeModal.classList.add("is-active");
-    });
+    }, 0); // 0ms의 짧은 딜레이
   }
+
+  //새로운 유저 목록을 컨테이너에 추가
+  usersContainer.appendChild(userList);
 
   // 총 요약에 값 삽입
   usersCount.innerText = addCommas(summary.usersCount);
