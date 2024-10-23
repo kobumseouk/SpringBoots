@@ -100,7 +100,7 @@ sizeButtons.forEach(button => {
 
 
 // 장바구니에 추가하는 함수
-function addToCart(product) {
+async function addToCart(product) {
   const selectedSize = getSelectedSize();
   if (!selectedSize) {
     alert("사이즈를 선택해 주세요.");
@@ -108,7 +108,8 @@ function addToCart(product) {
   }
 
   //만약 로그인이 안되어있다면 return
-  if(!checkLogin()){
+  const isLoggedIn = await checkLogin();
+  if(!isLoggedIn){
     return;
   }
 
