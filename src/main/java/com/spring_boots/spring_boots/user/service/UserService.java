@@ -288,4 +288,20 @@ public class UserService {
         return true; // 모든 유효성 검증 통과
 
     }
+
+    public boolean validateLogin(JwtTokenLoginRequest request) {
+        //아이디 값이 빈값이면 false
+        String userRealId = request.getUserRealId();
+        if (userRealId.isEmpty()) {
+            return false;
+        }
+
+        //패스워드 값이 빈값이면 false
+        String password = request.getPassword();
+        if (password.isEmpty()) {
+            return false;
+        }
+
+        return true;
+    }
 }
