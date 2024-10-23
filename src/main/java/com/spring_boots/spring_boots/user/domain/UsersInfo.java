@@ -49,6 +49,7 @@ public class UsersInfo extends BaseTimeEntity {
     }
 
     public void updateUserInfo(UserUpdateRequestDto userUpdateRequestDto) {
+        //DB에 저장된 첫번째 값을 가지고온다.
         UsersInfoResponseDto userInfoDto = userUpdateRequestDto.getAddress().get(0);
         this.address = userInfoDto.getAddress();
         this.streetAddress = userInfoDto.getStreetAddress();
