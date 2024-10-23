@@ -22,4 +22,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
   // 카테고리 테마별로 아이템을 조회
   Page<Item> findByCategory_CategoryThema(String thema, Pageable pageable);
+
+  // 상품 이름으로 조회
+  Page<Item> findByItemNameContainingIgnoreCase(String itemName, Pageable pageable);
 }

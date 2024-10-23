@@ -9,6 +9,8 @@ const modalCloseButton = document.querySelector("#modalCloseButton");
 const deleteCompleteButton = document.querySelector("#deleteCompleteButton");
 const deleteCancelButton = document.querySelector("#deleteCancelButton");
 const addItemButton = document.querySelector("#addItemButton");
+const searchInput = document.querySelector("#searchInput");
+const searchButton = document.querySelector("#searchButton");
 
 let itemIdToDelete;
 
@@ -61,7 +63,108 @@ if (addItemButton) {
   }
 }
 
+searchButton.addEventListener("click", async () => {
+  const searchTerm = searchInput.value.trim();
+  if (searchTerm) {
+    await searchItems(searchTerm);
+  } else {
+    await insertItems(); // 검색어가 없으면 모든 아이템 로드
+  }
+});
 
+// Enter 키 이벤트 리스너 추가
+searchInput.addEventListener("keydown", async (event) => {
+  if (event.key === "Enter") { // Enter 키가 눌렸을 때
+    event.preventDefault(); // 기본 Enter 키 동작 방지 (예: 폼 제출)
+    const searchTerm = searchInput.value.trim();
+    if (searchTerm) {
+      await searchItems(searchTerm);
+    } else {
+      await insertItems(); // 검색어가 없으면 모든 아이템 로드
+    }
+  }
+});
+
+// 검색 함수
+async function searchItems(keyword, page = 0, size = 10) {
+  try {
+    const response = await Api.get(`/api/items/list/search/name?itemName=${encodeURIComponent(keyword)}&page=${page}&size=${size}`);
+    console.log('검색 API 응답:', response);
+
+    if (!response || !response.content) {
+      throw new Error('예상치 못한 API 응답 형식');
+    }
+
+    const items = response.content;
+    const totalPages = response.totalPages;
+    const currentPage = response.number;
+
+    // 기존 아이템 목록 초기화
+    const itemsContainer = document.querySelector("#itemsContainer");
+    const existingList = itemsContainer.querySelector('.item-list');
+    if (existingList) {
+      existingList.remove();
+    }
+
+    // 새로운 아이템 목록 컨테이너 생성
+    const itemList = document.createElement('div');
+    itemList.className = 'item-list';
+
+    for (const item of items) {
+      const { id, itemName, categoryId, createdAt, updatedAt } = item;
+      const createdDate = new Date(createdAt);
+      const updatedDate = new Date(updatedAt);
+      const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false // 24시간 형식
+      };
+      const categories = await Api.get(`/api/admin/categories/${categoryId}`);
+
+      itemList.insertAdjacentHTML(
+        "beforeend",
+        `
+          <div class="columns orders-item" id="item-${id}">
+            <div class="column is-2 has-text-centered">${itemName}</div>
+            <div class="column is-2 has-text-centered">${translateEnglishToKorean(categories.categoryThema)}</div>
+            <div class="column is-2 has-text-centered">${createdDate.toLocaleDateString('ko-KR', options)}</div>
+            <div class="column is-2 has-text-centered">${updatedDate.toLocaleDateString('ko-KR', options)}</div>
+            <div class="column is-2 has-text-centered">
+              <button class="button is-outlined is-small mr-2" id="editButton-${id}">수정</button>
+              <button class="button is-outlined is-small" id="deleteButton-${id}">삭제</button>
+            </div>
+          </div>
+        `
+      );
+    }
+
+    // 새로운 아이템 목록을 컨테이너에 추가
+    itemsContainer.appendChild(itemList);
+
+    // 이벤트 리스너 추가
+    items.forEach(item => {
+      const { id } = item;
+      document.querySelector(`#editButton-${id}`).addEventListener("click", () => {
+        window.location.href = `/admin/items/edit?id=${id}`;
+      });
+      document.querySelector(`#deleteButton-${id}`).addEventListener("click", () => {
+        itemIdToDelete = id;
+        openModal();
+      });
+    });
+
+    // 페이지네이션 UI 생성
+    createPagination(currentPage, totalPages);
+
+  } catch (error) {
+    console.error('아이템 검색 실패:', error);
+    alert('상품 검색에 실패했습니다.');
+  }
+}
 
 // 상품 데이터를 받아서 테이블에 추가
 async function insertItems(page = 0, size = 10) {
@@ -228,6 +331,7 @@ function translateEnglishToKorean(englishTheme) {
 
   return themeMap[englishTheme];
 }
+
 
 
 
