@@ -139,6 +139,10 @@ public class OrdersService {
                     Item item = itemRepository.findById(itemDto.getItemId())
                             .orElseThrow(() -> new BadRequestException("ITEM_NOT_FOUND", "해당 ID의 상품을 찾을 수 없습니다: " + itemDto.getItemId()));
 
+                    // 상품 판매량 + 현재 주문량
+                    item.setItemQuantity(item.getItemQuantity() + itemDto.getItemQuantity());
+                    itemRepository.save(item);
+
                     return OrderItems.builder()
                             .orders(savedOrder)
                             .item(item)
@@ -156,6 +160,7 @@ public class OrdersService {
 
         // OrderItems 저장
         orderItemsRepository.saveAll(orderItemsList);
+
 
         // OrderItems와 Orders 간의 관계를 설정
         savedOrder.setOrderItemsList(orderItemsList);
@@ -207,6 +212,15 @@ public class OrdersService {
                 .filter(order -> order.getUser().getUserId().equals(currentUser.getUserId())) // 주문 소유자 확인
                 .map(order -> {
                     if (!order.getIsCanceled()) {
+
+                        // 주문 취소된 각 상품의 판매량 감소
+                        orderItemsRepository.findByOrders(order)
+                            .forEach(orderItem -> {
+                                Item item = orderItem.getItem();
+                                item.setItemQuantity(item.getItemQuantity() - orderItem.getOrderItemsQuantity());
+                                itemRepository.save(item);
+                            });
+
                         order.setIsCanceled(true);
                         order.setOrderStatus("주문취소");
                         order.setUpdatedAt(LocalDateTime.now());
@@ -222,6 +236,15 @@ public class OrdersService {
     public Optional<OrderResponseDto> adminCancelOrder(Long ordersId) {
         return ordersRepository.findById(ordersId).map(order -> {
             if (!order.getIsCanceled()) {
+
+                // 주문 취소된 각 상품의 판매량 감소
+                orderItemsRepository.findByOrders(order)
+                    .forEach(orderItem -> {
+                        Item item = orderItem.getItem();
+                        item.setItemQuantity(item.getItemQuantity() - orderItem.getOrderItemsQuantity());
+                        itemRepository.save(item);
+                    });
+
                 order.setIsCanceled(true);
                 order.setUpdatedAt(LocalDateTime.now());
                 ordersRepository.save(order);

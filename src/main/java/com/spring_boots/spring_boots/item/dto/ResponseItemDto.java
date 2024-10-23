@@ -20,7 +20,7 @@ public class ResponseItemDto {
     private List<String> itemColor;
     private String imageUrl;
     private List<String> keywords;
-
+    private int itemQuantity;
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
