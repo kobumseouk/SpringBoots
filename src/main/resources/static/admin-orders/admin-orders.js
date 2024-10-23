@@ -93,6 +93,9 @@ async function insertOrders() {
     const cancelButtonContainer = document.querySelector(`#cancelButtonContainer-${ordersId}`);
 
     // 상태 변경 이벤트
+    let oldStatus = orderStatus; // 변경 전 상태 저장
+
+    // 상태 변경 이벤트
     statusSelectBox.addEventListener("change", async () => {
       const newStatus = statusSelectBox.value;
       const data = { orderStatus: newStatus };
@@ -117,15 +120,29 @@ async function insertOrders() {
 
         // 상태 변경 후 요약 정보 업데이트
         if (newStatus === "상품배송중") {
-          summary.prepareCount -= 1;
+          if (oldStatus === "주문완료" && summary.prepareCount > 0) {
+            summary.prepareCount -= 1;
+          } else if (oldStatus === "배송완료" && summary.completeCount > 0) {
+            summary.completeCount -= 1;
+          }
           summary.deliveryCount += 1;
         } else if (newStatus === "배송완료") {
-          summary.deliveryCount -= 1;
+          if (oldStatus === "상품배송중" && summary.deliveryCount > 0) {
+            summary.deliveryCount -= 1;
+          } else if (oldStatus === "주문완료" && summary.prepareCount > 0) {
+            summary.prepareCount -= 1;
+          }
           summary.completeCount += 1;
         } else if (newStatus === "주문완료") {
+          if (oldStatus === "배송완료" && summary.completeCount > 0) {
+            summary.completeCount -= 1;
+          } else if (oldStatus === "상품배송중" && summary.deliveryCount > 0) {
+            summary.deliveryCount -= 1;
+          }
           summary.prepareCount += 1;
-          summary.completeCount -= 1;
         }
+
+        oldStatus = newStatus; // 상태가 변경되었으므로 oldStatus 업데이트
 
         updateSummaryCounts();
       } catch (error) {
@@ -158,9 +175,26 @@ function updateSummaryCounts() {
 // 주문 취소
 async function deleteOrderData(orderIdToDelete) {
   try {
+
+    // 삭제하려는 주문의 상태를 추적
+    const orderElement = document.querySelector(`#order-${orderIdToDelete}`);
+    const statusSelectBox = orderElement.querySelector('select');
+    const orderStatus = statusSelectBox.value; // 현재 상태 가져오기
+
     await Api.delete(`/api/admin/orders`, orderIdToDelete);
     const deletedItem = document.querySelector(`#order-${orderIdToDelete}`);
     deletedItem.remove();
+
+    summary.ordersCount -= 1; // 주문 개수 감소
+    if (orderStatus === "주문완료") {
+      summary.prepareCount -= 1;
+    } else if (orderStatus === "상품배송중") {
+      summary.deliveryCount -= 1;
+    } else if (orderStatus === "배송완료") {
+      summary.completeCount -= 1;
+    }
+
+    updateSummaryCounts(); // 요약 정보 업데이트
     alert("주문이 취소되었습니다.");
     closeModal();
   } catch (err) {

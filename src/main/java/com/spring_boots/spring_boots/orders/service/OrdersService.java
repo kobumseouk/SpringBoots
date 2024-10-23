@@ -9,7 +9,9 @@ import com.spring_boots.spring_boots.orders.entity.Orders;
 import com.spring_boots.spring_boots.orders.repository.OrderItemsRepository;
 import com.spring_boots.spring_boots.orders.repository.OrdersRepository;
 import com.spring_boots.spring_boots.user.domain.Users;
+import com.spring_boots.spring_boots.user.domain.UsersInfo;
 import com.spring_boots.spring_boots.user.dto.UserDto;
+import com.spring_boots.spring_boots.user.repository.UserInfoRepository;
 import com.spring_boots.spring_boots.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,8 @@ public class OrdersService {
     private final OrderItemsRepository orderItemsRepository;
 
     private final UserService userService;
+
+    private final UserInfoRepository usersInfoRepository;
 
     // 사용자 주문 목록 조회
     /*
@@ -68,7 +72,7 @@ public class OrdersService {
                                     item.getItem().getItemName(),
                                     item.getOrderItemsQuantity(),
                                     item.getOrderItemsTotalPrice(),
-                                    item.getItem().getItemSize(),
+                                    item.getItemSize(),
                                     item.getItem().getImageUrl() // 이미지 URL 가져오기
                             )).collect(Collectors.toList());
 
@@ -100,6 +104,25 @@ public class OrdersService {
     public Orders createOrder(OrderRequestDto request, UserDto currentUser) {
         // UserDto를 Users 엔티티로 변환
         Users userEntity = userService.getUserEntityByDto(currentUser);
+
+
+        // 배송 정보가 없는 경우 users_info 테이블에 추가
+        UsersInfo existingInfo = usersInfoRepository.findByUsers_UserId(currentUser.getUserId()).orElse(null);
+        if (existingInfo == null) {
+            // 배송 정보를 새로 저장
+            String fullAddress = request.getShippingAddress();
+            String[] addressParts = fullAddress.split(",", 2); // 쉼표를 기준으로 도로명 주소와 상세 주소 분리
+
+            UsersInfo newInfo = UsersInfo.builder()
+                    .users(userEntity)  // FK 설정
+                    .streetAddress(addressParts.length > 0 ? addressParts[0].trim() : "") // 첫 번째 부분은 도로명 주소
+                    .detailedAddress(addressParts.length > 1 ? addressParts[1].trim() : "") // 두 번째 부분은 상세 주소 (없을 수도 있음)
+                    .phone(request.getRecipientContact()) // 연락처
+                    .build();
+
+            usersInfoRepository.save(newInfo);
+        }
+
 
 
         // 필수 필드 유효성 검사
@@ -142,6 +165,7 @@ public class OrdersService {
                     return OrderItems.builder()
                             .orders(savedOrder)
                             .item(item)
+                            .itemSize(itemDto.getItemSize()) // itemSize 매핑 추가
                             .orderItemsQuantity(itemDto.getItemQuantity())
                             .orderItemsTotalPrice(itemDto.getItemPrice() * itemDto.getItemQuantity())
                             .shippingAddress(request.getShippingAddress())
