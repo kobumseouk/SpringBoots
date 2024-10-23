@@ -62,8 +62,8 @@ INSERT INTO category (
     ('Comfortable', 'recommend', 'recommend', 2, NOW(), NOW(), null);
 
 -- Item 테이블에 테스트 데이터 삽입
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (101, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241021174149-1638484837', 230);
+INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size, item_quantity)
+VALUES (101, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241021174149-1638484837', 230, 0);
 -- 아이템 키워드 리스트
 INSERT INTO item_keywords (item_id, keyword) VALUES
 (101, 'Running Shoes'),
@@ -73,8 +73,8 @@ INSERT INTO item_keywords (item_id, keyword) VALUES
 (101, 'mesh'),
 (101, '24SS SUMMER RECOMMEND STYLING');
 
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size)
-VALUES (102, 2, 'Walking Shoes', 7000, 'Comfortable walking shoes', 'Brand B', 'Blue', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241021174149-1638484837', 240);
+INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size, item_quantity)
+VALUES (102, 2, 'Walking Shoes', 7000, 'Comfortable walking shoes', 'Brand B', 'Blue', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241021174149-1638484837', 240, 0);
 INSERT INTO item_keywords (item_id, keyword) VALUES
 (102, 'Walking Shoes'),
 (102, 'common'),
