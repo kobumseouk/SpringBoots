@@ -304,4 +304,24 @@ public class UserService {
 
         return true;
     }
+
+    public boolean validateUpdateUser(UserUpdateRequestDto request) {
+        //변경할 password 유효성 검증: 8~20글자, 영문자, 특수문자 포함
+        String password = request.getUpdatePassword();
+        boolean isPasswordValid = password != null && password.length() >= 8 && password.length() <= 20
+                && password.matches("^(?=.*[a-zA-Z])(?=.*\\W).+$");
+        //패스워드 값이 없으면 true, 있으면 유효성 검증
+        if (password!=null && !isPasswordValid) {
+            return false; // 유효성 검증 실패
+        }
+
+        // email 유효성 검증: 이메일 형식
+        String email = request.getEmail();
+        boolean isEmailValid = email != null && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+        if (!isEmailValid) {
+            return false; // 유효성 검증 실패
+        }
+
+        return true;
+    }
 }

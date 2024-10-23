@@ -71,6 +71,9 @@ public class UserApiController {
     public ResponseEntity<UserUpdateResponseDto> updateUser(UserDto userDto,
                                                             @PathVariable("userInfoId") Long userInfoId,
                                                             @RequestBody UserUpdateRequestDto request) {
+        if (userService.validateUpdateUser(request)) {
+
+        }
         try {
 
             if (userDto.getProvider().equals(Provider.NONE)) {
