@@ -56,8 +56,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
             // 새로운 액세스토큰을 쿠키에 저장
             Cookie newAccessTokenCookie = new Cookie(ACCESS_TOKEN_TYPE_VALUE, newAccessToken);
-//            newAccessTokenCookie.setHttpOnly(true);
-//            newAccessTokenCookie.setSecure(true);
+            newAccessTokenCookie.setHttpOnly(true);
+            newAccessTokenCookie.setSecure(true);
+            newAccessTokenCookie.setAttribute("SameSite", "Lax");
             newAccessTokenCookie.setPath("/");
             response.addCookie(newAccessTokenCookie);
 
