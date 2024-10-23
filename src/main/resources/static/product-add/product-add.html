@@ -80,7 +80,7 @@
       <form class="box register-product-form-box" id="registerProductForm" enctype="multipart/form-data" action="/api/admin/items" method="post">
         <p class="title is-5 has-text-primary">제품을 판매해 보세요</p>
         <div class="field">
-          <label class="label" for="titleInput">제품 이름</label>
+          <label class="label" for="titleInput">* 제품 이름</label>
           <div class="control">
             <input
                     name="itemName"
@@ -92,11 +92,12 @@
                     required
             />
           </div>
+          <small class="help">필수 입력란. 최대 200자까지 입력 가능합니다.</small>
         </div>
 
         <!-- 카테고리 -->
         <div class="field">
-          <label class="label">카테고리</label>
+          <label class="label">* 카테고리</label>
           <label for="themeSelectBox">테마 선택</label>
           <div class="control">
             <div class="select is-fullwidth">
@@ -122,6 +123,7 @@
                 <option value="">카테고리를 선택해 주세요.</option>
               </select>
             </div>
+            <small class="help">필수 입력란. 카테고리를 반드시 선택해주세요.</small>
           </div>
         </div>
 
@@ -172,7 +174,7 @@
         </div>
 
         <div class="field">
-          <label class="label" for="searchColorInput">색상</label>
+          <label class="label" for="searchColorInput">* 색상</label>
           <div class="field has-addons">
             <div class="control header-search-input is-flex-grow-1">
               <input
@@ -188,6 +190,7 @@
               </button>
             </div>
           </div>
+          <small class="help">필수 입력란. 반드시 하나 이상의 색상을 추가해주세요.</small>
           <ul id="colorList"></ul> <!-- 색상 리스트를 보여줄 공간 -->
         </div>
 
@@ -198,11 +201,26 @@
               const input = document.getElementById('searchColorInput');
               const color = input.value.trim();
 
+              // 한글만 입력되도록 정규 표현식 사용
+              const koreanRegex = /^[가-힣]+$/;
+
+              // 색상이 한글로만 이루어져 있는지 검사
+              if (!koreanRegex.test(color)) {
+                  alert('색상은 한글로만 입력 가능합니다.');
+                  return;
+              }
+
+              // 색상 개수 제한
               if (color) {
-                  if (colors.length < 5) { // 색상 개수 제한
-                      colors.push(color); // 색상 추가
-                      input.value = ''; // 입력 필드 초기화
-                      renderColorList(); // 색상 리스트 갱신
+                  if (colors.length < 5) {
+                      // 색상 중복 검사 (이미 추가된 색상인지 확인)
+                      if (colors.includes(color)) {
+                          alert('이미 추가된 색상입니다.');
+                      } else {
+                          colors.push(color); // 색상 추가
+                          input.value = ''; // 입력 필드 초기화
+                          renderColorList(); // 색상 리스트 갱신
+                      }
                   } else {
                       alert('색상은 최대 5개까지 추가할 수 있습니다.'); // 최대 개수 알림
                   }
@@ -244,9 +262,7 @@
         </script>
 
         <div class="field">
-          <label class="label" for="detailDescriptionInput"
-          >상세 설명</label
-          >
+          <label class="label" for="detailDescriptionInput">* 상세 설명</label>
           <div class="control">
                 <textarea
                         class="textarea"
@@ -258,6 +274,7 @@
                         required
                 ></textarea>
           </div>
+          <small class="help">필수 입력란. 반드시 상세 설명을 작성해주세요.</small>
         </div>
 
         <div class="field is-fullwidth">
@@ -320,7 +337,8 @@
         </script>
 
         <div class="field">
-          <label class="label" for="priceInput">가격</label>
+          <label class="label" for="priceInput">* 가격</label>
+
           <div class="field">
             <div class="control has-icons-right">
               <input
@@ -328,17 +346,19 @@
                       name="itemPrice"
                       id="priceInput"
                       type="number"
+                      max="10000000"
                       placeholder="10000"
                       autocomplete="on"
                       required
               />
               <span class="icon is-small is-right"> 원 </span>
             </div>
+            <small class="help">필수 입력란. 최대 10,000,000원입니다.</small>
           </div>
         </div>
 
         <div class="field">
-          <label class="label" for="searchKeywordInput">검색 키워드</label>
+          <label class="label" for="searchKeywordInput">* 검색 키워드</label>
           <div class="field has-addons">
             <div class="control header-search-input is-flex-grow-1">
               <input
@@ -354,6 +374,7 @@
               </button>
             </div>
           </div>
+          <small class="help">필수 입력란. 반드시 하나 이상의 키워드를 선택해주세요.</small>
           <ul id="keywordList"></ul> <!-- 키워드 리스트를 보여줄 공간 -->
         </div>
         <script>
@@ -365,9 +386,13 @@
 
               if (keyword) {
                   if (keywords.length < 5) { // 키워드 개수 제한
-                      keywords.push(keyword); // 키워드 추가
+                    if (keywords.includes(keyword)) {
+                    alert('이미 추가된 키워드입니다.');
+                    } else {
+                    keywords.push(keyword); // 키워드 추가
                       input.value = ''; // 입력 필드 초기화
                       renderKeywordList(); // 키워드 리스트 갱신
+                      }
                   } else {
                       alert('키워드는 최대 5개까지 추가할 수 있습니다.'); // 최대 개수 알림
                   }
@@ -430,6 +455,8 @@
                 alert('색상을 추가하세요.');
                 return;
               }
+
+
 
               const formData = new FormData(this); // 현재 폼의 데이터를 FormData 객체로 생성
 

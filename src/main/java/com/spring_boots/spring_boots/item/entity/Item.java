@@ -33,7 +33,7 @@ public class Item extends BaseTimeEntity {
     private String itemName;
 
     @Column(name = "item_price")
-    private Integer itemPrice;
+    private Long itemPrice;
 
     @Column(name = "item_description")
     private String itemDescription;

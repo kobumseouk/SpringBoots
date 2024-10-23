@@ -1,6 +1,7 @@
 package com.spring_boots.spring_boots.item.dto;
 
 import com.spring_boots.spring_boots.item.entity.Item;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -27,10 +28,12 @@ public class CreateItemDto {
 
     @NotBlank(message = "가격은 필수입니다.")
     @Positive(message = "가격은 0보다 커야 합니다.")
-    private Integer itemPrice;
+    @Max(value = 10000000, message = "가격은 최대 10,000,000원 이하여야 합니다.")
+    private Long itemPrice;
 
-    @Length(max = 10000, message = "설명란의 최대 글자수는 10000입니다.")
+    @Length(max = 1000, message = "설명란의 최대 글자수는 1000입니다.")
     private String itemDescription;
+
 
     private String itemMaker;
 
