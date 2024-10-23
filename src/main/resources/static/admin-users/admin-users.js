@@ -46,7 +46,7 @@ async function insertUsers(page = 0, size = 10) {
 
   // 총 요약에 활용
   const summary = {
-    usersCount: usersPage.totalElements,
+    usersCount: adminCountApi.totalUser,
     adminCount: adminCountApi.countAdmin,
   };
 

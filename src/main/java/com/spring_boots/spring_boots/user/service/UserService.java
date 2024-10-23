@@ -241,11 +241,17 @@ public class UserService {
         return usersPage.map(Users::toResponseDto);
     }
 
-    public UserAdminCountResponseDto countAdmin() {
+    public UserAdminCountResponseDto countUsers() {
         List<Users> users = userRepository.findAll();
-        long count = users.stream()
+        long countAdmin = users.stream()
                 .filter(user -> user.getRole().equals(UserRole.ADMIN))
                 .count();
-        return UserAdminCountResponseDto.builder().countAdmin(count).build();
+        long totalUsers = users.stream()
+                .filter(user -> !user.isDeleted())
+                .count();
+        return UserAdminCountResponseDto.builder()
+                .countAdmin(countAdmin)
+                .totalUser(totalUsers)
+                .build();
     }
 }
