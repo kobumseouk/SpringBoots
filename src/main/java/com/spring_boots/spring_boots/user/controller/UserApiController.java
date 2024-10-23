@@ -34,10 +34,10 @@ public class UserApiController {
     //회원가입
     @PostMapping("/signup")
     public ResponseEntity<UserSignupResponseDto> signup(@RequestBody UserSignupRequestDto userSignupRequestDto) {
-
-        if (userSignupRequestDto == null) {
+        //요청데이터가 유효한지 검사
+        if (!userService.validateSignup(userSignupRequestDto)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(UserSignupResponseDto.builder().message("잘못된 요청입니다.").build());
+                    .body(UserSignupResponseDto.builder().message("유효성 검증실패").build());
         }
 
         Users user = userService.save(userSignupRequestDto);
