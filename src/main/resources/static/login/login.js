@@ -8,7 +8,7 @@ import {
 //useful-functions.js 파일에 있는 blockIfLogin,... 함수를 사용하겠다.
 
 // 요소(element), input 혹은 상수
-const usernameInput = document.querySelector("#usernameInput");
+const usernameInput = document.querySelector("#usernameInput"); //아이디 들어가는곳
 const passwordInput = document.querySelector("#passwordInput");
 const submitButton = document.querySelector("#submitButton");
 
@@ -34,12 +34,18 @@ async function handleSubmit(e) {
   const password = passwordInput.value;
 
   // 잘 입력했는지 확인
-  const isEmailValid = validateEmail(username);
-  const isPasswordValid = password.length >= 4;
+  const isUsernameValid = username.length >=1;
+  const isPasswordValid = password.length >=1;
+
+  if (!isUsernameValid) {
+      return alert(
+        "아이디를 입력해주세요"
+      );
+    }
 
   if (!isPasswordValid) {
     return alert(
-      "비밀번호가 4글자 이상인지 확인해주세요"
+      "비밀번호를 입력해주세요"
     );
   }
 

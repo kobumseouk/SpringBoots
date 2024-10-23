@@ -65,6 +65,43 @@ export const validateEmail = (email) => {
     );
 };
 
+// 올바른 비밀번호 형식인지 (영문자, 특수문자 포함 여부, 8~20자리이상인지)
+export const validatePassword = (password) => {
+  // 비밀번호 최소 길이
+  const minLength = 8;
+
+  // 영문자, 특수문자 포함 여부 확인
+  const hasLetter = /[a-zA-Z]/.test(password); // 영문자가 포함되어 있는지 확인
+  const hasSpecialChars = /[!@#$%^&*(),.?":{}|<>]/.test(password); // 특수문자가 포함되어 있는지 확인
+
+  // 조건 모두 충족하는지 체크
+  return password.length >= minLength && hasLetter && hasSpecialChars;
+};
+
+//아이디의 길이는 6~20
+export const validateUserRealId = (userRealId) => {
+  // 사용자 실 ID 최소 길이
+  const minLength = 6;
+  const maxLength = 20;
+
+  // 사용자 실 ID의 길이가 6~20자리 인지
+  return userRealId.length >= minLength && userRealId.length <= maxLength;
+};
+
+//이름은 2~20글자, 숫자x
+export const validateFullName = (fullName) => {
+  // 전체 이름의 최소 및 최대 길이 설정
+  const minLength = 2;
+  const maxLength = 20;
+
+  // 전체 이름의 길이와 숫자 포함 여부를 검사
+  const isValidLength = fullName.length >= minLength && fullName.length <= maxLength;
+  const hasNoNumbers = !/\d/.test(fullName);
+
+  // 유효성 검사 결과 반환
+  return isValidLength && hasNoNumbers;
+};
+
 // 주소창의 url로부터 params를 얻어 객체로 만듦
 export const getUrlParams = () => {
   const queryString = window.location.search;
