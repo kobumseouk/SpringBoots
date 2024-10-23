@@ -6,6 +6,36 @@ INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_r
 VALUES ('second_user', 'second_real_id', 'second_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
 
 INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('third_user', 'third_real_id', 'third_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('fourth_user', 'fourth_real_id', 'fourth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('fifth_user', 'fifth_real_id', 'fifth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('sixth_user', 'sixth_real_id', 'sixth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('seventh_user', 'seventh_real_id', 'seventh_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('eighth_user', 'eighth_real_id', 'eighth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('ninth_user', 'ninth_real_id', 'ninth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('tenth_user', 'tenth_real_id', 'tenth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('eleventh_user', 'eleventh_real_id', 'eleventh_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('twelfth_user', 'twelfth_real_id', 'twelfth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
 VALUES ('admin', 'admin', 'admin@example.com', '$2a$10$V1hEUNfKSMDNC2lkh58L0uebtdMuwl0tCf2mwlmz4j47Vt.7OgZNe', 0, NULL, 'ADMIN', 'NONE', NOW(), NOW());
 
 -- UsersInfo 테이블에 테스트 데이터 삽입
