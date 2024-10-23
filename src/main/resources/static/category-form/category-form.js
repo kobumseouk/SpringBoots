@@ -172,8 +172,8 @@ async function handleSubmit(e) {
     return alert("카테고리 이름, 테마, 배치 위치는 필수 입력 항목입니다.");
   }
 
-  if (image && image.size > 3e6) {
-    return alert("사진은 최대 2.5MB 크기까지 가능합니다.");
+  if (image && image.size > 500 * 1024) {
+    return alert("이미지의 크기가 최대 500KB 크기를 초과했습니다.");
   }
 
   try {
