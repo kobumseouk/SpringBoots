@@ -162,9 +162,16 @@ public class OrdersService {
                     Item item = itemRepository.findById(itemDto.getItemId())
                             .orElseThrow(() -> new BadRequestException("ITEM_NOT_FOUND", "해당 ID의 상품을 찾을 수 없습니다: " + itemDto.getItemId()));
 
+                    int itemQuantity =0;
+                    if (item.getItemQuantity() != null) {
+                        itemQuantity = item.getItemQuantity();
+                    }
+
                     // 상품 판매량 + 현재 주문량
-                    item.setItemQuantity(item.getItemQuantity() + itemDto.getItemQuantity());
+                    item.setItemQuantity(itemQuantity + itemDto.getItemQuantity());
                     itemRepository.save(item);
+
+
 
                     return OrderItems.builder()
                             .orders(savedOrder)
@@ -240,8 +247,14 @@ public class OrdersService {
                         // 주문 취소된 각 상품의 판매량 감소
                         orderItemsRepository.findByOrders(order)
                             .forEach(orderItem -> {
+
                                 Item item = orderItem.getItem();
-                                item.setItemQuantity(item.getItemQuantity() - orderItem.getOrderItemsQuantity());
+                                int itemQuantity =0;
+                                if (item.getItemQuantity() != null) {
+                                    itemQuantity = item.getItemQuantity();
+                                }
+
+                                item.setItemQuantity(itemQuantity - orderItem.getOrderItemsQuantity());
                                 itemRepository.save(item);
                             });
 
@@ -264,8 +277,14 @@ public class OrdersService {
                 // 주문 취소된 각 상품의 판매량 감소
                 orderItemsRepository.findByOrders(order)
                     .forEach(orderItem -> {
+
                         Item item = orderItem.getItem();
-                        item.setItemQuantity(item.getItemQuantity() - orderItem.getOrderItemsQuantity());
+                        int itemQuantity =0;
+                        if (item.getItemQuantity() != null) {
+                            itemQuantity = item.getItemQuantity();
+                        }
+
+                        item.setItemQuantity(itemQuantity- orderItem.getOrderItemsQuantity());
                         itemRepository.save(item);
                     });
 
