@@ -38,16 +38,22 @@ function updateEventDetail() {
   document.getElementById('event-end-date').textContent = formatDate(eventDetail.endDate);
 
   const contentImageContainer = document.getElementById('event-content-image');
-  contentImageContainer.innerHTML = ''; // 기존 내용 초기화
-  if (eventDetail.contentImageUrl && eventDetail.contentImageUrl.length > 0) {
+
+  // 내용 이미지가 있는 경우에만 표시
+  if (eventDetail.contentImageUrl && eventDetail.contentImageUrl.length > 0 &&
+      eventDetail.contentImageUrl.some(url => url)) {  // url이 실제로 존재하는지 확인
+    contentImageContainer.style.display = 'block';  // 또는 'flex', 레이아웃에 따라 선택
+    contentImageContainer.innerHTML = '';
     eventDetail.contentImageUrl.forEach(url => {
-      if (url) { // url이 존재하는 경우에만 이미지 생성
+      if (url) {
         const contentImage = document.createElement('img');
         contentImage.src = url;
         contentImage.alt = eventDetail.eventTitle;
         contentImageContainer.appendChild(contentImage);
       }
     });
+  } else {
+    contentImageContainer.style.display = 'none';  // 이미지가 없으면 컨테이너 숨김
   }
 
   // 이벤트 설명 부분 수정
