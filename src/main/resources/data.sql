@@ -6,6 +6,36 @@ INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_r
 VALUES ('second_user', 'second_real_id', 'second_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
 
 INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('third_user', 'third_real_id', 'third_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('fourth_user', 'fourth_real_id', 'fourth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('fifth_user', 'fifth_real_id', 'fifth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('sixth_user', 'sixth_real_id', 'sixth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('seventh_user', 'seventh_real_id', 'seventh_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('eighth_user', 'eighth_real_id', 'eighth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('ninth_user', 'ninth_real_id', 'ninth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('tenth_user', 'tenth_real_id', 'tenth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('eleventh_user', 'eleventh_real_id', 'eleventh_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
+VALUES ('twelfth_user', 'twelfth_real_id', 'twelfth_user@example.com', '$2a$10$WKGvXJc/mTeYBvCTHu0t/uAxuh3NS5u.Tv4BqhR8Geby1DVchWLxO', 0, NULL, 'USER', 'NONE', NOW(), NOW());
+
+INSERT INTO users (username, user_real_id, email, password, is_deleted, delete_reason, role, provider, created_at, updated_at)
 VALUES ('admin', 'admin', 'admin@example.com', '$2a$10$V1hEUNfKSMDNC2lkh58L0uebtdMuwl0tCf2mwlmz4j47Vt.7OgZNe', 0, NULL, 'ADMIN', 'NONE', NOW(), NOW());
 
 -- UsersInfo 테이블에 테스트 데이터 삽입
@@ -73,29 +103,29 @@ INSERT INTO orders (
 
 -- OrderItems 테이블에 테스트 데이터 삽입
 INSERT INTO order_items (
-    orders_id, item_id, orderitems_total_price, orderitems_quantity,
+    orders_id, item_id, orderitems_total_price, orderitems_quantity, item_size,
     shipping_address, recipient_name, recipient_contact, delivery_message,
     created_at, updated_at
 ) VALUES
-      (1, 101, 5000, 1, '서울특별시 강남구 선릉로 433, 신관 6층', '엘리스', '010-4234-3424', '문앞에 배송해주세요', NOW(), NOW()),
-      (1, 101, 10000, 2, '서울특별시 강남구 선릉로 433, 신관 6층', 'John Doe', '031-434-223', '부재시 경비실에 맡겨주세요', NOW(), NOW());
+      (1, 101, 5000, 1, 290, '서울특별시 강남구 선릉로 433, 신관 6층', '엘리스', '010-4234-3424', '문앞에 배송해주세요', NOW(), NOW()),
+      (1, 101, 10000, 2, 290, '서울특별시 강남구 선릉로 433, 신관 6층', 'John Doe', '031-434-223', '부재시 경비실에 맡겨주세요', NOW(), NOW());
 
 INSERT INTO order_items (
-    orders_id, item_id, orderitems_total_price, orderitems_quantity,
+    orders_id, item_id, orderitems_total_price, orderitems_quantity, item_size,
     shipping_address, recipient_name, recipient_contact, delivery_message,
     created_at, updated_at
 ) VALUES
-      (2, 102, 7000, 1, '서울특별시 마포구 월드컵북로 396', 'Second User', '010-8765-4321', '부재 시 경비실에 맡겨주세요', NOW(), NOW()),
-      (2, 102, 7000, 1, '서울특별시 마포구 월드컵북로 396', 'Second User', '010-8765-4321', '조심히 다뤄주세요', NOW(), NOW());
+      (2, 102, 7000, 1, 280, '서울특별시 마포구 월드컵북로 396', 'Second User', '010-8765-4321', '부재 시 경비실에 맡겨주세요', NOW(), NOW()),
+      (2, 102, 7000, 1, 280, '서울특별시 마포구 월드컵북로 396', 'Second User', '010-8765-4321', '조심히 다뤄주세요', NOW(), NOW());
 
 
 INSERT INTO order_items (
-    orders_id, item_id, orderitems_total_price, orderitems_quantity,
+    orders_id, item_id, orderitems_total_price, orderitems_quantity, item_size,
     shipping_address, recipient_name, recipient_contact, delivery_message,
     created_at, updated_at
 ) VALUES
-      (3, 101, 7000, 1, '경기도 성남시 분당구 대왕판교로 670', '김이박', '010-9876-5432', '경비실에 맡겨주세요', NOW(), NOW()),
-      (3, 102, 14000, 2, '경기도 성남시 분당구 대왕판교로 670', '김이박', '010-9876-5432', '조심히 다뤄주세요', NOW(), NOW());
+      (3, 101, 7000, 1, 220 ,'경기도 성남시 분당구 대왕판교로 670', '김이박', '010-9876-5432', '경비실에 맡겨주세요', NOW(), NOW()),
+      (3, 102, 14000, 2, 230 ,'경기도 성남시 분당구 대왕판교로 670', '김이박', '010-9876-5432', '조심히 다뤄주세요', NOW(), NOW());
 
 
 -- Event 테이블에 테스트 데이터 삽입

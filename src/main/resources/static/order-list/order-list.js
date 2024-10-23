@@ -25,7 +25,14 @@ async function loadOrderList() {
             throw new Error('주문 목록을 가져오는 중 오류가 발생했습니다.');
         }
         const orders = await response.json();
-        renderOrderList(orders);
+
+        // 주문이 없는 경우 처리
+        if (orders.length === 0) {
+            document.getElementById('order-list-root').innerHTML = `<div class="notification is-info">주문이 없습니다.</div>`;
+        } else {
+            renderOrderList(orders); // 주문 목록을 렌더링
+        }
+
     } catch (error) {
         document.getElementById('order-list-root').innerHTML = `<div class="notification is-danger">${error.message}</div>`;
     }

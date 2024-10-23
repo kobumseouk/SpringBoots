@@ -28,9 +28,6 @@ public class OrdersRestController {
     @GetMapping("/api/orders")
     public ResponseEntity<List<OrderDto>> getUserOrders(UserDto currentUser) {
         List<OrderDto> orders = ordersService.getUserOrders(currentUser.getUserId());
-        if (orders.isEmpty()) {
-            throw new ResourceNotFoundException("주문을 찾을 수 없습니다.");
-        }
         return ResponseEntity.ok(orders);
     }
 
