@@ -115,15 +115,18 @@ function displayCategoryInfo(category) {
 async function fetchCategoryItems(categoryId, sort, page) {
   try {
     let endpoint;
+    const thema = window.location.pathname.split('/')[2]; // common, women, men 등의 테마값
+
     if (categoryId === 'all') {
       const thema = window.location.pathname.split('/')[2];
       endpoint = `/api/items/thema/${thema}?sort=${sort}&page=${page}&limit=${ITEMS_PER_PAGE}`;
     } else {
       endpoint = `/api/items/categories/${categoryId}?sort=${sort}&page=${page}&limit=${ITEMS_PER_PAGE}`;
     }
-    console.log('Fetching from endpoint:', endpoint); // 요청 URL 로깅
+
+    console.log('Fetching from endpoint:', endpoint);
     const response = await Api.get(endpoint);
-    console.log('Server response:', response); // 서버 응답 로깅
+    console.log('Server response:', response);
     displayItems(response.content);
     displayPagination(response);
     document.getElementById('product-count').textContent = `${response.totalElements}개의 상품이 있습니다.`;
