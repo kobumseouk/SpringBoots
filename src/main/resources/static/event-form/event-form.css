@@ -18,18 +18,22 @@
 .register-event-form-container {
     display: flex;
     justify-content: center;
-    align-items: center;
-    margin-bottom: 1rem;
+    align-items: flex-start;  /* center에서 flex-start로 변경 */
+    margin: 2rem 0;          /* 상하 여백 추가 */
+    width: 100%;
 }
 
 /* 이벤트 폼 박스 스타일 */
 .register-event-form-box {
     width: 100%;
-    max-width: 50rem;
+    max-width: 60rem;        /* 최대 너비 증가 */
     padding: 2rem;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 0.6em 1.2em -0.2em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02);
+    min-height: auto;        /* 최소 높이 자동 */
+    height: auto;            /* 높이 자동 */
+    overflow: visible;       /* 오버플로우 허용 */
 }
 
 /* 폼 필드 간 간격 조정 */
@@ -69,6 +73,8 @@
 /* 텍스트 영역 최소 높이 설정 */
 .register-event-form-box .textarea {
     min-height: 250px;
+    height: auto;           /* 높이 자동 조절 */
+    resize: vertical;       /* 세로 리사이즈만 허용 */
 }
 
 /* 파일 업로드 버튼 스타일 */
@@ -96,6 +102,8 @@
 .register-event-form-box .image-preview-container {
     margin-top: 1.2rem;
     display: none;
+    max-width: 100%;        /* 최대 너비 제한 */
+    overflow: hidden;       /* 넘치는 내용 숨김 */
 }
 
 /* 이미지 미리보기 스타일 */

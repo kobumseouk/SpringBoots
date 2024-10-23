@@ -61,6 +61,9 @@ public class Item extends BaseTimeEntity {
     @Column(name = "item_size")
     private Integer itemSize;
 
+    @Column(name = "item_quantity")
+    private int itemQuantity;  // 총 판매량 (주문 시 업뎃)
+
     @ElementCollection
     @CollectionTable(name = "item_keywords", joinColumns = @JoinColumn(name = "item_id"))
     @Column(name = "keyword")

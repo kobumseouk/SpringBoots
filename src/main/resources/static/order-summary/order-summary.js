@@ -33,6 +33,7 @@ async function loadOrderSummary(orderId) {
             throw new Error('주문 정보를 가져오는 중 오류가 발생했습니다.');
         }
         const order = await response.json();
+        console.log(order);  // 응답 데이터를 콘솔에 출력하여 확인
         renderOrderSummary(order);
     } catch (error) {
         document.getElementById('order-summary-root').innerHTML = `<div class="notification is-danger">${error.message}</div>`;

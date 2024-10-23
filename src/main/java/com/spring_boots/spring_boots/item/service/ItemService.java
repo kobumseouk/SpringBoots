@@ -192,6 +192,9 @@ public class ItemService {
     private Pageable createPageableWithSort(String sort, int page, int limit) {
         Sort sortOrder;
         switch (sort) {
+            case "best":    // 판매량순
+                sortOrder = Sort.by(Sort.Direction.DESC, "itemQuantity");
+                break;
             case "price-asc":  // 낮은 가격순
                 sortOrder = Sort.by(Sort.Direction.ASC, "itemPrice");
                 break;

@@ -13,8 +13,8 @@ public class CookieUtil {
         cookie.setPath("/");
         cookie.setMaxAge(maxAge);
 
-//        cookie.setHttpOnly(isHttpOnly);  // HttpOnly 속성 설정
-//        cookie.setSecure(isSecure);  // Secure 속성 설정
+        cookie.setHttpOnly(true);  // HttpOnly 속성 설정
+        cookie.setSecure(true);  // Secure 속성 설정
         // SameSite 속성 설정: 쿠키를 CSRF 공격에 대해 보호하기 위해 Lax로 설정
         cookie.setAttribute("SameSite", "Lax");
 
@@ -33,8 +33,9 @@ public class CookieUtil {
                 cookie.setValue("");
                 cookie.setPath("/");
                 cookie.setMaxAge(0);
-//                cookie.setHttpOnly(isHttpOnly);  // HttpOnly 속성 설정
-//                cookie.setSecure(isSecure);  // Secure 속성 설정
+                cookie.setHttpOnly(true);  // HttpOnly 속성 설정
+                cookie.setSecure(true);  // Secure 속성 설정
+                cookie.setAttribute("SameSite", "Lax");
                 response.addCookie(cookie);
             }
         }

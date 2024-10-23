@@ -27,6 +27,9 @@ public class OrderItems extends BaseTimeEntity {
     @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
+    @Column(name = "item_size", nullable = false)
+    private Integer itemSize;
+
     @Column(name = "orderitems_total_price", nullable = false)
     private Integer orderItemsTotalPrice;
 

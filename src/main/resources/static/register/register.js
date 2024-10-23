@@ -1,5 +1,5 @@
 import * as Api from "../api.js";
-import { validateEmail, createNavbar } from "../useful-functions.js";
+import { validateEmail, createNavbar, validatePassword, validateUserRealId, validateFullName } from "../useful-functions.js";
 
 // 요소(element), input 혹은 상수
 const fullNameInput = document.querySelector("#fullNameInput"); //이름
@@ -73,17 +73,26 @@ async function handleSubmit(e) {
   const passwordConfirm = passwordConfirmInput.value;
 
   // 잘 입력했는지 확인
-  const isFullNameValid = username.length >= 2;
+  const isFullNameValid = validateFullName(username);
+  const isUserRealIdValid = validateUserRealId(userRealId);
   const isEmailValid = validateEmail(email);
-  const isPasswordValid = password.length >= 4;
+  const isPasswordValid = validatePassword(password);
   const isPasswordSame = password === passwordConfirm;
 
-  if (!isFullNameValid || !isPasswordValid) {
-    return alert("이름은 2글자 이상, 비밀번호는 4글자 이상이어야 합니다.");
+  if (!isFullNameValid) {
+    return alert("이름은 2~20글자 사이여야하고, 숫자가 들어가선 안됩니다.");
+  }
+
+  if (!isUserRealIdValid) {
+    return alert("아이디는 6~20글자 사이여야합니다.");
   }
 
   if (!isEmailValid) {
     return alert("이메일 형식이 맞지 않습니다.");
+  }
+
+  if(!isPasswordValid){
+    return alert("비밀번호는 8자리 이상이어야 하고, 영문자와 특수문자를 포함해야합니다.");
   }
 
   if (!isPasswordSame) {
