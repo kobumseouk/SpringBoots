@@ -6,6 +6,7 @@ import com.spring_boots.spring_boots.user.dto.request.JwtTokenLoginRequest;
 import com.spring_boots.spring_boots.user.dto.request.RefreshTokenRequest;
 import com.spring_boots.spring_boots.user.dto.response.JwtTokenResponse;
 import com.spring_boots.spring_boots.user.dto.response.RefreshTokenResponse;
+import com.spring_boots.spring_boots.user.dto.response.UserValidateTokenResponseDto;
 import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
 import com.spring_boots.spring_boots.user.exception.UserDeletedException;
 import com.spring_boots.spring_boots.user.exception.UserNotFoundException;
@@ -82,27 +83,39 @@ public class TokenApiController {
 //        return ResponseEntity.ok(new RefreshTokenResponse(newAccessToken));
 //    }
 
-//    //토큰 유효성 api
-//    @GetMapping("/protected")
-//    public ResponseEntity<String> getProtectedResource(@CookieValue("accessToken") String accessToken) {
-//        if (userService.validateToken(accessToken)) {
-//            return ResponseEntity.ok("Protected data");
-//        } else {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-//        }
-//    }
+    //토큰 유효성 api
+    @GetMapping("/protected")
+    public ResponseEntity<UserValidateTokenResponseDto> getProtectedResource(@CookieValue(
+            value = "accessToken", required = false, defaultValue = "") String accessToken) {
+        if (accessToken == null || accessToken.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(UserValidateTokenResponseDto.builder()
+                            .message("not login").build());
+        }
+        if (userService.validateToken(accessToken)) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(UserValidateTokenResponseDto.builder()
+                            .message("success").build());
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(UserValidateTokenResponseDto.builder()
+                            .message("fail").build());
+        }
+    }
 
     //엑세스토큰, 리프레시 토큰 쿠키삭제 로직
     private void deleteTokenCookie(HttpServletResponse response) {
         Cookie deleteRefreshTokenCookie = new Cookie(REFRESH_TOKEN_TYPE_VALUE, null);
-//            deleteRefreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
-        deleteRefreshTokenCookie.setSecure(true); // HTTPS에서만 전송 todo 배포시 설정 주석 해제
+        deleteRefreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
+        deleteRefreshTokenCookie.setSecure(true); // HTTPS에서만 전송
+        deleteRefreshTokenCookie.setAttribute("SameSite", "Lax");
         deleteRefreshTokenCookie.setPath("/"); // 동일한 경로
         deleteRefreshTokenCookie.setMaxAge(0); // 쿠키 삭제 설정
 
         Cookie deleteAccessTokenCookie = new Cookie(ACCESS_TOKEN_TYPE_VALUE, null);
-//            deleteAccessTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
-        deleteAccessTokenCookie.setSecure(true); // HTTPS에서만 전송 todo 배포시 설정 주석 해제
+        deleteAccessTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
+        deleteAccessTokenCookie.setSecure(true); // HTTPS에서만 전송
+        deleteAccessTokenCookie.setAttribute("SameSite", "Lax");
         deleteAccessTokenCookie.setPath("/"); // 동일한 경로
         deleteAccessTokenCookie.setMaxAge(0); // 쿠키 삭제 설정
 
@@ -122,13 +135,15 @@ public class TokenApiController {
                 jwtTokenResponse.getAccessToken()
         );
 
-//        refreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근할 수 없도록 설정
-        refreshTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (생산 환경에서 사용) todo 배포시 설정 주석 해제
+        refreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근할 수 없도록 설정
+        refreshTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (생산 환경에서 사용)
+        refreshTokenCookie.setAttribute("SameSite", "Lax"); //보안설정 Lax
         refreshTokenCookie.setPath("/"); // 쿠키의 유효 경로 설정
         refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키의 유효 기간 설정 (예: 7일)
 
-//        accessTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근할 수 없도록 설정
-        accessTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (생산 환경에서 사용) todo 배포시 설정 주석 해제
+        accessTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근할 수 없도록 설정
+        accessTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (생산 환경에서 사용)
+        accessTokenCookie.setAttribute("SameSite", "Lax"); //보안설정 Lax
         accessTokenCookie.setPath("/"); // 쿠키의 유효 경로 설정
         accessTokenCookie.setMaxAge(15 * 60); // 15분
 
