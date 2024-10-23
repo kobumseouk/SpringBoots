@@ -73,7 +73,7 @@ function setupFilterListeners() {
 
 async function loadProducts() {
     try {
-        let endpoint = `/api/items/thema/${currentCategory}?sort=${currentFilter === 'new' ? 'newest' : 'default'}&page=${currentPage}&limit=${ITEMS_PER_PAGE}`;
+        let endpoint = `/api/items/thema/${currentCategory}?sort=${currentFilter === 'new' ? 'newest' : 'best'}&page=${currentPage}&limit=${ITEMS_PER_PAGE}`;
         const response = await Api.get(endpoint);
         displayProducts(response.content);
         updatePaginationButtons(response);
