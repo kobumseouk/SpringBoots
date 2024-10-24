@@ -133,7 +133,7 @@ class EventServiceTest {
     List<Event> activeEvents = Arrays.asList(mockEvent, mockEvent);
     Page<Event> activePage = new PageImpl<>(activeEvents, pageRequest, activeEvents.size());
 
-    when(eventRepository.findActiveEvents(eq(currentDate), eq(pageRequest))).thenReturn(activePage);
+    when(eventRepository.findByEndDateGreaterThanEqual(eq(currentDate), eq(pageRequest))).thenReturn(activePage);
     when(eventMapper.eventToEventDto(any(Event.class))).thenReturn(mockEventDto);
 
     // when
@@ -144,7 +144,7 @@ class EventServiceTest {
     assertEquals(2, result.getContent().size());
     assertEquals(mockEventDto.getEventTitle(), result.getContent().get(0).getEventTitle());
 
-    verify(eventRepository).findActiveEvents(eq(currentDate), eq(pageRequest));
+    verify(eventRepository).findByEndDateGreaterThanEqual(eq(currentDate), eq(pageRequest));
     verify(eventMapper, times(2)).eventToEventDto(any(Event.class));
   }
 
