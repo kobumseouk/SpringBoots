@@ -68,7 +68,7 @@ public class WebSecurityConfig {
                                 "api.js", "useful-functions.js",    //공통 js 파일
                                 "indexed-db.js", "navbar.js",   //공통 js 파일
                                 "elice-rabbit.png","elice-rabbit-favicon.png",  //이미지
-                                "leaf.png","google.png",    //이미지
+                                "springboots_logo.png","/logo.png","google.png",    //이미지
                                 //url 경로
                                 "/","/login","/register",
                                 "/categories/**","/items/**","/events/**"

@@ -16,6 +16,16 @@
   font-size: 1.5rem;
 }
 
+.header-container .icon {
+  height: 5rem !important;
+  width: 5rem !important;
+}
+
+.header-container .navbar-item img {
+  max-height: 50px !important;
+}
+
+
 /* 오른쪽 컨테이너 스타일 */
 .header-container .navbar-end {
   display: flex;
