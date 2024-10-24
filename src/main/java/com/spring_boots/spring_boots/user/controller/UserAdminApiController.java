@@ -41,8 +41,8 @@ public class UserAdminApiController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/count")
-    public ResponseEntity<UserAdminCountResponseDto> countAdmin() {
-        UserAdminCountResponseDto userAdminCountResponseDto = userService.countAdmin();
+    public ResponseEntity<UserAdminCountResponseDto> countUsers() {
+        UserAdminCountResponseDto userAdminCountResponseDto = userService.countUsers();
         return ResponseEntity.status(HttpStatus.OK).body(userAdminCountResponseDto);
     }
 

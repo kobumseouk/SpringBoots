@@ -7,4 +7,5 @@ import lombok.Getter;
 @Builder
 public class UserAdminCountResponseDto {
     private long countAdmin;
+    private long totalUser;
 }

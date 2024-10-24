@@ -88,7 +88,7 @@ public class UserService {
         Map<String, Object> claims = Map.of(
                 "accountId", user.getUserId(),  //JWT 클래임에 accountId
                 "role", user.getRole(),  //JWT 클래임에 role
-                "provider",user.getProvider(),
+                "provider", user.getProvider(),
                 "userRealId", user.getUserRealId()   //JWT 클래임에 실제 ID 추가
         );
 
@@ -126,7 +126,8 @@ public class UserService {
         }
         Users user = findById(userDto.getUserId());
 
-        UsersInfo usersInfo = userInfoRepository.findById(userInfoId).orElse(null);
+        //Users 엔티티에 있는 userId 값을 찾아서 반환
+        UsersInfo usersInfo = userInfoRepository.findByUsers_UserId(userInfoId).orElse(null);
         //회원정보가 이미 있다면 업데이트, 그렇지않다면 생성
         if (usersInfo != null) {
             usersInfo.updateUserInfo(userUpdateRequestDto);
@@ -215,7 +216,7 @@ public class UserService {
 
     @Transactional
     public void updateGoogleUser(UserDto userDto, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
-        UsersInfo usersInfo = userInfoRepository.findById(userInfoId).orElse(null);
+        UsersInfo usersInfo = userInfoRepository.findByUsers_UserId(userInfoId).orElse(null);
         Users user = findById(userDto.getUserId());
 
         //회원정보가 이미 있다면 업데이트, 그렇지않다면 생성
@@ -233,18 +234,94 @@ public class UserService {
         return user.isDeleted();
     }
 
-    public Page<UserResponseDto> getUsersByCreatedAt(int page,int size) {
+    public Page<UserResponseDto> getUsersByCreatedAt(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Users> usersPage = userRepository.findAll(pageable);
 
         return usersPage.map(Users::toResponseDto);
     }
 
-    public UserAdminCountResponseDto countAdmin() {
+    public UserAdminCountResponseDto countUsers() {
         List<Users> users = userRepository.findAll();
-        long count = users.stream()
+        long countAdmin = users.stream()
                 .filter(user -> user.getRole().equals(UserRole.ADMIN))
                 .count();
-        return UserAdminCountResponseDto.builder().countAdmin(count).build();
+        long totalUsers = users.stream()
+                .filter(user -> !user.isDeleted())
+                .count();
+        return UserAdminCountResponseDto.builder()
+                .countAdmin(countAdmin)
+                .totalUser(totalUsers)
+                .build();
+    }
+
+    public boolean validateSignup(UserSignupRequestDto userSignupRequestDto) {
+        // username 유효성 검증: 2~20글자, 숫자 포함 불가
+        String username = userSignupRequestDto.getUsername();
+        boolean isUsernameValid = username != null && username.length() >= 2 && username.length() <= 20 && !username.matches(".*\\d.*");
+        if (!isUsernameValid) {
+            return false; // 유효성 검증 실패
+        }
+
+        // userRealId 유효성 검증: 6~20글자
+        String userRealId = userSignupRequestDto.getUserRealId();
+        boolean isUserRealIdValid = userRealId != null && userRealId.length() >= 6 && userRealId.length() <= 20;
+        if (!isUserRealIdValid) {
+            return false; // 유효성 검증 실패
+        }
+
+        // email 유효성 검증: 이메일 형식
+        String email = userSignupRequestDto.getEmail();
+        boolean isEmailValid = email != null && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+        if (!isEmailValid) {
+            return false; // 유효성 검증 실패
+        }
+
+        // password 유효성 검증: 8~20글자, 영문자, 특수문자 포함
+        String password = userSignupRequestDto.getPassword();
+        boolean isPasswordValid = password != null && password.length() >= 8 && password.length() <= 20
+                && password.matches("^(?=.*[a-zA-Z])(?=.*\\W).+$");
+        if (!isPasswordValid) {
+            return false; // 유효성 검증 실패
+        }
+
+        return true; // 모든 유효성 검증 통과
+
+    }
+
+    public boolean validateLogin(JwtTokenLoginRequest request) {
+        //아이디 값이 빈값이면 false
+        String userRealId = request.getUserRealId();
+        if (userRealId.isEmpty()) {
+            return false;
+        }
+
+        //패스워드 값이 빈값이면 false
+        String password = request.getPassword();
+        if (password.isEmpty()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean validateUpdateUser(UserUpdateRequestDto request) {
+        //변경할 password 유효성 검증: 8~20글자, 영문자, 특수문자 포함
+        String password = request.getUpdatePassword();
+        boolean isPasswordValid = password != null && password.length() >= 8 && password.length() <= 20
+                && password.matches("^(?=.*[a-zA-Z])(?=.*\\W).+$");
+        //패스워드 값이 없으면 true, 있으면 유효성 검증
+        if (password!=null && !isPasswordValid) {
+            return false; // 유효성 검증 실패
+        }
+
+        // email 유효성 검증: 이메일 형식
+        String email = request.getEmail();
+        boolean isEmailValid = email != null && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+        if (!isEmailValid) {
+            return false; // 유효성 검증 실패
+        }
+
+        return true;
     }
 }
