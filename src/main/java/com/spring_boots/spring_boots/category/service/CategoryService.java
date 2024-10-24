@@ -193,7 +193,7 @@ public class CategoryService {
   }
 
 
-  // displayOrder가 1이 아닌 카테고리를 반환
+  // displayOrder가 0이 아닌 카테고리를 반환
   public List<Category> getCategoriesExcludingDisplayOrder(int displayOrder) {
     return categoryRepository.findByDisplayOrderNot(displayOrder);
   }

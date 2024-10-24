@@ -1,6 +1,5 @@
 package com.spring_boots.spring_boots.category.controller;
 
-import com.spring_boots.spring_boots.category.dto.category.CategoryAdminDto;
 import com.spring_boots.spring_boots.category.dto.category.CategoryDto;
 import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.category.service.CategoryService;
@@ -40,7 +39,7 @@ public class CategoryApiController {
     return ResponseEntity.ok(category);
   }
 
-  // displayOrder '1'을 제외한 나머지 카테고리 출력
+  // displayOrder '0'을 제외한 나머지 카테고리 출력
   @GetMapping("/themas/displayOrder/{theme}")
   public List<Category> getCategoriesByTheme(@PathVariable String theme) {
     List<CategoryDto> categories = categoryService.getCategoriesByThema(theme);
