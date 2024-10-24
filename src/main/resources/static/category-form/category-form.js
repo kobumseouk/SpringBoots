@@ -62,21 +62,27 @@ function toggleImageUploadField() {
 }
 
 async function handleThemeChange() {
-  const selectedTheme = themeSelectBox.value;
-  console.log("Selected theme:", selectedTheme);
+    const selectedTheme = themeSelectBox.value;
+    console.log("Selected theme:", selectedTheme);
 
-  if (selectedTheme) {
+    if (!selectedTheme) return;
+
     try {
-      await updateDisplayOrderOptions(selectedTheme);
-    } catch (err) {
-      console.error("Error updating display order options:", err);
-      alert('배치 순서 옵션을 업데이트하는데 실패했습니다: ' + err.message);
-    }
-  } else {
-    updateDisplayOrderOptions('');
-  }
+        // 현재 선택된 값 저장
+        const currentValue = displaySelectBox.value;
 
-  toggleImageUploadField();
+        await updateDisplayOrderOptions(selectedTheme);
+
+        // 이전 선택값이 있고 유효한 경우 복원
+        if (currentValue && displaySelectBox.querySelector(`option[value="${currentValue}"]`)) {
+            displaySelectBox.value = currentValue;
+        }
+    } catch (err) {
+        console.error("Error updating display order options:", err);
+        alert('배치 순서 옵션을 업데이트하는데 실패했습니다: ' + err.message);
+    }
+
+    toggleImageUploadField();
 }
 
 async function updateDisplayOrderOptions(selectedTheme, currentCategoryId = null, currentDisplayOrder = null) {
@@ -114,10 +120,21 @@ async function updateDisplayOrderOptions(selectedTheme, currentCategoryId = null
 
 // 카테고리 이름 입력 필드에 이벤트 리스너 추가
 titleInput.addEventListener('input', function() {
-  const selectedTheme = themeSelectBox.value;
-  if (selectedTheme) {
-    handleThemeChange();
-  }
+    // 입력값 정규화 (공백 제거)
+    const normalizedValue = this.value.trim();
+
+    const selectedTheme = themeSelectBox.value;
+    if (!selectedTheme) return;
+
+    // 이전 값과 현재 값이 같으면 중복 실행 방지
+    if (this._lastValue === normalizedValue) return;
+    this._lastValue = normalizedValue;
+
+    // 비동기 실행을 위한 setTimeout 사용
+    clearTimeout(this._timeout);
+    this._timeout = setTimeout(() => {
+        handleThemeChange();
+    }, 100);
 });
 
 async function fetchCategoryData() {
