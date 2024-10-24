@@ -54,50 +54,12 @@ Spring-boots는 사용자가 신발을 편리하게 구매할 수 있도록 다�
 
 ## 개발 환경
 ```
-- 운영체제: Windows 11, 
-- IDE: IntelliJ IDEA
-- 빌드 도구: Gradle
+- 빌드 도구: Gradle-8.10.2
 - JDK 버전: JDK 17
 - 버전 관리: Git / Gitlab
 - 기타 툴: Postman (API 테스트), Lombok
 ```
 
-## 의존성 목록
-### 주요 라이브러리 및 버전
-- **Spring Boot**:
-  - `spring-boot-starter-data-jpa`
-  - `spring-boot-starter-jdbc`
-  - `spring-boot-starter-validation:3.2.0`
-  - `spring-boot-starter-security`
-  - `spring-boot-starter-thymeleaf`
-  - `spring-boot-starter-web`
-  - `jakarta.validation:jakarta.validation-api`
-  -  `org.thymeleaf.extras:thymeleaf-extras-springsecurity6`
-  -  `com.h2database:h2`
-  -  `org.springframework.boot:spring-boot-starter-test`
-  -   `org.springframework.security:spring-security-test`
-  -   `org.junit.platform:junit-platform-launcher`
-
-- **보안 및 인증**:
-  - `io.jsonwebtoken:jjwt-api:0.11.5`
-  - `io.jsonwebtoken:jjwt-impl:0.11.5`
-  - `io.jsonwebtoken:jjwt-jackson:0.11.5`
-- **Mapper**:
-  - `org.mapstruct:mapstruct:1.5.3.Final`
-  - `org.mapstruct:mapstruct-processor:1.5.3.Final`
-- **Lombok**:
-  - `org.projectlombok:lombok`
-- **AWS S3 Bucket**:
-  -  `org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE`
-  -  `software.amazon.awssdk:bom:2.20.0`
-  -  `software.amazon.awssdk:s3`
-  -  `software.amazon.awssdk:sts`
-- **테스트**:
-  - `spring-boot-starter-test`
-  - `spring-security-test`
-  - `junit-platform-launcher`
-- **DevTools**:
-  - `spring-boot-devtools`
 
 
 ##테스트##
