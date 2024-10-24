@@ -86,13 +86,13 @@ async function handleThemeChange() {
     toggleImageUploadField();
 }
 
-// 배치 순서 선택 시점 이벤트 핸들러
+/*// 배치 순서 선택 이벤트 핸들러
 function handleNotThemeChange() {
     const selectedTheme = themeSelectBox.value;
     if (selectedTheme) {
         handleThemeChange();
     }
-}
+}*/
 
 async function updateDisplayOrderOptions(selectedTheme, currentCategoryId = null, currentDisplayOrder = null) {
    // 기본 옵션으로 초기화

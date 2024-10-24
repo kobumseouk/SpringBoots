@@ -10,10 +10,8 @@ import com.spring_boots.spring_boots.orders.repository.OrderItemsRepository;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -146,8 +144,6 @@ public class CategoryService {
 
     // 카테고리 삭제
     categoryRepository.delete(category);
-
-
   }
 
   // URL에서 S3 키를 추출
