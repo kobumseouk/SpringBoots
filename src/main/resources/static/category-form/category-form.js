@@ -42,8 +42,8 @@ function addAllEvents() {
   categoryForm.addEventListener("submit", handleSubmit);
   imageInput.addEventListener("change", handleImageUpload);
   themeSelectBox.addEventListener("change", handleThemeChange);
-  descriptionInput.addEventListener('input', handleNotThemeChange);  // 카테고리 내용 변경 이벤트
-  displaySelectBox.addEventListener('focus', handleNotThemeChange);  // 배치 순서 선택 시점 이벤트
+  /*descriptionInput.addEventListener('input', handleNotThemeChange);  // 카테고리 내용 변경 이벤트
+  displaySelectBox.addEventListener('focus', handleNotThemeChange);  // 배치 순서 선택 시점 이벤트*/
   console.log("All events added.");
 }
 
@@ -176,7 +176,10 @@ async function fetchCategoryData() {
     console.log("Theme set to:", koreanTheme);
 
     // 테마에 맞는 배치 옵션 업데이트
-    await updateDisplayOrderOptions(category.categoryThema, category.id, category.displayOrder);
+    //await updateDisplayOrderOptions(category.categoryThema, category.id, category.displayOrder);
+
+    // 테마 변경 핸들러 호출하여 배치 옵션 즉시 업데이트
+    await handleThemeChange();
 
     // 전체보기가 아닌 경우에만 displayOrder 설정
     if (category.categoryName !== '전체보기') {
