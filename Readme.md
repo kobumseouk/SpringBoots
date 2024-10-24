@@ -13,7 +13,7 @@ Spring-boots는 사용자가 신발을 편리하게 구매할 수 있도록 다�
 | 차현승 | Product  | 상품 도메인   |
 
 <aside>
-<img src="![image](/uploads/5ca2093e2e0d072fc764d88d1693523a/image.png)" alt="![image](/uploads/5ca2093e2e0d072fc764d88d1693523a/image.png)" width="40px" /> **필수 요구사항**
+<img src="![image](/uploads/5ca2093e2e0d072fc764d88d1693523a/image.png)" alt="왜안되징" width="40px" /> **필수 요구사항**
 
 - **회원 도메인 (`User`) - 찬진**
 - **카테고리 도메인 (`Category`) - 범석**
