@@ -99,11 +99,11 @@ async function insertUsers(page = 0, size = 10) {
       "beforeend",
       `
         <div class="columns orders-item" id="user-${id}">
-          <div class="column is-2">${formattedDate}</div>
-          <div class="column is-2">${userRealId}</div>
-          <div class="column is-2">${email}</div>
-          <div class="column is-2">${fullName}</div>
-          <div class="column is-2">
+          <div class="column" style="flex: 1;word-break: break-all;">${formattedDate}</div>
+          <div class="column" style="flex: 1;word-break: break-all;">${userRealId}</div>
+          <div class="column" style="flex: 1;word-break: break-all;">${email}</div>
+          <div class="column" style="flex: 1;word-break: break-all;">${fullName}</div>
+          <div class="column" style="flex: 1;word-break: break-all;">
             <div class="select">
               <select id="roleSelectBox-${id}">
                 <option
@@ -121,11 +121,11 @@ async function insertUsers(page = 0, size = 10) {
               </select>
             </div>
           </div>
-          <div class="column is-2">
+          <div class="column" style="flex: 1;word-break: break-all;">
           <!-- 삼항 연산자 안에 삼항연산자 -->
             ${deleted === false ? 'X' : deleted === true ? 'O' : '알수없음'}
           </div>
-          <div class="column is-2">
+          <div class="column" style="flex: 1;word-break: break-all;">
              ${provider === 'NONE' ? '일반' : provider === 'GOOGLE' ? '구글' : provider}
           </div>
           <!-- <div class="column is-2"> -->
