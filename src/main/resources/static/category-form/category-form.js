@@ -37,12 +37,13 @@ async function initializePage() {
   console.log("Page initialization complete.");
 }
 
-
 function addAllEvents() {
   console.log("Adding all events...");
   categoryForm.addEventListener("submit", handleSubmit);
   imageInput.addEventListener("change", handleImageUpload);
   themeSelectBox.addEventListener("change", handleThemeChange);
+  descriptionInput.addEventListener('input', handleNotThemeChange);  // 카테고리 내용 변경 이벤트
+  displaySelectBox.addEventListener('focus', handleNotThemeChange);  // 배치 순서 선택 시점 이벤트
   console.log("All events added.");
 }
 
@@ -85,37 +86,60 @@ async function handleThemeChange() {
     toggleImageUploadField();
 }
 
-async function updateDisplayOrderOptions(selectedTheme, currentCategoryId = null, currentDisplayOrder = null) {
-  displaySelectBox.innerHTML = '<option value="">배치할 위치를 골라주세요.</option>';
-
-  if (titleInput.value.trim().toLowerCase() === '전체보기') {
-    displaySelectBox.disabled = true;
-    return;
-  }
-
-  displaySelectBox.disabled = false;
-
-  if (selectedTheme) {
-    try {
-      const categories = await Api.get(`/api/categories/themas/${selectedTheme}`);
-      const nonAllViewCategories = categories.filter(c => c.categoryName !== '전체보기' && c.id !== currentCategoryId);
-
-      const maxOrder = nonAllViewCategories.length + 1;
-
-      for (let i = 1; i <= maxOrder; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = `${i}번째`;
-        if (isEditMode && i === currentDisplayOrder) {
-          option.selected = true;
-        }
-        displaySelectBox.appendChild(option);
-      }
-    } catch (err) {
-      console.error("Error fetching categories:", err);
-      alert('카테고리 정보를 불러오는데 실패했습니다: ' + err.message);
+// 배치 순서 선택 시점 이벤트 핸들러
+function handleNotThemeChange() {
+    const selectedTheme = themeSelectBox.value;
+    if (selectedTheme) {
+        handleThemeChange();
     }
-  }
+}
+
+async function updateDisplayOrderOptions(selectedTheme, currentCategoryId = null, currentDisplayOrder = null) {
+   // 기본 옵션으로 초기화
+   displaySelectBox.innerHTML = '<option value="">배치할 위치를 골라주세요.</option>';
+
+   // '전체보기' 카테고리인 경우 select box 비활성화
+   if (titleInput.value.trim() === '전체보기') {
+       displaySelectBox.disabled = true;
+       return;
+   }
+
+   // select box 활성화
+   displaySelectBox.disabled = false;
+
+   if (selectedTheme) {
+       try {
+           // 선택된 테마의 모든 카테고리 조회
+           const categories = await Api.get(`/api/categories/themas/${selectedTheme}`);
+
+           // '전체보기'가 아니고 현재 수정 중인 카테고리가 아닌 카테고리만 필터링
+           const nonAllViewCategories = categories.filter(c =>
+               c.categoryName !== '전체보기' &&
+               c.id !== currentCategoryId
+           );
+
+           // 최대 순서 결정
+           const maxOrder = isEditMode && selectedTheme === originalTheme
+               ? nonAllViewCategories.length      // 같은 테마 내에서 수정 시
+               : nonAllViewCategories.length + 1; // 새로운 테마로 변경 시
+
+           // maxOrder까지의 옵션 생성
+           for (let i = 1; i <= maxOrder; i++) {
+               const option = document.createElement('option');
+               option.value = i;
+               option.textContent = `${i}번째`;
+
+               // 수정 모드면서 현재 카테고리의 displayOrder와 일치하면 선택
+               if (isEditMode && i === currentDisplayOrder) {
+                   option.selected = true;
+               }
+               displaySelectBox.appendChild(option);
+           }
+       } catch (err) {
+           console.error("Error fetching categories:", err);
+           alert('카테고리 정보를 불러오는데 실패했습니다: ' + err.message);
+       }
+   }
 }
 
 // 카테고리 이름 입력 필드에 이벤트 리스너 추가
@@ -136,6 +160,7 @@ titleInput.addEventListener('input', function() {
         handleThemeChange();
     }, 100);
 });
+
 
 async function fetchCategoryData() {
   try {
