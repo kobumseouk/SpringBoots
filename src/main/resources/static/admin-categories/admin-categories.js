@@ -123,10 +123,17 @@ async function insertCategories(page = 0, size = 10) {
 async function deleteCategoryData() {
   try {
     const response = await Api.delete(`/api/admin/categories/${categoryIdToDelete}`);
-    if (response.status === 204) {  // No Content
-      const deletedItem = document.querySelector(`#category-${categoryIdToDelete}`);
-      if (deletedItem) {
-        deletedItem.remove();
+    if (response.status === 204) {
+      const currentPage = getCurrentPage();
+      // 현재 페이지의 아이템 수 확인
+      const currentItems = document.querySelectorAll('.orders-item').length;
+
+      if (currentItems === 1 && currentPage > 0) {
+        // 마지막 항목 삭제 시 이전 페이지로
+        await insertCategories(currentPage - 1);
+      } else {
+        // 현재 페이지 다시 로드
+        await insertCategories(currentPage);
       }
       alert("카테고리가 삭제되었습니다.");
     } else {
@@ -137,6 +144,16 @@ async function deleteCategoryData() {
     console.error(`Error: ${err.message}`);
     alert(`카테고리 삭제 과정에서 오류가 발생하였습니다: ${err.message}`);
   }
+}
+
+// 현재 페이지 번호를 가져오는 함수 추가
+function getCurrentPage() {
+  const currentPageElement = document.querySelector('.pagination-link.is-current');
+  if (currentPageElement) {
+    // 페이지는 1부터 시작하지만 API는 0부터 시작하므로 1을 빼줌
+    return parseInt(currentPageElement.textContent) - 1;
+  }
+  return 0;  // 기본값은 첫 페이지
 }
 
 // 페이지네이션 생성 함수
