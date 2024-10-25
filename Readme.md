@@ -1,67 +1,58 @@
 # Spring-boots : 신발 판매 쇼핑몰
 
+
+<img src="/uploads/5ca2093e2e0d072fc764d88d1693523a/image.png" alt="왜안되징" width="200px" /> 
+
 ## 프로젝트 소개
 Spring-boots는 사용자가 신발을 편리하게 구매할 수 있도록 다양한 기능을 제공하는 웹 기반 쇼핑몰입니다. 관리자 기능, 상품 카테고리 분류, 장바구니 시스템, 주문 기능을 지원하며, 소셜 로그인 및 JWT 기반 보안 인증을 제공합니다.
 
+
+
 ## 팀원 소개
-| 이름   | 역할     | 담당 기능                        |
-|--------|---------|----------------------------------|
-| 이서율 | Order    | 주문 시스템 |
-| 윤호준 | Cart     | 장바구니 도메인 |
-| 고범석 | Category | 카테고리 도메인   |
-| 이찬진 | User     | 회원 도메인   |
-| 차현승 | Product  | 상품 도메인   |
+| 이름   | 역할     | 
+|--------|---------|
+| 이서율 | Order    | 
+| 윤호준 | Cart     | 
+| 고범석 | Category | 
+| 이찬진 | User     | 
+| 차현승 | Product  |
 
-<aside>
-<img src="/uploads/5ca2093e2e0d072fc764d88d1693523a/image.png" alt="왜안되징" width="200px" /> 
-
-**필수 요구사항**
-
-- **회원 도메인 (`User`) - 찬진**
-- **카테고리 도메인 (`Category`) - 범석**
-- **상품 도메인 (`Product`) - 현승**
-- **장바구니 도메인 (`orderItem`) - 호준**
-- **주문 도메인 (`Order`) - 서율**
-</aside>
 
 ## ERD
 <img src="/uploads/02566675f63487a3de55101f5fefb7fe/image.png" />
 
 
 ## 기술 스택
-- **Frontend**: Bulma, Javascript
-- **Backend**: Spring Boot
-- **Database**: MySQL, H2
-- **Security**: Spring Security, JWT(JSON Web Token)
-- **DevOps**: AWS (EC2, S3, RDS)..?
+- **Frontend**: Bulma:0.9.3, Javascript
+- **Backend**: Spring Boot:3.3.4, JDK 22, Mockito:5.14.1, Junit: 5.11.3
+- **Database**: MySQL:8.0.35 (AWS,RDS)
+- **Security**: Spring Security:3.3.4, JWT
+- **DevOps**: 
+- **Server**: AWS EC2, GCP VM<br>
+            - OS: Ubuntu 24.04 LTS(EC2) / Ubuntu 20.04.6 LTS(GCP)<br>
+            - JRE: OpenJDK 22<br>
+            - 애플리케이션 서버: Spring Boot (내장 Tomcat 사용)
+
+
+
 
 ## 주요 기능
-- **사용자**: 회원가입, 로그인, 로그아웃, 소셜 로그인, 관리자 계정 전환
-- **카테고리**: 상품 카테고리 등록, 수정, 삭제 기능 제공
+- **사용자**: 회원가입, 로그인, 로그아웃, 구글 소셜 로그인, 관리자 계정 전환 기능 제공
+- **카테고리**: 상품 카테고리 등록, 수정, 삭제 기능 제공, 카테고리 검색, 이벤트 생성 및 활성화 이벤트 확인 기능 제공
 - **상품**: 상품 조회, 상품 상세 페이지, 상품 등록/수정/삭제 기능 제공
-- **장바구리**: 장바구니 표시, 가격 계산
-- **주문**: 결제 정보 입력, 주문 내역 조회
+- **장바구니**: 장바구니 조회, 수량/사이즈 변경, 선택 삭제/ 전체 삭제/ 개별 삭제 기능 제공
+- **주문**: 결제 정보 시 주소지 자동 입력, 회원/관리자 별 주문 조회 및 취소 기능 제공
 
 ## 배포 환경
 ```
-- 서버 : AWS EC2, GCP VM
-    - OS: Ubuntu 24.04 LTS(EC2) / Ubuntu 20.04.6 LTS(GCP)
-    - JRE: OpenJDK 22
-    - 애플리케이션 서버: Spring Boot (내장 Tomcat 사용)
 - 데이터베이스: AWS RDS (MySQL)
     - MySQL 버전: 8.0.35
 - 파일 저장소: AWS S3
 - 기타 라이브러리 및 도구
     - AWS CLI: AWS 명령줄 인터페이스 v2
+    - Postman (API 테스트), Lombok
 ```
 
-## 개발 환경
-```
-- 빌드 도구: Gradle-8.10.2
-- JDK 버전: JDK 17
-- 버전 관리: Git / Gitlab
-- 기타 툴: Postman (API 테스트), Lombok
-```
 
 
 
@@ -136,3 +127,19 @@ Spring-boots는 사용자가 신발을 편리하게 구매할 수 있도록 다�
 | **order** | `GET`                       | `/api/admin/orders`          | 관리자가 모든 주문을 조회합니다.                                                                         |                                                                                                                                                      |                | 응답: 200 OK: 조회 완료.<br>401 Unauthorized: 인증이 필요한 경우.<br>403 Forbidden: 관리자가 아닌 사용자가 접근한 경우.<br>404 Not Found: 주문을 찾을 수 없는 경우.<br><br>응답 본문: <br>[ { "orders_id": "int", "user_id": "int", "created_at": "datetime", "orders_total_price": "int", "order_status": "string", "shipping_address": "string", "recipient_name": "string", "recipient_contact": "string", "delivery_fee": "int" } ] |
 | **order** | `PATCH`                     | `/api/admin/orders/{orders_id}/status` | 관리자가 주문 상태를 수정합니다.                                                                       | { "orders_status": "string" }                                                                                                                        | `orders_id`    | 응답: 200 OK: 주문 상태 수정 완료.<br>400 Bad Request: 요청 본문이 잘못된 경우.<br>404 Not Found: 주문 ID가 존재하지 않는 경우.<br>403 Forbidden: 관리자가 아닌 사용자가 접근한 경우.<br><br>응답 본문: <br>{ "orders_id": "int", "status": "주문 상태가 성공적으로 수정되었습니다." } |
 | **order** | `DELETE`                    | `/api/admin/orders/{orders_id}` | 관리자가 주문을 삭제합니다.                                                                             |                                                                                                                                                      | `orders_id`    | 응답: 200 OK: 삭제 완료.<br>404 Not Found: 주문 ID가 존재하지 않는 경우.<br>403 Forbidden: 관리자가 아닌 사용자가 접근한 경우.<br><br>응답 본문: <br>{ "orders_id": "int", "status": "주문이 성공적으로 삭제되었습니다." } |
+
+
+## 트러블슈팅
+
+1. 배포 환경에서 item 엔티티에서 버그가 발생하는 문제
+    - 문제 분석: 로컬 H2 데이터베이스에서 배포 환경의 MySQL 데이터베이스로 전환하는 과정에서, Item 엔티티의 List<String> 형태의 필드(itemColor)가 제대로 저장되지 않는 문제가 발생
+
+    - 해결 방법: Á StringListConverter 클래스를 만들어 JPA에서 리스트 데이터를
+문자열로 변환하고, 다시 리스트로 변환하는 로직을 추가, <br> List<String> 데이터를 콤마로 구분된 문자열로 변환한 뒤 MySQL에 저장하고, 다시 엔티티로 불러올 때는 콤마로 구분된 문자열을 리스트로 변환하도록 설정
+
+
+
+2. 카테고리 삭제 시 순환 참조와 참조 무결성 제약으로 인한 오류
+    - 문제 분석: 카테고리 관리자 페이지에서 카테고리를 삭제하는 과정에서 카테고리와 상품 간 양방향 매핑으로 순환참조와 참조 무결성 제약으로 인한 문제 발생
+
+    - 순환참조 문제를 @JsonIgnore 방법을 사용하지 않고 단방향 관계로 설정하여 해결, 직접적으로 삭제 로직을 통해 카테고리 삭제 전에 상품의 이미지를 S3에서 삭제하고 상품 주문 정보, 상품, 카테고리 순으로 제거하도록 처리
