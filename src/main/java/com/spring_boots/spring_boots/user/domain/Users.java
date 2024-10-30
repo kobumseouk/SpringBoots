@@ -21,6 +21,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
+@Table(name = "users", indexes = {
+        @Index(name = "idx_user_real_id", columnList = "user_real_id"),  // 고유 ID로 조회하는 경우를 위한 인덱스
+        @Index(name = "idx_email", columnList = "email"),                // 이메일로 조회하는 경우를 위한 인덱스
+        @Index(name = "idx_role", columnList = "role"),                  // 역할별 조회를 위한 인덱스
+        @Index(name = "idx_is_deleted", columnList = "is_deleted")       // 삭제 여부로 조회하는 경우를 위한 인덱스
+})
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
