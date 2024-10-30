@@ -10,7 +10,12 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "event")
+@Table(name = "event", indexes = {
+        @Index(name = "idx_event_title", columnList = "event_title"),       // 이벤트 제목별 조회를 위한 인덱스
+        @Index(name = "idx_start_date", columnList = "start_date"),         // 시작일로 조회할 경우를 대비한 인덱스
+        @Index(name = "idx_end_date", columnList = "end_date"),             // 종료일로 조회할 경우를 대비한 인덱스
+        @Index(name = "idx_is_active", columnList = "is_active")            // 활성화 여부로 조회할 경우를 대비한 인덱스
+})
 @Getter
 @Setter
 @NoArgsConstructor
