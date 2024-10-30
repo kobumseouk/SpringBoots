@@ -9,7 +9,11 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "category")
+@Table(name = "category", indexes = {
+        @Index(name = "idx_category_thema", columnList = "category_thema"),     // 카테고리 주제별 조회를 위한 인덱스
+        @Index(name = "idx_category_name", columnList = "category_name"),       // 카테고리 이름별 조회를 위한 인덱스
+        @Index(name = "idx_display_order", columnList = "display_order")        // 표시 순서별 조회를 위한 인덱스
+})
 @Getter
 @Setter
 @NoArgsConstructor

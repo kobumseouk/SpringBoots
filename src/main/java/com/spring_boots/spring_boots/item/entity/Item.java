@@ -17,7 +17,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Table(name = "item")
+@Table(name = "item", indexes = {
+        @Index(name = "idx_category_id", columnList = "category_id"),
+        @Index(name = "idx_item_name", columnList = "item_name"),
+        @Index(name = "idx_item_price", columnList = "item_price"),
+        @Index(name = "idx_created_at", columnList = "createdAt"),
+        @Index(name = "idx_item_name_price", columnList = "item_name, item_price") // 복합 인덱스
+})
 @Builder(toBuilder = true)
 public class Item extends BaseTimeEntity {
     @Id
@@ -53,7 +59,6 @@ public class Item extends BaseTimeEntity {
     public void preUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
 
     @Column(name = "image_url")
     private String imageUrl;
