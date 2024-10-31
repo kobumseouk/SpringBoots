@@ -176,6 +176,9 @@ public class ItemService {
 
     // 검색한 아이템 키워드 정렬 옵션
     public Page<ResponseItemDto> searchAndSortItems(String keyword, String sort, int page, int limit) {
+        // 검색어를 소문자로 변환
+        keyword = keyword.toLowerCase();
+
         Pageable pageable = createPageableWithSort(sort, page, limit);
         Page<Item> itemsPage = itemRepository.findByKeywordIgnoreCase(keyword, pageable);
         return itemsPage.map(itemMapper::toResponseDto);

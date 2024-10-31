@@ -74,7 +74,11 @@ public class Item extends BaseTimeEntity {
     private Integer itemQuantity;  // 총 판매량 (주문 시 업뎃)
 
     @ElementCollection
-    @CollectionTable(name = "item_keywords", joinColumns = @JoinColumn(name = "item_id"))
+    @CollectionTable(
+        name = "item_keywords",
+        joinColumns = @JoinColumn(name = "item_id"),
+        indexes = @Index(name = "idx_keyword", columnList = "keyword")   // 검색 키워드에 대한 인덱스 추가
+    )
     @Column(name = "keyword")
     private List<String> keywords = new ArrayList<>();
 
