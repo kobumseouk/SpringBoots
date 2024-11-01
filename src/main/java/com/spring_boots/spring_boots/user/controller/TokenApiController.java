@@ -1,5 +1,6 @@
 package com.spring_boots.spring_boots.user.controller;
 
+import com.spring_boots.spring_boots.common.util.CookieUtil;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.dto.request.JwtTokenDto;
 import com.spring_boots.spring_boots.user.dto.request.JwtTokenLoginRequest;
@@ -19,8 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.spring_boots.spring_boots.config.jwt.UserConstants.ACCESS_TOKEN_TYPE_VALUE;
-import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOKEN_TYPE_VALUE;
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.*;
 
 @RestController
 @RequestMapping("/api")
@@ -45,13 +45,20 @@ public class TokenApiController {
 
         // 기존 쿠키 삭제 로직
         if (existingRefreshTokenCookie != null) {
-            deleteTokenCookie(response);
+            CookieUtil.deleteTokenCookie(response,REFRESH_TOKEN_TYPE_VALUE);
+            CookieUtil.deleteTokenCookie(response,ACCESS_TOKEN_TYPE_VALUE);
         }
+
 
         try {
             JwtTokenDto jwtTokenResponse = userService.login(request);
 
-            getCookie(jwtTokenResponse, response);
+            CookieUtil.addCookie(response,REFRESH_TOKEN_TYPE_VALUE,
+                    jwtTokenResponse.getRefreshToken(),
+                    (int) REFRESH_TOKEN_DURATION.toSeconds());
+            CookieUtil.addCookie(response, ACCESS_TOKEN_TYPE_VALUE,
+                    jwtTokenResponse.getAccessToken(),
+                    (int) ACCESS_TOKEN_DURATION.toSeconds());
 
             return ResponseEntity.ok().body(JwtTokenResponse
                     .builder()
@@ -106,53 +113,5 @@ public class TokenApiController {
                     .body(UserValidateTokenResponseDto.builder()
                             .message("fail").build());
         }
-    }
-
-    //엑세스토큰, 리프레시 토큰 쿠키삭제 로직
-    private void deleteTokenCookie(HttpServletResponse response) {
-        Cookie deleteRefreshTokenCookie = new Cookie(REFRESH_TOKEN_TYPE_VALUE, null);
-        deleteRefreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
-        deleteRefreshTokenCookie.setSecure(true); // HTTPS에서만 전송
-        deleteRefreshTokenCookie.setAttribute("SameSite", "Lax");
-        deleteRefreshTokenCookie.setPath("/"); // 동일한 경로
-        deleteRefreshTokenCookie.setMaxAge(0); // 쿠키 삭제 설정
-
-        Cookie deleteAccessTokenCookie = new Cookie(ACCESS_TOKEN_TYPE_VALUE, null);
-        deleteAccessTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
-        deleteAccessTokenCookie.setSecure(true); // HTTPS에서만 전송
-        deleteAccessTokenCookie.setAttribute("SameSite", "Lax");
-        deleteAccessTokenCookie.setPath("/"); // 동일한 경로
-        deleteAccessTokenCookie.setMaxAge(0); // 쿠키 삭제 설정
-
-        response.addCookie(deleteRefreshTokenCookie); // 삭제할 쿠키를 response에 추가
-        response.addCookie(deleteAccessTokenCookie);
-    }
-
-    //쿠키 생성로직
-    private void getCookie(JwtTokenDto jwtTokenResponse, HttpServletResponse response) {
-        Cookie refreshTokenCookie = new Cookie(
-                REFRESH_TOKEN_TYPE_VALUE,
-                jwtTokenResponse.getRefreshToken()
-        );
-
-        Cookie accessTokenCookie = new Cookie(
-                ACCESS_TOKEN_TYPE_VALUE,
-                jwtTokenResponse.getAccessToken()
-        );
-
-        refreshTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근할 수 없도록 설정
-        refreshTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (생산 환경에서 사용)
-        refreshTokenCookie.setAttribute("SameSite", "Lax"); //보안설정 Lax
-        refreshTokenCookie.setPath("/"); // 쿠키의 유효 경로 설정
-        refreshTokenCookie.setMaxAge(7 * 24 * 60 * 60); // 쿠키의 유효 기간 설정 (예: 7일)
-
-        accessTokenCookie.setHttpOnly(true); // 자바스크립트에서 접근할 수 없도록 설정
-        accessTokenCookie.setSecure(true); // HTTPS에서만 전송되도록 설정 (생산 환경에서 사용)
-        accessTokenCookie.setAttribute("SameSite", "Lax"); //보안설정 Lax
-        accessTokenCookie.setPath("/"); // 쿠키의 유효 경로 설정
-        accessTokenCookie.setMaxAge(15 * 60); // 15분
-
-        response.addCookie(refreshTokenCookie);
-        response.addCookie(accessTokenCookie);
     }
 }
