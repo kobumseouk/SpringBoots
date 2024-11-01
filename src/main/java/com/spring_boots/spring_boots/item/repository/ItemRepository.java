@@ -17,7 +17,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
   Page<Item> findAllByCategoryId(Long categoryId, Pageable pageable);
 
   // 키워드를 대소문자 구분없이 아이템 조회
-  @Query("SELECT DISTINCT i FROM Item i JOIN i.keywords k WHERE LOWER(k) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+  // @Query("SELECT DISTINCT i FROM Item i JOIN i.keywords k WHERE LOWER(k) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+  @Query("SELECT DISTINCT i FROM Item i JOIN i.keywords k WHERE LOWER(k) LIKE LOWER(CONCAT(:keyword, '%'))")
   Page<Item> findByKeywordIgnoreCase(@Param("keyword") String keyword, Pageable pageable);
 
   // 카테고리 테마별로 아이템을 조회
