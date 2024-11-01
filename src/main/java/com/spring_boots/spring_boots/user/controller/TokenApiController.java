@@ -10,7 +10,6 @@ import com.spring_boots.spring_boots.user.dto.response.UserValidateTokenResponse
 import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
 import com.spring_boots.spring_boots.user.exception.UserDeletedException;
 import com.spring_boots.spring_boots.user.exception.UserNotFoundException;
-import com.spring_boots.spring_boots.user.service.TokenService;
 import com.spring_boots.spring_boots.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
