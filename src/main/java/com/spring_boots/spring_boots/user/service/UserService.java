@@ -36,14 +36,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-
-    private static final int PAGE_SIZE = 10;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtProviderImpl jwtProvider;
     private final UserInfoRepository userInfoRepository;
-    @Value("${admin.code}")
-    private String adminCode;
 
     //일반 회원가입
     public Users save(UserSignupRequestDto dto) {
