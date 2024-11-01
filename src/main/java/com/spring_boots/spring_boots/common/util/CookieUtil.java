@@ -7,6 +7,8 @@ import org.springframework.util.SerializationUtils;
 
 import java.util.Base64;
 
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOKEN_TYPE_VALUE;
+
 public class CookieUtil {
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         Cookie cookie = new Cookie(name, value);
@@ -39,6 +41,18 @@ public class CookieUtil {
                 response.addCookie(cookie);
             }
         }
+    }
+
+    public static void deleteTokenCookie(HttpServletResponse response, String name) {
+        Cookie cookie = new Cookie(name, null);
+
+        cookie.setHttpOnly(true); // 자바스크립트에서 접근 불가
+        cookie.setSecure(true); // HTTPS에서만 전송
+        cookie.setAttribute("SameSite", "Lax");
+        cookie.setPath("/"); // 동일한 경로
+        cookie.setMaxAge(0); // 쿠키 삭제 설정
+
+        response.addCookie(cookie); // 삭제할 쿠키를 response에 추가
     }
 
     public static String serialize(Object obj) {
