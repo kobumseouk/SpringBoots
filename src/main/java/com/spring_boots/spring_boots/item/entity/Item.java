@@ -21,8 +21,12 @@ import java.util.List;
         @Index(name = "idx_category_id", columnList = "category_id"),
         @Index(name = "idx_item_name", columnList = "item_name"),
         @Index(name = "idx_item_price", columnList = "item_price"),
-        @Index(name = "idx_created_at", columnList = "createdAt"),
-        @Index(name = "idx_item_name_price", columnList = "item_name, item_price") // 복합 인덱스
+        // @Index(name = "idx_created_at", columnList = "createdAt"),        BaseTimeEntity를 상속받아 사용
+        @Index(name = "idx_item_quantity", columnList = "item_quantity"),
+        @Index(name = "idx_item_name_price", columnList = "item_name, item_price"), // 복합 인덱스
+        @Index(name = "idx_category_price", columnList = "category_id, item_price"),  // 카테고리별 가격순
+        @Index(name = "idx_category_quantity", columnList = "category_id, item_quantity"),  // 카테고리별 베스트상품
+        @Index(name = "idx_category_created", columnList = "category_id, createdAt")        // 카테고리별 최신순
 })
 @Builder(toBuilder = true)
 public class Item extends BaseTimeEntity {
@@ -70,7 +74,11 @@ public class Item extends BaseTimeEntity {
     private Integer itemQuantity;  // 총 판매량 (주문 시 업뎃)
 
     @ElementCollection
-    @CollectionTable(name = "item_keywords", joinColumns = @JoinColumn(name = "item_id"))
+    @CollectionTable(
+        name = "item_keywords",
+        joinColumns = @JoinColumn(name = "item_id"),
+        indexes = @Index(name = "idx_keyword", columnList = "keyword")   // 검색 키워드에 대한 인덱스 추가
+    )
     @Column(name = "keyword")
     private List<String> keywords = new ArrayList<>();
 
