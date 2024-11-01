@@ -1,5 +1,6 @@
 package com.spring_boots.spring_boots.config.jwt.impl;
 
+import com.spring_boots.spring_boots.config.jwt.JwtProperties;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.DefaultClaims;
@@ -24,22 +25,14 @@ import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOK
 @Component
 @RequiredArgsConstructor
 public class JwtProviderImpl{
-    @Value("${jwt.secret}") //설정 정보 파일에 값을 가져옴.
-    private String secret;
-
-    @Value("${jwt.token.access-expires}")
-    private long accessExpires;
-
-    @Value("${jwt.token.refresh-expires}")
-    private long refreshExpires;
-
+    private final JwtProperties jwtProperties;
     private Key key;
 
     private final UserDetailsServiceImpl userDetailsService;
 
     @PostConstruct
     public void init() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -78,7 +71,7 @@ public class JwtProviderImpl{
                 role,
                 key,
                 (Claims) claims,
-                new Date(System.currentTimeMillis() + accessExpires)
+                new Date(System.currentTimeMillis() + jwtProperties.getAccessExpires())
         );
     }
 
@@ -94,10 +87,9 @@ public class JwtProviderImpl{
                 role,
                 key,
                 (Claims) claims,
-                new Date(System.currentTimeMillis() + refreshExpires)
+                new Date(System.currentTimeMillis() + jwtProperties.getRefreshExpires())
         );
     }
-
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -111,7 +103,7 @@ public class JwtProviderImpl{
     private Claims extractAllClaims(String token) {
         try {
             return Jwts.parser()
-                    .setSigningKey(secret)
+                    .setSigningKey(jwtProperties.getSecret())
                     .parseClaimsJws(token)
                     .getBody();
         } catch (ExpiredJwtException e) {
@@ -158,8 +150,8 @@ public class JwtProviderImpl{
                 .claim("role", role) // 사용자 역할 설정
                 .claim("type", "access_token") // 토큰 타입 설정
                 .setIssuedAt(new Date(System.currentTimeMillis())) // 발급 시간 설정
-                .setExpiration(new Date(System.currentTimeMillis() + accessExpires)) // 만료 시간 설정
-                .signWith(SignatureAlgorithm.HS256, secret) // 서명 알고리즘 및 비밀키 설정
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessExpires())) // 만료 시간 설정
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret()) // 서명 알고리즘 및 비밀키 설정
                 .compact(); // JWT 생성
     }
 
