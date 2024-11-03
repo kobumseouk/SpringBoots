@@ -13,7 +13,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "users_info", indexes = {
-        @Index(name = "idx_user_id", columnList = "user_id"),        // Users와의 조인 성능을 위한 인덱스
         @Index(name = "idx_phone", columnList = "phone")             // 전화번호로 조회할 경우를 대비한 인덱스
 })
 @NoArgsConstructor
