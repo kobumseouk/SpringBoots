@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Table(name = "orderItems", indexes = {
         @Index(name = "idx_orders_id", columnList = "orders_id"),  // Orders와의 조인을 위한 인덱스
         @Index(name = "idx_item_id", columnList = "item_id"),      // Item과의 조인을 위한 인덱스
-        @Index(name = "idx_created_at", columnList = "created_at") // 날짜별 조회를 위한 인덱스
+        @Index(name = "idx_orderItems_created_at", columnList = "created_at") // 날짜별 조회를 위한 인덱스
 })
 @Getter
 @Setter

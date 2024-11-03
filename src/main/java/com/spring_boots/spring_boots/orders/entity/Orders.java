@@ -14,7 +14,7 @@ import java.util.List;
         @Index(name = "idx_user_id", columnList = "user_id"),          // Users와의 조인을 위한 인덱스
         @Index(name = "idx_order_status", columnList = "order_status"), // 주문 상태별 조회를 위한 인덱스
         @Index(name = "idx_is_canceled", columnList = "is_canceled"),   // 취소 여부 조회를 위한 인덱스
-        @Index(name = "idx_created_at", columnList = "created_at")      // 날짜별 조회를 위한 인덱스
+        @Index(name = "idx_orders_created_at", columnList = "created_at")      // 날짜별 조회를 위한 인덱스
 })
 @Getter
 @Setter
