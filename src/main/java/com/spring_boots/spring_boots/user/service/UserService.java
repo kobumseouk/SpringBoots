@@ -2,10 +2,7 @@ package com.spring_boots.spring_boots.user.service;
 
 import com.spring_boots.spring_boots.config.jwt.impl.AuthTokenImpl;
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
-import com.spring_boots.spring_boots.user.domain.Provider;
-import com.spring_boots.spring_boots.user.domain.UserRole;
-import com.spring_boots.spring_boots.user.domain.Users;
-import com.spring_boots.spring_boots.user.domain.UsersInfo;
+import com.spring_boots.spring_boots.user.domain.*;
 import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.dto.request.*;
 import com.spring_boots.spring_boots.user.dto.response.UserAdminCountResponseDto;
@@ -14,6 +11,7 @@ import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
 import com.spring_boots.spring_boots.user.exception.UserDeletedException;
 import com.spring_boots.spring_boots.user.exception.UserNotFoundException;
+import com.spring_boots.spring_boots.user.repository.TokenRedisRepository;
 import com.spring_boots.spring_boots.user.repository.UserInfoRepository;
 import com.spring_boots.spring_boots.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +40,7 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtProviderImpl jwtProvider;
     private final UserInfoRepository userInfoRepository;
+    private final TokenRedisRepository tokenRedisRepository;
 
     //일반 회원가입
     public Users save(UserSignupRequestDto dto) {
@@ -99,6 +100,9 @@ public class UserService {
                 user.getRole(),
                 claims
         );
+
+        tokenRedisRepository.save(
+                new TokenRedis(user.getUserRealId(), refreshToken.getToken()));
 
         return JwtTokenDto.builder()
                 .accessToken(accessToken.getToken())
