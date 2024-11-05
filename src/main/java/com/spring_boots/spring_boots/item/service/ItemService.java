@@ -7,6 +7,7 @@ import com.spring_boots.spring_boots.category.repository.CategoryRepository;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
+import com.spring_boots.spring_boots.item.dto.SearchItemDto;
 import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
 import com.spring_boots.spring_boots.item.entity.Item;
 import com.spring_boots.spring_boots.item.mapper.ItemMapper;
@@ -175,13 +176,12 @@ public class ItemService {
     }
 
     // 검색한 아이템 키워드 정렬 옵션
-    public Page<ResponseItemDto> searchAndSortItems(String keyword, String sort, int page, int limit) {
+    public Page<SearchItemDto> searchAndSortItems(String keyword, String sort, int page, int limit) {
         // 검색어를 소문자로 변환
-        keyword = keyword.toLowerCase();
-
+        String searchKeyword = keyword.toLowerCase();
         Pageable pageable = createPageableWithSort(sort, page, limit);
-        Page<Item> itemsPage = itemRepository.findByKeywordIgnoreCase(keyword, pageable);
-        return itemsPage.map(itemMapper::toResponseDto);
+        Page<Item> items = itemRepository.findByIntegratedSearch(searchKeyword, pageable);
+        return items.map(item -> itemMapper.toSearchDtoWithMatchedField(item, searchKeyword));
     }
 
     // 테마별 정렬된 모든 아이템 조회
