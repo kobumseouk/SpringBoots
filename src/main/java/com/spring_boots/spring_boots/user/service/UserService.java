@@ -101,12 +101,12 @@ public class UserService {
                 claims
         );
 
+        //리프레시 토큰은 redis 에 저장
         tokenRedisRepository.save(
                 new TokenRedis(user.getUserRealId(), refreshToken.getToken()));
 
         return JwtTokenDto.builder()
                 .accessToken(accessToken.getToken())
-                .refreshToken(refreshToken.getToken())
                 .role(user.getRole())
                 .build();
     }
