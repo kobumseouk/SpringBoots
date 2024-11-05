@@ -10,6 +10,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class JwtTokenDto {
     private String accessToken;
-    private String refreshToken;
     private UserRole role;
 }
