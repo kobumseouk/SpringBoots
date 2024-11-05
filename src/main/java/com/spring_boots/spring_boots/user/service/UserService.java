@@ -9,6 +9,7 @@ import com.spring_boots.spring_boots.user.dto.response.UserAdminCountResponseDto
 import com.spring_boots.spring_boots.user.dto.response.UserDeleteResponseDto;
 import com.spring_boots.spring_boots.user.dto.response.UserResponseDto;
 import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
+import com.spring_boots.spring_boots.user.exception.TokenNotFoundException;
 import com.spring_boots.spring_boots.user.exception.UserDeletedException;
 import com.spring_boots.spring_boots.user.exception.UserNotFoundException;
 import com.spring_boots.spring_boots.user.repository.TokenRedisRepository;
@@ -284,5 +285,11 @@ public class UserService {
         }
 
         return true;
+    }
+
+//    @Transactional    // redis는 트랜잭션이 엄격하게 필요하지않음..?=
+    public void deleteRefreshTokenInRedis(UserDto user) {
+        //토큰삭제
+        tokenRedisRepository.deleteById(user.getUserRealId());
     }
 }
