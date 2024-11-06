@@ -162,8 +162,9 @@ public class UserApiController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        //엑세스토큰, 리프레시토큰 삭제
-        deleteCookie(REFRESH_TOKEN_TYPE_VALUE, response);
+        userService.deleteRefreshTokenInRedis(user);
+
+        //엑세스토큰
         deleteCookie(ACCESS_TOKEN_TYPE_VALUE, response);
 
         return ResponseEntity.status(HttpStatus.OK).build();

@@ -35,7 +35,7 @@ public class TokenApiController {
     public ResponseEntity<JwtTokenResponse> jwtLogin(
             @RequestBody JwtTokenLoginRequest request,
             HttpServletResponse response,
-            @CookieValue(value = "refreshToken", required = false) Cookie existingRefreshTokenCookie
+            @CookieValue(value = "accessToken", required = false) Cookie existingAccessTokenCookie
     ) {
         if (!userService.validateLogin(request)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -44,8 +44,7 @@ public class TokenApiController {
         }
 
         // 기존 쿠키 삭제 로직
-        if (existingRefreshTokenCookie != null) {
-            CookieUtil.deleteTokenCookie(response,REFRESH_TOKEN_TYPE_VALUE);
+        if (existingAccessTokenCookie != null) {
             CookieUtil.deleteTokenCookie(response,ACCESS_TOKEN_TYPE_VALUE);
         }
 
@@ -53,9 +52,6 @@ public class TokenApiController {
         try {
             JwtTokenDto jwtTokenResponse = userService.login(request);
 
-            CookieUtil.addCookie(response,REFRESH_TOKEN_TYPE_VALUE,
-                    jwtTokenResponse.getRefreshToken(),
-                    (int) REFRESH_TOKEN_DURATION.toSeconds());
             CookieUtil.addCookie(response, ACCESS_TOKEN_TYPE_VALUE,
                     jwtTokenResponse.getAccessToken(),
                     (int) ACCESS_TOKEN_DURATION.toSeconds());
@@ -63,7 +59,6 @@ public class TokenApiController {
             return ResponseEntity.ok().body(JwtTokenResponse
                     .builder()
                     .accessToken(jwtTokenResponse.getAccessToken())
-                    .refreshToken(jwtTokenResponse.getRefreshToken())
                     .isAdmin(jwtTokenResponse.getRole().equals(UserRole.ADMIN))
                     .message("로그인 성공")
                     .build());

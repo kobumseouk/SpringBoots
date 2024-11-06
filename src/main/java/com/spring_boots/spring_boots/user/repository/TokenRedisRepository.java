@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 public interface TokenRedisRepository extends CrudRepository<TokenRedis,String> {
-    Optional<TokenRedis> findByAccessToken(String accessToken); // AccessToken으로 찾아내기
+    Optional<TokenRedis> findByRefreshToken(String accessToken);
 }
