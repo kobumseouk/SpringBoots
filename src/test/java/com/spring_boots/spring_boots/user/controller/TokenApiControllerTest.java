@@ -47,6 +47,7 @@ class TokenApiControllerTest {
         JwtTokenDto jwtTokenDto = new JwtTokenDto("accessToken", "refreshToken", UserRole.USER);
 
         // Mock 동작 설정
+        when(userService.validateLogin(any(JwtTokenLoginRequest.class))).thenReturn(true);  //유효성 검증시 무조건 true 반환
         when(userService.login(any(JwtTokenLoginRequest.class))).thenReturn(jwtTokenDto);
 
         // API 호출
@@ -75,6 +76,7 @@ class TokenApiControllerTest {
         JwtTokenDto jwtTokenDto = new JwtTokenDto("newAccessToken", "newRefreshToken", UserRole.USER);
 
         // Mock 동작 설정
+        when(userService.validateLogin(any(JwtTokenLoginRequest.class))).thenReturn(true);  //유효성 검증시 무조건 true 반환
         when(userService.login(any(JwtTokenLoginRequest.class))).thenReturn(jwtTokenDto);   //로그인하면 jwtToken반환
 
         // API 호출
@@ -98,6 +100,7 @@ class TokenApiControllerTest {
 
 
         // Mock 동작 설정
+        when(userService.validateLogin(any(JwtTokenLoginRequest.class))).thenReturn(true);  // 유효성 검증시 무조건 true 반환
         when(userService.login(any(JwtTokenLoginRequest.class))).thenThrow(new UserNotFoundException("가입되지 않은 실제 ID 입니다."));
 
         // API 호출
