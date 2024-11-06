@@ -21,6 +21,7 @@ import java.util.List;
         @Index(name = "idx_category_id", columnList = "category_id"),
         @Index(name = "idx_item_name", columnList = "item_name"),
         @Index(name = "idx_item_price", columnList = "item_price"),
+        @Index(name = "idx_item_maker", columnList = "item_maker"),
         @Index(name = "idx_item_created_at", columnList = "createdAt"),
         @Index(name = "idx_item_quantity", columnList = "item_quantity"),
         @Index(name = "idx_item_name_price", columnList = "item_name, item_price"),   // 복합 인덱스
