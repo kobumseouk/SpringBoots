@@ -185,6 +185,7 @@ public class JwtProviderImpl{
         Claims claims = extractAllClaims(jwtAccessToken); //리프레시토큰에 있는 모든 정보를 추출
         String userRealId = claims.get("userRealId", String.class); // 사용자 실제 ID
 
+        //todo 리프레시 토큰이 만료되었으므로 자동 로그아웃
         TokenRedis tokenInfo = tokenRedisRepository.findById(userRealId)
                 .orElseThrow(() -> new TokenNotFoundException("해당 토큰을 찾을수없습니다."));
 
