@@ -53,9 +53,9 @@ public class WebSecurityConfig {
 //                        "/login/**","/register/**",
 //                        "/api/login","/api/logout"
 //                ))
-//                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))  // H2 콘솔에서 iframe 사용을 허용, 배포시 주석처리
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))  // H2 콘솔에서 iframe 사용을 허용, 배포시 주석처리
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(toH2Console()).permitAll()  // H2 콘솔에 대한 요청 허용, 배포시 주석처리
+                     .requestMatchers(toH2Console()).permitAll()  // H2 콘솔에 대한 요청 허용, 배포시 주석처리
                         .requestMatchers(
                                 //Api
                                 "/api/**",
