@@ -7,12 +7,14 @@ import com.spring_boots.spring_boots.orders.dto.*;
 import com.spring_boots.spring_boots.orders.entity.OrderItems;
 import com.spring_boots.spring_boots.orders.entity.Orders;
 import com.spring_boots.spring_boots.orders.repository.OrderItemsRepository;
+import com.spring_boots.spring_boots.orders.repository.ShippingInfoRepository;
 import com.spring_boots.spring_boots.orders.repository.OrdersRepository;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.domain.UsersInfo;
 import com.spring_boots.spring_boots.user.dto.UserDto;
 import com.spring_boots.spring_boots.user.repository.UserInfoRepository;
 import com.spring_boots.spring_boots.user.service.UserService;
+import com.spring_boots.spring_boots.orders.entity.ShippingInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,17 +38,7 @@ public class OrdersService {
 
     private final UserInfoRepository usersInfoRepository;
 
-    // 사용자 주문 목록 조회
-    /*
-    public List<OrderDto> getUserOrders(Long userId) {
-        List<Orders> orders = ordersRepository.findAll(); // 나중에 userId 필터 적용 필요
-        return orders.stream()
-                .filter(order -> order.getUser() != null &&
-                        order.getUser().getUserId().equals(userId) &&
-                        !order.getIsCanceled()) // isCanceled가 false인 경우만 필터링
-                .map(this::convertToOrderDto)
-                .collect(Collectors.toList());
-    }*/
+    private final ShippingInfoRepository shippingInfoRepository;
 
     // 사용자 주문 목록 조회
     public List<OrderDto> getUserOrders(Long userId) {
@@ -77,9 +69,10 @@ public class OrdersService {
                             )).collect(Collectors.toList());
 
                     // 기본적인 정보를 첫 번째 OrderItems에서 가져오는 방식으로 설정
-                    String shippingAddress = orderItemsList.isEmpty() ? null : orderItemsList.get(0).getShippingAddress();
-                    String recipientName = orderItemsList.isEmpty() ? null : orderItemsList.get(0).getRecipientName();
-                    String recipientContact = orderItemsList.isEmpty() ? null : orderItemsList.get(0).getRecipientContact();
+                    ShippingInfo shippingInfo = order.getShippingInfo();
+                    String shippingAddress = shippingInfo != null ? shippingInfo.getShippingAddress() : null;
+                    String recipientName = shippingInfo != null ? shippingInfo.getRecipientName() : null;
+                    String recipientContact = shippingInfo != null ? shippingInfo.getRecipientContact() : null;
 
                     return new OrderDetailsDto(
                             order.getOrdersId(),
@@ -105,6 +98,15 @@ public class OrdersService {
         // UserDto를 Users 엔티티로 변환
         Users userEntity = userService.getUserEntityByDto(currentUser);
 
+        // 필수 필드 유효성 검사
+        if (request.getRecipientName().isEmpty() || request.getShippingAddress().isEmpty()) {
+            throw new BadRequestException("INVALID_ORDER_REQUEST", "수취인 정보 또는 배송 주소가 누락되었습니다.");
+        }
+
+        if (request.getItems() == null || request.getItems().isEmpty()) {
+            throw new BadRequestException("INVALID_ORDER_REQUEST", "주문할 상품이 없습니다.");
+        }
+
 
         // 배송 정보가 없는 경우 users_info 테이블에 추가
         UsersInfo existingInfo = usersInfoRepository.findByUsers_UserId(currentUser.getUserId()).orElse(null);
@@ -124,15 +126,17 @@ public class OrdersService {
         }
 
 
+        // 배송 정보 저장
+        ShippingInfo shippingInfo = ShippingInfo.builder()
+                .shippingAddress(request.getShippingAddress())
+                .recipientName(request.getRecipientName())
+                .recipientContact(request.getRecipientContact())
+                .deliveryMessage(request.getDeliveryMessage())
+                .build();
 
-        // 필수 필드 유효성 검사
-        if (request.getRecipientName().isEmpty() || request.getShippingAddress().isEmpty()) {
-            throw new BadRequestException("INVALID_ORDER_REQUEST", "수취인 정보 또는 배송 주소가 누락되었습니다.");
-        }
+        ShippingInfo savedShippingInfo = shippingInfoRepository.save(shippingInfo);
 
-        if (request.getItems() == null || request.getItems().isEmpty()) {
-            throw new BadRequestException("INVALID_ORDER_REQUEST", "주문할 상품이 없습니다.");
-        }
+
 
         // 주문의 총 수량 및 총 가격 계산
         int totalQuantity = request.getItems().stream()
@@ -152,6 +156,7 @@ public class OrdersService {
                 .isCanceled(false)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .shippingInfo(savedShippingInfo) // ShippingInfo와 연결
                 .build();
 
         Orders savedOrder = ordersRepository.save(order);
@@ -179,10 +184,6 @@ public class OrdersService {
                             .itemSize(itemDto.getItemSize()) // itemSize 매핑 추가
                             .orderItemsQuantity(itemDto.getItemQuantity())
                             .orderItemsTotalPrice(itemDto.getItemPrice() * itemDto.getItemQuantity())
-                            .shippingAddress(request.getShippingAddress())
-                            .recipientName(request.getRecipientName())
-                            .recipientContact(request.getRecipientContact())
-                            .deliveryMessage(request.getDeliveryMessage())
                             .createdAt(LocalDateTime.now())
                             .updatedAt(LocalDateTime.now())
                             .build();
@@ -210,19 +211,17 @@ public class OrdersService {
 
             // 배송이 시작되지 않은 경우에만 수정 가능
             if ("주문완료".equals(order.getOrderStatus())) {
-                orderItemsRepository.findByOrders(order).forEach(orderItem -> {
-                    // 필수 필드 확인 및 업데이트
-                    if (request.getRecipientContact() == null || request.getRecipientName() == null || request.getShippingAddress() == null) {
-                        throw new IllegalArgumentException("shippingAddress, recipientName, recipientContact는 필수 입력 값입니다.");
-                    }
+                ShippingInfo shippingInfo = order.getShippingInfo();
 
-                    orderItem.setShippingAddress(request.getShippingAddress());
-                    orderItem.setRecipientName(request.getRecipientName());
-                    orderItem.setRecipientContact(request.getRecipientContact());
-                    orderItem.setUpdatedAt(LocalDateTime.now());
+                // 필수 필드 확인 및 업데이트
+                if (request.getRecipientContact() == null || request.getRecipientName() == null || request.getShippingAddress() == null) {
+                    throw new IllegalArgumentException("shippingAddress, recipientName, recipientContact는 필수 입력 값입니다.");
+                }
 
-                    orderItemsRepository.save(orderItem);
-                });
+                shippingInfo.setShippingAddress(request.getShippingAddress());
+                shippingInfo.setRecipientName(request.getRecipientName());
+                shippingInfo.setRecipientContact(request.getRecipientContact());
+                shippingInfo.setDeliveryMessage(request.getDeliveryMessage());
 
                 // Order 자체 업데이트
                 order.setUpdatedAt(LocalDateTime.now());
@@ -289,6 +288,7 @@ public class OrdersService {
                     });
 
                 order.setIsCanceled(true);
+                order.setOrderStatus("주문취소");
                 order.setUpdatedAt(LocalDateTime.now());
                 ordersRepository.save(order);
                 return new OrderResponseDto(order.getOrdersId(), "주문이 관리자로 인해 성공적으로 삭제되었습니다.");
@@ -327,8 +327,8 @@ public class OrdersService {
                         item.getOrderItemsTotalPrice()
                 )).collect(Collectors.toList());
 
-        // OrderItems 리스트에서 기본 정보를 가져오기
-        String shippingAddress = orderItemsList.isEmpty() ? null : orderItemsList.get(0).getShippingAddress();
+        ShippingInfo shippingInfo = orders.getShippingInfo();
+        String shippingAddress = shippingInfo != null ? shippingInfo.getShippingAddress() : null;
 
         return new OrderDto(
                 orders.getOrdersId(),

@@ -13,4 +13,6 @@ public class UpdateOrderRequest {
     private String recipientName;
     @JsonProperty("recipient_contact")
     private String recipientContact;
+    @JsonProperty("delivery_Message")
+    private String deliveryMessage;
 }
