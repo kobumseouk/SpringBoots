@@ -52,6 +52,7 @@ jwt:
   token:
     refresh-expires: 604800000 # 7일
     access-expires: 900000 # 15분
+#    access-expires: 10000 # 10초
 
 admin:
   code: ${ADMIN_CODE} #관리자코드
