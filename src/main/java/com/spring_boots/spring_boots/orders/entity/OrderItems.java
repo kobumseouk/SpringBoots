@@ -40,15 +40,6 @@ public class OrderItems extends BaseTimeEntity {
     @Column(name = "orderitems_quantity", nullable = false)
     private Integer orderItemsQuantity;
 
-    @Column(name = "shipping_address", nullable = false)
-    private String shippingAddress;
-
-    @Column(name = "recipient_name", nullable = false)
-    private String recipientName;
-
-    @Column(name = "recipient_contact", nullable = false)
-    private String recipientContact;
-
     @Column(name = "delivery_message")
     private String deliveryMessage;
 
