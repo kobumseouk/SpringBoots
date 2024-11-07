@@ -53,7 +53,7 @@ public class Item extends BaseTimeEntity {
     @Column(name = "item_maker")
     private String itemMaker;
 
-    @Column(name = "item_color")
+/*    @Column(name = "item_color")
     @Convert(converter = StringListConverter.class)
     @CollectionTable(
         name = "item_colors",
@@ -63,7 +63,21 @@ public class Item extends BaseTimeEntity {
             @Index(name = "idx_color_item", columnList = "item_id, color")
         }
     )
+    private List<String> itemColor = new ArrayList<>();*/
+
+    // 상품별 색상 리스트 테이블
+    @ElementCollection
+    @CollectionTable(
+        name = "item_colors",
+        joinColumns = @JoinColumn(name = "item_id"),
+        indexes = {
+            @Index(name = "idx_color", columnList = "item_color"),
+            @Index(name = "idx_color_item", columnList = "item_id, item_color")
+        }
+    )
+    @Column(name = "item_color")
     private List<String> itemColor = new ArrayList<>();
+
 
     private LocalDateTime createdAt;
 

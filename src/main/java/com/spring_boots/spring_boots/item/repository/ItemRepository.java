@@ -27,10 +27,14 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     JOIN i.category c
     WHERE LOWER(i.itemName) LIKE (CONCAT('%', :keyword, '%'))
     OR LOWER(i.itemMaker) = :keyword
-    OR LOWER(c.categoryName) LIKE (CONCAT(:keyword, '%'))
+    OR LOWER(c.categoryName) = :keyword
     OR EXISTS (
         SELECT 1 FROM i.keywords k
         WHERE LOWER(k) LIKE (CONCAT(:keyword, '%'))
+    )
+    OR EXISTS (
+        SELECT 1 FROM i.itemColor color
+        WHERE LOWER(color) = :keyword
     )
   """)
   @EntityGraph(attributePaths = "category")
