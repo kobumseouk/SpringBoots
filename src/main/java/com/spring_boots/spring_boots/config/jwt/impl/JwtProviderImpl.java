@@ -22,8 +22,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.spring_boots.spring_boots.config.jwt.UserConstants.ACCESS_TOKEN_TYPE_VALUE;
-import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOKEN_TYPE_VALUE;
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.*;
 
 @Component
 @RequiredArgsConstructor
@@ -187,7 +186,11 @@ public class JwtProviderImpl{
 
         //todo 리프레시 토큰이 만료되었으므로 자동 로그아웃
         TokenRedis tokenInfo = tokenRedisRepository.findById(userRealId)
-                .orElseThrow(() -> new TokenNotFoundException("해당 토큰을 찾을수없습니다."));
+                .orElse(null);
+
+        if (tokenInfo == null) {
+            return NOT_FOUND_REFRESH_TOKEN;
+        }
 
         Claims claimsByRedis = extractAllClaims(tokenInfo.getRefreshToken());
         String userIdByRedis = claimsByRedis.getSubject(); //리프레시토큰에 있는 사용자 ID 또는 고유 식별자

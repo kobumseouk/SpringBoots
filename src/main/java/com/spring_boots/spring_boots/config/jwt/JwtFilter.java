@@ -56,7 +56,15 @@ public class JwtFilter extends OncePerRequestFilter {
             //레디스에 있는 리프레시토큰을 가져와 새로운 엑세스토큰 발급
             String newAccessToken = tokenProvider.generateAccessTokenFromRefreshTokenByRedis(jwtAccessToken);
 
-            log.info("리프레시토큰 발급 완료..!");
+            //db에 리프레시토큰이 없다면 자동 로그아웃
+            if (newAccessToken.equals(NOT_FOUND_REFRESH_TOKEN)) {
+                //쿠키삭제
+                CookieUtil.deleteTokenCookie(response,ACCESS_TOKEN_TYPE_VALUE);
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            log.info("액세스토큰 발급 완료..!");
 
 
             int cookieMaxAge = (int) ACCESS_TOKEN_DURATION.toSeconds(); // 쿠키 유효 기간 설정
