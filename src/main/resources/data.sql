@@ -55,6 +55,7 @@ INSERT INTO category (
     category_name, category_thema, category_content, display_order, created_at, updated_at, image_url
 ) VALUES
     ('Shoes', 'common', 'All types of shoes', 1, NOW(), NOW(), NULL),
+    ('boots', 'common', 'All types of boots', 2, NOW(), NOW(), NULL),
     ('Shoes', 'women', 'All types of shoes', 1, NOW(), NOW(), NULL),
     ('Shoes', 'men', 'All types of shoes', 1, NOW(), NOW(), NULL),
     ('Socks', 'accessories', 'All types of socks', 1, NOW(), NOW(), NULL),
@@ -62,8 +63,26 @@ INSERT INTO category (
     ('Comfortable', 'recommend', 'recommend', 2, NOW(), NOW(), null);
 
 -- Item 테이블에 테스트 데이터 삽입
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size, item_quantity)
-VALUES (101, 1, 'Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', 'Red', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241021174149-1638484837', 230, 0);
+INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, created_at, updated_at, image_url, item_size, item_quantity)
+VALUES (101, 1, 'A Running Shoes', 5000, 'Comfortable running shoes', 'Brand A', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241021174149-1638484837', 230, 0);
+
+
+INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, created_at, updated_at, image_url, item_size, item_quantity)
+VALUES (102, 3, 'B Walking Shoes', 7000, 'Comfortable walking shoes', 'Brand B', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241021174149-1638484837', 240, 0);
+
+
+INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, created_at, updated_at, image_url, item_size, item_quantity)
+VALUES (103, 2, 'C Walking Boots', 7000, 'Comfortable boots', 'Brand C', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241021174149-1638484837', 240, 0);
+
+-- 아이템 색상 리스트
+INSERT INTO item_colors (item_id, item_color) VALUES
+(101, 'Red'),
+(101, 'White'),
+(102, 'Blue'),
+(102, 'Black'),
+(103, 'Brown'),
+(103, 'Beige');
+
 -- 아이템 키워드 리스트
 INSERT INTO item_keywords (item_id, keyword) VALUES
 (101, 'Running Shoes'),
@@ -71,11 +90,7 @@ INSERT INTO item_keywords (item_id, keyword) VALUES
 (101, 'comfortable'),
 (101, 'athletic'),
 (101, 'mesh'),
-(101, '24SS SUMMER RECOMMEND STYLING');
-
-INSERT INTO item (item_id, category_id, item_name, item_price, item_description, item_maker, item_color, created_at, updated_at, image_url, item_size, item_quantity)
-VALUES (102, 2, 'Walking Shoes', 7000, 'Comfortable walking shoes', 'Brand B', 'Blue', NOW(), NOW(), 'https://project-springboots.s3.amazonaws.com/20241021174149-1638484837', 240, 0);
-INSERT INTO item_keywords (item_id, keyword) VALUES
+(101, '24SS SUMMER RECOMMEND STYLING'),
 (102, 'Walking Shoes'),
 (102, 'common'),
 (102, 'comfortable'),

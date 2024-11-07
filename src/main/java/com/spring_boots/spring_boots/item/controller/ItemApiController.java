@@ -3,11 +3,13 @@ package com.spring_boots.spring_boots.item.controller;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
+import com.spring_boots.spring_boots.item.dto.SearchItemDto;
 import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
 import com.spring_boots.spring_boots.item.entity.Item;
 import com.spring_boots.spring_boots.item.service.ItemService;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -121,12 +123,12 @@ public class ItemApiController {
 
     // 키워드와 정렬 - Items 조회
     @GetMapping("/items/search")
-    public ResponseEntity<Page<ResponseItemDto>> searchItems(
+    public ResponseEntity<Page<SearchItemDto>> searchItems(
         @RequestParam String keyword,
         @RequestParam(required = false) String sort,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "8") int limit) {
-        Page<ResponseItemDto> result = itemService.searchAndSortItems(keyword, sort, page, limit);
+        Page<SearchItemDto> result = itemService.searchAndSortItems(keyword, sort, page, limit);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
