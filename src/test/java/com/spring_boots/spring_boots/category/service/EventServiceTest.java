@@ -124,6 +124,29 @@ class EventServiceTest {
   }
 
   @Test
+  @DisplayName("이미지 없는 이벤트 생성 확인 테스트")
+  void createEventWithoutImages() throws IOException {
+    // given
+    EventRequestDto requestDto = EventRequestDto.builder()
+        .eventTitle("Test Event")
+        .eventContent("Test Content")
+        .build();
+
+    when(eventMapper.eventRequestDtoToEvent(any(EventRequestDto.class))).thenReturn(mockEvent);
+    when(eventRepository.save(any(Event.class))).thenReturn(mockEvent);
+    when(eventMapper.eventToEventDetailDto(any(Event.class))).thenReturn(mockEventDetailDto);
+
+    // when
+    EventDetailDto result = eventService.createEvent(requestDto, null, null);
+
+    // then
+    assertNotNull(result);
+    assertNull(result.getThumbnailImageUrl());
+    assertTrue(result.getContentImageUrl().isEmpty());
+    verify(s3BucketService, never()).uploadFile(any(MultipartFile.class));
+  }
+
+  @Test
   @DisplayName("진행 중인 이벤트 목록 확인 테스트")
   void getActiveEvents() {
     // given
@@ -281,6 +304,21 @@ class EventServiceTest {
     assertThrows(ResourceNotFoundException.class, () -> eventService.deleteEvent(INVALID_EVENT_ID));
     verify(eventRepository).findById(INVALID_EVENT_ID);
     verify(eventRepository, never()).deleteById(INVALID_EVENT_ID);
+  }
+
+  @Test
+  @DisplayName("S3 URL에서 파일 키 추출 확인 테스트")
+  void extractKeyFromUrl() throws IOException {
+    // given
+    String testUrl = "https://bucket-name.s3.region.amazonaws.com/folder/file-name.jpg";
+    Event event = mock(Event.class);
+    when(event.getThumbnailImageUrl()).thenReturn(testUrl);
+
+    // when
+    eventService.deleteEvent(1L);
+
+    // then
+    verify(s3BucketService).deleteFile("file-name.jpg");
   }
 
   @Test
