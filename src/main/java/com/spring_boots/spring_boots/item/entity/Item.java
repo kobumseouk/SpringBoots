@@ -21,12 +21,14 @@ import java.util.List;
         @Index(name = "idx_category_id", columnList = "category_id"),
         @Index(name = "idx_item_name", columnList = "item_name"),
         @Index(name = "idx_item_price", columnList = "item_price"),
+        @Index(name = "idx_item_maker", columnList = "item_maker"),
         @Index(name = "idx_item_created_at", columnList = "createdAt"),
         @Index(name = "idx_item_quantity", columnList = "item_quantity"),
-        @Index(name = "idx_item_name_price", columnList = "item_name, item_price"), // 복합 인덱스
-        @Index(name = "idx_category_price", columnList = "category_id, item_price"),  // 카테고리별 가격순
-        @Index(name = "idx_category_quantity", columnList = "category_id, item_quantity"),  // 카테고리별 베스트상품
-        @Index(name = "idx_category_created", columnList = "category_id, createdAt")        // 카테고리별 최신순
+        @Index(name = "idx_item_name_price", columnList = "item_name, item_price"),   // 복합 인덱스
+        @Index(name = "idx_category_price", columnList = "category_id, item_price"),  // 카테고리별 가격순(오름차순, 내림차순)
+        @Index(name = "idx_category_quantity", columnList = "category_id, item_quantity"),  // 카테고리별 베스트상품 정렬 시
+        @Index(name = "idx_category_created", columnList = "category_id, createdAt"),       // 카테고리별 최신순 정렬 시
+        @Index(name = "idx_search_category", columnList = "category_id, item_name")         // 카테고리별 상품명 검색 시
 })
 @Builder(toBuilder = true)
 public class Item extends BaseTimeEntity {
@@ -51,9 +53,31 @@ public class Item extends BaseTimeEntity {
     @Column(name = "item_maker")
     private String itemMaker;
 
-    @Column(name = "item_color")
+/*    @Column(name = "item_color")
     @Convert(converter = StringListConverter.class)
+    @CollectionTable(
+        name = "item_colors",
+        joinColumns = @JoinColumn(name = "item_id"),
+        indexes = {
+            @Index(name = "idx_color", columnList = "color"),
+            @Index(name = "idx_color_item", columnList = "item_id, color")
+        }
+    )
+    private List<String> itemColor = new ArrayList<>();*/
+
+    // 상품별 색상 리스트 테이블
+    @ElementCollection
+    @CollectionTable(
+        name = "item_colors",
+        joinColumns = @JoinColumn(name = "item_id"),
+        indexes = {
+            @Index(name = "idx_color", columnList = "item_color"),
+            @Index(name = "idx_color_item", columnList = "item_id, item_color")
+        }
+    )
+    @Column(name = "item_color")
     private List<String> itemColor = new ArrayList<>();
+
 
     private LocalDateTime createdAt;
 
@@ -77,7 +101,7 @@ public class Item extends BaseTimeEntity {
     @CollectionTable(
         name = "item_keywords",
         joinColumns = @JoinColumn(name = "item_id"),
-        indexes = @Index(name = "idx_keyword", columnList = "keyword")   // 검색 키워드에 대한 인덱스 추가
+        indexes = @Index(name = "idx_keyword_search", columnList = "keyword, item_id")     // 검색에서 키워드와 상품 매칭 시
     )
     @Column(name = "keyword")
     private List<String> keywords = new ArrayList<>();
