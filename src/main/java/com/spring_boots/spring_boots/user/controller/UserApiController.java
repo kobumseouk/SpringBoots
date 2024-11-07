@@ -1,5 +1,6 @@
 package com.spring_boots.spring_boots.user.controller;
 
+import com.spring_boots.spring_boots.common.util.CookieUtil;
 import com.spring_boots.spring_boots.user.domain.Provider;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.dto.UserDto;
@@ -119,8 +120,7 @@ public class UserApiController {
         UserDeleteResponseDto userDeleteResponseDto = userService.softDeleteUser(userDto);
 
         if (userDeleteResponseDto.isDeleted()) {
-            deleteCookie(REFRESH_TOKEN_TYPE_VALUE, response);
-            deleteCookie(ACCESS_TOKEN_TYPE_VALUE, response);
+            CookieUtil.deleteTokenCookie(response,ACCESS_TOKEN_TYPE_VALUE);
 
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserDeleteResponseDto.builder().message("회원탈퇴 성공").build());
@@ -165,7 +165,7 @@ public class UserApiController {
         userService.deleteRefreshTokenInRedis(user);
 
         //엑세스토큰
-        deleteCookie(ACCESS_TOKEN_TYPE_VALUE, response);
+        CookieUtil.deleteTokenCookie(response,ACCESS_TOKEN_TYPE_VALUE);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -193,16 +193,5 @@ public class UserApiController {
     public ResponseEntity<UserProviderResponseDto> checkProvider(UserDto userDto) {
         return ResponseEntity.status(HttpStatus.OK).body(UserProviderResponseDto.builder()
                 .provider(userDto.getProvider()).build());
-    }
-
-    //쿠키 삭제 로직
-    private void deleteCookie(String token, HttpServletResponse response) {
-        Cookie cookie = new Cookie(token, null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setAttribute("SameSite", "Lax");
-        cookie.setPath("/");
-        cookie.setMaxAge(0); // 쿠키 즉시 만료
-        response.addCookie(cookie);
     }
 }

@@ -53,6 +53,7 @@ jwt:
   token:
     refresh-expires: 604800000 # 7일
     access-expires: 900000 # 15분
+#    refresh-expires: 30000 # 30초
 #    access-expires: 10000 # 10초
 
 admin:
