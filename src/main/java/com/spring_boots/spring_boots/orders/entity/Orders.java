@@ -58,4 +58,9 @@ public class Orders extends BaseTimeEntity {
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "shipping_info_id", referencedColumnName = "shipping_info_id")
+    private ShippingInfo shippingInfo;
+
 }

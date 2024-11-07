@@ -1,7 +1,10 @@
 package com.spring_boots.spring_boots.config.jwt.impl;
 
 import com.spring_boots.spring_boots.config.jwt.JwtProperties;
+import com.spring_boots.spring_boots.user.domain.TokenRedis;
 import com.spring_boots.spring_boots.user.domain.UserRole;
+import com.spring_boots.spring_boots.user.exception.TokenNotFoundException;
+import com.spring_boots.spring_boots.user.repository.TokenRedisRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.DefaultClaims;
 import io.jsonwebtoken.io.Decoders;
@@ -19,8 +22,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
 
-import static com.spring_boots.spring_boots.config.jwt.UserConstants.ACCESS_TOKEN_TYPE_VALUE;
-import static com.spring_boots.spring_boots.config.jwt.UserConstants.REFRESH_TOKEN_TYPE_VALUE;
+import static com.spring_boots.spring_boots.config.jwt.UserConstants.*;
 
 @Component
 @RequiredArgsConstructor
@@ -29,6 +31,7 @@ public class JwtProviderImpl{
     private Key key;
 
     private final UserDetailsServiceImpl userDetailsService;
+    private final TokenRedisRepository tokenRedisRepository;
 
     @PostConstruct
     public void init() {
@@ -129,6 +132,7 @@ public class JwtProviderImpl{
     }
 
     // 리프레시 토큰을 사용하여 새로운 액세스 토큰 생성
+    //사용자가 리프레시토큰을 가지고 있을 경우
     public String generateAccessTokenFromRefreshToken(String refreshToken) {
         // 리프레시 토큰 검증
         if (!validateToken(refreshToken)) {
@@ -172,5 +176,38 @@ public class JwtProviderImpl{
             // 그 외의 오류 (만료된 토큰 등)
             throw new RuntimeException("Token validation error: " + e.getMessage());
         }
+    }
+
+    //redis 에 리프레시토큰 정보를 가져와 처리
+    public String generateAccessTokenFromRefreshTokenByRedis(String jwtAccessToken) {
+        // 리프레시 토큰에서 사용자 정보를 추출
+        Claims claims = extractAllClaims(jwtAccessToken); //리프레시토큰에 있는 모든 정보를 추출
+        String userRealId = claims.get("userRealId", String.class); // 사용자 실제 ID
+
+        //todo 리프레시 토큰이 만료되었으므로 자동 로그아웃
+        TokenRedis tokenInfo = tokenRedisRepository.findById(userRealId)
+                .orElse(null);
+
+        if (tokenInfo == null) {
+            return NOT_FOUND_REFRESH_TOKEN;
+        }
+
+        Claims claimsByRedis = extractAllClaims(tokenInfo.getRefreshToken());
+        String userIdByRedis = claimsByRedis.getSubject(); //리프레시토큰에 있는 사용자 ID 또는 고유 식별자
+        String userRealIdByRedis = claimsByRedis.get("userRealId", String.class); // 사용자 실제 ID
+        Long accountIdByRedis = claimsByRedis.get("accountId", Long.class); // 계정 ID
+        String roleByRedis = claimsByRedis.get("role", String.class); // 사용자 역할
+
+        // 새로운 액세스 토큰 생성
+        return Jwts.builder()
+                .setSubject(userIdByRedis) // 사용자 ID 설정
+                .claim("userRealId", userRealIdByRedis) // 실제 사용자 ID 설정
+                .claim("accountId", accountIdByRedis) // 계정 ID 설정
+                .claim("role", roleByRedis) // 사용자 역할 설정
+                .claim("type", "access_token") // 토큰 타입 설정
+                .setIssuedAt(new Date(System.currentTimeMillis())) // 발급 시간 설정
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessExpires())) // 만료 시간 설정
+                .signWith(SignatureAlgorithm.HS256, jwtProperties.getSecret()) // 서명 알고리즘 및 비밀키 설정
+                .compact(); // JWT 생성
     }
 }

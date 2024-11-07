@@ -31,6 +31,11 @@ spring:
   sql:
     init:
       mode: always
+  redis:
+    host: ${REDIS_CLOUD_HOST}
+    port: ${REDIS_CLOUD_PORT}
+    password: ${REDIS_CLOUD_PASSWORD}
+    username: default
 
   security:
     oauth2:
@@ -48,6 +53,8 @@ jwt:
   token:
     refresh-expires: 604800000 # 7일
     access-expires: 900000 # 15분
+#    refresh-expires: 30000 # 30초
+#    access-expires: 10000 # 10초
 
 admin:
   code: ${ADMIN_CODE} #관리자코드
