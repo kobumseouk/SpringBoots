@@ -353,5 +353,19 @@ class CategoryServiceTest {
     verify(categoryRepository).findById(INVALID_CATEGORY_ID);
   }
 
+  @Test
+  @DisplayName("특정 displayOrder를 제외한 카테고리 목록 조회 확인 테스트")
+  void getCategoriesExcludingDisplayOrder() {
+    // given
+    int excludeOrder = 0;
+    List<Category> categories = Arrays.asList(mockCategory, mockCategory);
+    when(categoryRepository.findByDisplayOrderNot(excludeOrder)).thenReturn(categories);
 
+    // when
+    List<Category> result = categoryService.getCategoriesExcludingDisplayOrder(excludeOrder);
+
+    // then
+    assertEquals(2, result.size());
+    verify(categoryRepository).findByDisplayOrderNot(excludeOrder);
+  }
 }
