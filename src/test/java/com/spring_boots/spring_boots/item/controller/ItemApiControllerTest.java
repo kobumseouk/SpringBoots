@@ -1,9 +1,11 @@
 package com.spring_boots.spring_boots.item.controller;
 
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
+import com.spring_boots.spring_boots.item.dto.SearchItemDto;
 import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
 import com.spring_boots.spring_boots.item.service.ItemService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -105,28 +107,45 @@ public class ItemApiControllerTest {
                 .andExpect(status().isOk());
     }
 
-    // 검색한 아이템들 목록 조회 + 페이지네이션 확인
+    // 검색한 아이템들 목록 조회 + 페이지네이션 + 정렬 기능 확인
     @Test
+    @DisplayName("검색, 정렬, 페이징 통합 테스트")
     public void testSearchItems() throws Exception {
-        // item1과 item2에 필요한 데이터 설정
-        List<ResponseItemDto> searchResults = Arrays.asList(new ResponseItemDto(), new ResponseItemDto(), new ResponseItemDto());
-        Page<ResponseItemDto> page = new PageImpl<>(searchResults, PageRequest.of(0, 8), 3);
+        // given
+        List<SearchItemDto> searchResults = Arrays.asList(new SearchItemDto(), new SearchItemDto());
+        Page<SearchItemDto> page = new PageImpl<>(searchResults, PageRequest.of(0, 8), 2);
 
-        // 서비스 메소드 모킹
-        when(itemService.searchAndSortItems(anyString(), anyString(), anyInt(), anyInt())).thenReturn(page);
+        String[] sortOptions = {"price-asc", "price-desc", "newest", "best", "default"};
 
-        // 테스트 실행
+        for (String sortOption : sortOptions) {
+            // when
+            when(itemService.searchAndSortItems(anyString(), eq(sortOption), anyInt(), anyInt()))
+                .thenReturn(page);
+
+            // then
+            mockMvc.perform(get("/api/items/search")
+                    .param("keyword", "test")
+                    .param("sort", sortOption)
+                    .param("page", "0")
+                    .param("limit", "8"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.size").value(8))
+                .andExpect(jsonPath("$.number").value(0));
+
+            verify(itemService).searchAndSortItems("test", sortOption, 0, 8);
+        }
+    }
+
+    // 빈 문자열의 검색어를 받는 경우
+    @Test
+    public void testSearchItems_WithEmptyKeyword() throws Exception {
         mockMvc.perform(get("/api/items/search")
-                .param("keyword", "test")
-                .param("sort", "price-asc")
                 .param("page", "0")
                 .param("limit", "8"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.content", hasSize(3)))
-            .andExpect(jsonPath("$.totalElements").value(3))
-            .andExpect(jsonPath("$.totalPages").value(1))
-            .andExpect(jsonPath("$.size").value(8))
-            .andExpect(jsonPath("$.number").value(0));
+            .andExpect(status().isBadRequest());
     }
 }
