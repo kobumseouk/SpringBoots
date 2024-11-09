@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static com.spring_boots.spring_boots.config.jwt.UserConstants.*;
+
+/**
+ * 토큰과 관련된 로직
+ * */
 
 @Component
 @RequiredArgsConstructor
@@ -38,23 +43,6 @@ public class JwtProviderImpl{
         byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
-
-//    public String createToken(Authentication authentication) {
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//        Date now = new Date();
-//        Date expiryDate = new Date(now.getTime() + refreshExpires);
-//
-//        return Jwts.builder()
-//                .setSubject(userDetails.getUsername())  // 사용자 이름을 subject로 설정
-//                .setIssuedAt(new Date())
-//                .setExpiration(expiryDate)
-//                .signWith(SignatureAlgorithm.HS512, secret)
-//                .compact();
-//    }
-
-//    public AuthTokenImpl convertAuthToken(String token) {
-//        return new AuthTokenImpl(token, key);
-//    }
 
     public Authentication getAuthentication(String authToken) {
         String username = extractUsername(authToken);
@@ -178,13 +166,13 @@ public class JwtProviderImpl{
         }
     }
 
-    //redis 에 리프레시토큰 정보를 가져와 처리
+    //redis 에 리프레시토큰 정보를 가져와 엑세스 토큰 재발급
     public String generateAccessTokenFromRefreshTokenByRedis(String jwtAccessToken) {
-        // 리프레시 토큰에서 사용자 정보를 추출
-        Claims claims = extractAllClaims(jwtAccessToken); //리프레시토큰에 있는 모든 정보를 추출
-        String userRealId = claims.get("userRealId", String.class); // 사용자 실제 ID
+        // 엑세스 토큰에서 사용자 정보를 추출
+        Claims claims = extractAllClaims(jwtAccessToken); //액세스토큰에 있는 모든 정보를 추출
+        String userRealId = claims.get("userRealId", String.class); // 사용자 실제 ID 추출
 
-        //todo 리프레시 토큰이 만료되었으므로 자동 로그아웃
+        //리프레시토큰이 redis DB에 없을 경우 null 로 처리해서 return
         TokenRedis tokenInfo = tokenRedisRepository.findById(userRealId)
                 .orElse(null);
 

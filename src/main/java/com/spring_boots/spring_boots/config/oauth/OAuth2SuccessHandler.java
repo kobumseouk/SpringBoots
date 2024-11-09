@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.util.Map;
 
 import static com.spring_boots.spring_boots.config.jwt.UserConstants.*;
-
+/**
+ * Oauth 로그인 성공시 호출되는 핸들러 클래스
+ * */
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {

@@ -92,26 +92,6 @@ public class UserApiController {
         }
     }
 
-//    //회원 탈퇴(hard delete)
-//    @DeleteMapping("/users-hard")
-//    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal Users user,
-//                                           HttpServletResponse response) {
-//        Users authUser = userService.findById(user.getUserId());
-//        userService.deleteUser(authUser);
-//
-//        if (userService.isDeleteUser(authUser)) {
-//            Cookie cookie = new Cookie("refreshToken", null);
-////            cookie.setHttpOnly(true);
-//            cookie.setPath("/");
-//            cookie.setMaxAge(0); // 쿠키 즉시 만료
-//            response.addCookie(cookie);
-//
-//            return ResponseEntity.status(HttpStatus.OK).build();
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//    }
-
     //회원 탈퇴(soft delete)
     @DeleteMapping("/users-soft/{id}")
     public ResponseEntity<UserDeleteResponseDto> softDeleteUser(UserDto userDto,

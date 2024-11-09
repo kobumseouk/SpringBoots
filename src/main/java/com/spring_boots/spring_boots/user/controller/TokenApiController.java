@@ -4,13 +4,12 @@ import com.spring_boots.spring_boots.common.util.CookieUtil;
 import com.spring_boots.spring_boots.user.domain.UserRole;
 import com.spring_boots.spring_boots.user.dto.request.JwtTokenDto;
 import com.spring_boots.spring_boots.user.dto.request.JwtTokenLoginRequest;
-import com.spring_boots.spring_boots.user.dto.request.RefreshTokenRequest;
 import com.spring_boots.spring_boots.user.dto.response.JwtTokenResponse;
-import com.spring_boots.spring_boots.user.dto.response.RefreshTokenResponse;
 import com.spring_boots.spring_boots.user.dto.response.UserValidateTokenResponseDto;
 import com.spring_boots.spring_boots.user.exception.PasswordNotMatchException;
 import com.spring_boots.spring_boots.user.exception.UserDeletedException;
 import com.spring_boots.spring_boots.user.exception.UserNotFoundException;
+import com.spring_boots.spring_boots.user.service.TokenService;
 import com.spring_boots.spring_boots.user.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +28,7 @@ import static com.spring_boots.spring_boots.config.jwt.UserConstants.*;
 public class TokenApiController {
 
     private final UserService userService;
+    private final TokenService tokenService;
 
     //jwt 로그인
     @PostMapping("/login")
@@ -50,7 +50,7 @@ public class TokenApiController {
 
 
         try {
-            JwtTokenDto jwtTokenResponse = userService.login(request);
+            JwtTokenDto jwtTokenResponse = tokenService.login(request);
 
             CookieUtil.addCookie(response, ACCESS_TOKEN_TYPE_VALUE,
                     jwtTokenResponse.getAccessToken(),
@@ -75,21 +75,6 @@ public class TokenApiController {
         }
     }
 
-//    //토큰 재발급 로직
-//    @PostMapping("/refresh-token")
-//    public ResponseEntity<RefreshTokenResponse> refreshAccessToken(@RequestBody RefreshTokenRequest request) {
-//        String refreshToken = request.getRefreshToken();
-//
-//        // refreshToken 검증 및 새로운 accessToken 생성
-//        String newAccessToken = tokenService.createNewAccessToken(refreshToken);
-//
-//        if (newAccessToken == null) {
-//            return ResponseEntity.status(401).build(); // 토큰이 유효하지 않은 경우 401 Unauthorized 응답
-//        }
-//
-//        return ResponseEntity.ok(new RefreshTokenResponse(newAccessToken));
-//    }
-
     //토큰 유효성 api
     @GetMapping("/protected")
     public ResponseEntity<UserValidateTokenResponseDto> getProtectedResource(@CookieValue(
@@ -99,7 +84,7 @@ public class TokenApiController {
                     .body(UserValidateTokenResponseDto.builder()
                             .message("not login").build());
         }
-        if (userService.validateToken(accessToken)) {
+        if (tokenService.validateToken(accessToken)) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(UserValidateTokenResponseDto.builder()
                             .message("success").build());

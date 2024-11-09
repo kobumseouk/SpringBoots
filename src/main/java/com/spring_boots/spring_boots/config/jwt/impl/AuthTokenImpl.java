@@ -13,6 +13,10 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * 실제토큰을 생성하는 곳
+ */
+
 @Getter
 @AllArgsConstructor
 @Slf4j
@@ -44,6 +48,7 @@ public class AuthTokenImpl {
                 .setSubject(userId)
                 .addClaims(claims)
                 .signWith(key, SignatureAlgorithm.HS256)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(expiredDate)
                 .compact()
         );
