@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -165,13 +166,13 @@ public class JwtProviderImpl{
         }
     }
 
-    //redis 에 리프레시토큰 정보를 가져와 처리
+    //redis 에 리프레시토큰 정보를 가져와 엑세스 토큰 재발급
     public String generateAccessTokenFromRefreshTokenByRedis(String jwtAccessToken) {
-        // 리프레시 토큰에서 사용자 정보를 추출
-        Claims claims = extractAllClaims(jwtAccessToken); //리프레시토큰에 있는 모든 정보를 추출
-        String userRealId = claims.get("userRealId", String.class); // 사용자 실제 ID
+        // 엑세스 토큰에서 사용자 정보를 추출
+        Claims claims = extractAllClaims(jwtAccessToken); //액세스토큰에 있는 모든 정보를 추출
+        String userRealId = claims.get("userRealId", String.class); // 사용자 실제 ID 추출
 
-        //리프레시토큰이 만료됐을 경우 null 로 처리해서 return
+        //리프레시토큰이 redis DB에 없을 경우 null 로 처리해서 return
         TokenRedis tokenInfo = tokenRedisRepository.findById(userRealId)
                 .orElse(null);
 
