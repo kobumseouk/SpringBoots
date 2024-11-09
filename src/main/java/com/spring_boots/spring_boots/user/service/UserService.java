@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final JwtProviderImpl jwtProvider;
     private final UserInfoRepository userInfoRepository;
     private final TokenRedisRepository tokenRedisRepository;
 
@@ -71,47 +70,6 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("Unexpected user"));
     }
 
-    public JwtTokenDto login(JwtTokenLoginRequest request) {
-        Users user = userRepository.findByUserRealId(request.getUserRealId())
-                .orElseThrow(() -> new UserNotFoundException("가입되지 않은 ID 입니다."));
-
-        if (user.isDeleted()) {
-            throw new UserDeletedException("회원 정보가 삭제된 상태입니다.");
-        }
-
-        if (!bCryptPasswordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new PasswordNotMatchException("잘못된 비밀번호입니다.");
-        }
-
-        Map<String, Object> claims = Map.of(
-                "accountId", user.getUserId(),  //JWT 클래임에 accountId
-                "role", user.getRole(),  //JWT 클래임에 role
-                "provider", user.getProvider(),
-                "userRealId", user.getUserRealId()   //JWT 클래임에 실제 ID 추가
-        );
-
-        AuthTokenImpl accessToken = jwtProvider.createAccessToken(
-                user.getUserRealId(),   //토큰에 실제 ID 정보 입력
-                user.getRole(),
-                claims
-        );
-
-        AuthTokenImpl refreshToken = jwtProvider.createRefreshToken(
-                user.getUserRealId(),   //토큰에 실제 ID 정보 입력
-                user.getRole(),
-                claims
-        );
-
-        //리프레시 토큰은 redis 에 저장
-        tokenRedisRepository.save(
-                new TokenRedis(user.getUserRealId(), refreshToken.getToken()));
-
-        return JwtTokenDto.builder()
-                .accessToken(accessToken.getToken())
-                .role(user.getRole())
-                .build();
-    }
-
     public List<UserResponseDto> findAll() {
         List<Users> users = userRepository.findAll();
 
@@ -141,20 +99,6 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(Users authUser) {
-        userRepository.delete(authUser);
-    }
-
-    public boolean isDeleteUser(Users authUser) {
-        Optional<Users> findUser = userRepository.findById(authUser.getUserId());
-        if (findUser.isPresent()) {
-            return false;   //존재하면 false 반환
-        }
-
-        return true;
-    }
-
-    @Transactional
     public UserDeleteResponseDto softDeleteUser(UserDto userDto) {
         Users user = findById(userDto.getUserId());
         return user.deleteUser();
@@ -172,17 +116,6 @@ public class UserService {
     public boolean isDuplicateUserRealId(String userRealId) {
         return userRepository.existsByUserRealId(userRealId);
     }
-
-
-    public boolean isGrantAdmin(Users authUser) {
-        return authUser.getRole().equals(UserRole.ADMIN);
-    }
-
-    public boolean validateToken(String accessToken) {
-        return jwtProvider.validateToken(accessToken);
-    }
-
-
 
     //엔티티 변경
     public Users getUserEntityByDto(UserDto userDto) {
@@ -208,12 +141,6 @@ public class UserService {
             UsersInfo newUsersInfo = userUpdateRequestDto.toUsersInfo(user);
             userInfoRepository.save(newUsersInfo);
         }
-    }
-
-    public boolean checkGoogleLoginDeleted(UserDto userDto) {
-        Users user = findById(userDto.getUserId());
-
-        return user.isDeleted();
     }
 
 
