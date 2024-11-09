@@ -15,15 +15,16 @@ import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemService {
@@ -180,8 +181,30 @@ public class ItemService {
         // 검색어를 소문자로 변환
         String searchKeyword = keyword.toLowerCase();
         Pageable pageable = createPageableWithSort(sort, page, limit);
-        Page<Item> items = itemRepository.findByIntegratedSearch(searchKeyword, pageable);
-        return items.map(item -> itemMapper.toSearchDtoWithMatchedField(item, searchKeyword));
+
+        // 먼저 일반 필드 검색 시도 (상품명, 제조사, 카테고리명, 색상)
+        Page<Item> items = itemRepository.findByNonKeywordSearch(searchKeyword, pageable);
+        Page<SearchItemDto> searchResult = items.map(item ->
+            itemMapper.toSearchDtoWithMatchedField(item, searchKeyword));
+
+        // 일반 검색 결과가 없으면 키워드 매칭 검색 시도
+        if (searchResult.isEmpty()) {
+            Page<Item> keywordItems = itemRepository.findByKeywordSearch(searchKeyword, pageable);
+            List<SearchItemDto> matchedItems = keywordItems.getContent().stream()
+                .filter(item -> item.getKeywords().stream()
+                    .anyMatch(k -> k.toLowerCase().equals(searchKeyword) ||
+                        Arrays.asList(k.toLowerCase().split(" "))
+                            .stream()
+                            .anyMatch(word -> word.equals(searchKeyword))))
+                .map(item -> itemMapper.toSearchDtoWithMatchedField(item, searchKeyword))
+                .collect(Collectors.toList());
+
+            return new PageImpl<>(matchedItems, pageable, matchedItems.size());
+        }
+
+        return searchResult;
+
+        // return items.map(item -> itemMapper.toSearchDtoWithMatchedField(item, searchKeyword));
     }
 
     // 테마별 정렬된 모든 아이템 조회
