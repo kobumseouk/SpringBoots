@@ -1,6 +1,6 @@
 package com.spring_boots.spring_boots.item.dto;
 
-import com.spring_boots.spring_boots.category.entity.Category;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

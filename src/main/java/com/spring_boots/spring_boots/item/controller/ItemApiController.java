@@ -1,6 +1,6 @@
 package com.spring_boots.spring_boots.item.controller;
 
-import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
+
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
 import com.spring_boots.spring_boots.item.dto.SearchItemDto;
