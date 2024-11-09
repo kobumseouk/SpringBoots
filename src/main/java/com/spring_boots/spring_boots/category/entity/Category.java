@@ -1,11 +1,8 @@
 package com.spring_boots.spring_boots.category.entity;
 
 import com.spring_boots.spring_boots.common.BaseTimeEntity;
-import com.spring_boots.spring_boots.item.entity.Item;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 
 @Entity
