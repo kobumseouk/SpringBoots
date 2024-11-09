@@ -8,6 +8,9 @@ import org.springframework.security.oauth2.client.web.AuthorizationRequestReposi
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.web.util.WebUtils;
 
+/**
+ * Oauth 인증 요청이 들어왔을시 인증 요청 정보를 처리하는 곳
+ * */
 public class OAuth2AuthorizationRequestBasedOnCookieRepository implements AuthorizationRequestRepository<OAuth2AuthorizationRequest> {
 
     // OAuth2 인증 요청을 저장할 때 사용하는 쿠키 이름
