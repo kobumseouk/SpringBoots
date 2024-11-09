@@ -21,7 +21,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
   // @Query("SELECT DISTINCT i FROM Item i JOIN i.keywords k WHERE LOWER(k) LIKE (CONCAT(:keyword, '%'))")
   // 키워드를 대소문자 구분없이 아이템 조회
   // 카테고리를 즉시 로딩하기 위한 FETCH JOIN 사용
-  // 키워드, 상품명, 상품 브랜드명, 카테고리명, 테마명, 색상에 대해 LIKE 검색 수행 + 서브쿼리로 필요한 경우에만 색상 검색
+  // 상품명, 상품 브랜드명, 카테고리명, 테마명, 색상에 대해 LIKE 검색 수행 + 서브쿼리로 필요한 경우에만 색상 검색
   @Query("""
     SELECT DISTINCT i FROM Item i
     JOIN i.category c
@@ -29,16 +29,18 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     OR LOWER(i.itemMaker) = :keyword
     OR LOWER(c.categoryName) = :keyword
     OR EXISTS (
-        SELECT 1 FROM i.keywords k
-        WHERE LOWER(k) LIKE (CONCAT(:keyword, '%'))
-    )
-    OR EXISTS (
-        SELECT 1 FROM i.itemColor color
+        SELECT 1
+        FROM i.itemColor color
         WHERE LOWER(color) = :keyword
     )
   """)
   @EntityGraph(attributePaths = "category")
-  Page<Item> findByIntegratedSearch(@Param("keyword") String keyword, Pageable pageable);
+  Page<Item> findByNonKeywordSearch(@Param("keyword") String keyword, Pageable pageable);
+
+  // 상품에 저장된 키워드 별 검색
+  // @Query("SELECT DISTINCT i FROM Item i JOIN i.keywords k WHERE LOWER(k) LIKE (CONCAT(:keyword, '%'))")
+  @Query("SELECT DISTINCT i FROM Item i JOIN i.keywords k")
+  Page<Item> findByKeywordSearch(@Param("keyword") String keyword, Pageable pageable);
 
   // 카테고리 테마별로 아이템을 조회
   Page<Item> findByCategory_CategoryThema(String thema, Pageable pageable);
