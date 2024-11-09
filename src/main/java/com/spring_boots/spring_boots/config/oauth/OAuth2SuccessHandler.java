@@ -4,8 +4,10 @@ import com.spring_boots.spring_boots.common.util.CookieUtil;
 import com.spring_boots.spring_boots.config.jwt.impl.AuthTokenImpl;
 import com.spring_boots.spring_boots.config.jwt.impl.JwtProviderImpl;
 import com.spring_boots.spring_boots.user.domain.RefreshToken;
+import com.spring_boots.spring_boots.user.domain.TokenRedis;
 import com.spring_boots.spring_boots.user.domain.Users;
 import com.spring_boots.spring_boots.user.repository.RefreshTokenRepository;
+import com.spring_boots.spring_boots.user.repository.TokenRedisRepository;
 import com.spring_boots.spring_boots.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,6 +34,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private final RefreshTokenRepository refreshTokenRepository; // 리프레시 토큰 저장소
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository; // OAuth2 인증 요청 쿠키 저장소
     private final UserService userService; // 사용자 서비스
+    private final TokenRedisRepository tokenRedisRepository;
 
     // OAuth2 로그인 성공 시 호출되는 메서드
     @Override
@@ -46,22 +49,20 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 "userRealId", user.getUserRealId()   //JWT 클래임에 실제 ID 추가
         );
 
-        // 리프레시 토큰 생성 및 저장
+        // 리프레시 토큰 생성 후 DB에 저장
         AuthTokenImpl createRefreshToken = provider.createRefreshToken(user.getUserRealId(), user.getRole(), claims); // 리프레시 토큰 생성
         String refreshToken = createRefreshToken.getToken();
 
-        saveRefreshToken(user.getUserId(), refreshToken); // 리프레시 토큰 저장
-        addRefreshTokenToCookie(request, response, refreshToken); // 리프레시 토큰을 쿠키에 추가
+        saveRefreshTokenFromRedis(user.getUserRealId(), refreshToken); // 리프레시 토큰 저장
 
-        // 액세스 토큰 생성
+        // 액세스 토큰 생성 후 쿠키에 저장
         AuthTokenImpl createAccessToken = provider.createAccessToken(user.getUserRealId(), user.getRole(), claims); // 리프레시 토큰 생성
         String accessToken = createAccessToken.getToken();
 
         addAccessTokenToCookie(request, response, accessToken); // 리프레시 토큰을 쿠키에 추가
-//        String targetUrl = getTargetUrl(accessToken); // 리다이렉트 URL 생성
-//
+
         // 인증 관련 쿠키와 정보를 정리하고 리다이렉트 처리
-        clearAuthenticationAttributes(request, response); // 인증 속성 정리
+        clearAuthenticationAttributes(request, response); // 인증 속성 정리(oauth2_auth_request 삭제)
         getRedirectStrategy().sendRedirect(request, response, "/"); // 지정된 URL로 리다이렉트
     }
 
@@ -73,7 +74,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CookieUtil.addCookie(response, ACCESS_TOKEN_TYPE_VALUE, accessToken, cookieMaxAge); // 새 쿠키 추가
     }
 
-    // 리프레시 토큰을 DB에 저장하는 메서드
+    // 리프레시 토큰을 DB에 저장하는 메서드 (legacy)
     private void saveRefreshToken(Long userId, String newRefreshToken) {
         RefreshToken refreshToken = refreshTokenRepository.findByUserId(userId)
                 .map(entity -> entity.update(newRefreshToken)) // 기존 토큰이 있으면 업데이트
@@ -82,7 +83,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshTokenRepository.save(refreshToken); // 저장소에 리프레시 토큰 저장
     }
 
-    // 리프레시 토큰을 쿠키에 추가하는 메서드
+    // 리프레시 토큰을 redis DB에 저장하는 메서드
+    private void saveRefreshTokenFromRedis(String userRealId, String newRefreshToken) {
+        //새로운 리프레시 토큰 생성
+        TokenRedis refreshToken = new TokenRedis(userRealId, newRefreshToken);
+        tokenRedisRepository.save(refreshToken); // 저장소에 리프레시 토큰 저장
+    }
+
+    // 리프레시 토큰을 쿠키에 추가하는 메서드(legacy)
     private void addRefreshTokenToCookie(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
         int cookieMaxAge = (int) REFRESH_TOKEN_DURATION.toSeconds(); // 쿠키 유효 기간 설정
 
@@ -94,14 +102,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private void clearAuthenticationAttributes(HttpServletRequest request, HttpServletResponse response) {
         super.clearAuthenticationAttributes(request); // 부모 클래스 메서드 호출하여 속성 정리
         authorizationRequestRepository.removeAuthorizationRequestCookies(request, response); // 인증 요청 쿠키 삭제
-    }
-
-    // 리다이렉트할 URL을 생성하는 메서드
-    private String getTargetUrl(String token) {
-        return UriComponentsBuilder.fromUriString("/") // 리다이렉트 경로 설정
-                .queryParam("token", token) // URL에 액세스 토큰을 쿼리 파라미터로 추가
-                .build()
-                .toUriString();
     }
 
 }
