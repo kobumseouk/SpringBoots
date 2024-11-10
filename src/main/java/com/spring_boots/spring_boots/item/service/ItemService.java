@@ -15,7 +15,6 @@ import com.spring_boots.spring_boots.item.mapper.ItemMapper;
 import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -33,8 +32,10 @@ public class ItemService {
     private final ItemMapper itemMapper;
     private final ItemRepository itemRepository;
     private final S3BucketService s3BucketService;
+    private final SearchHistoryService searchHistoryService;
     private final CategoryRepository categoryRepository;
     private final AmazonS3 amazonS3;
+
 
     @Value("${aws.s3.bucket.name}")
     private String bucketName;
@@ -165,7 +166,12 @@ public class ItemService {
     }
 
     // 검색한 아이템 키워드 정렬 옵션
-    public Page<SearchItemDto> searchAndSortItems(String keyword, String sort, int page, int limit) {
+    public Page<SearchItemDto> searchAndSortItems(String keyword, String sort, int page, int limit, Long userId) {
+        // 검색어 저장
+        if (userId != null) {
+            searchHistoryService.saveSearchKeyword(userId, keyword);
+        }
+
         // 검색어를 소문자로 변환
         String searchKeyword = keyword.toLowerCase();
         Pageable pageable = createPageableWithSort(sort, page, limit);
