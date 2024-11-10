@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
-
 public interface ItemMapper {
     @Mapping(source = "category.id", target = "categoryId")
     ResponseItemDto toResponseDto(Item item);
