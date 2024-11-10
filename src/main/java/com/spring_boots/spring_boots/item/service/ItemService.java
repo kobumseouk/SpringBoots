@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -60,6 +61,7 @@ public class ItemService {
     }
 
     // Item 만들기
+    @Transactional
     public ResponseItemDto createItem(CreateItemDto itemDto, MultipartFile file) throws IOException {
         Category category = categoryRepository.findById(itemDto.getCategoryId()) // categoryId로 Category 객체 조회
                 .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다.: " + itemDto.getCategoryId()));
@@ -84,6 +86,7 @@ public class ItemService {
     }
 
     // Item 수정하기
+    @Transactional
     public ResponseItemDto updateItem(Long id, UpdateItemDto itemDto) throws IOException {
         Item findItem = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("아이템을 찾을 수 없습니다: " + id));
         String existingImageUrl = findItem.getImageUrl(); // 기존 저장된 이미지 URL 담기
@@ -144,6 +147,7 @@ public class ItemService {
     }
 
     // Item 삭제하기
+    @Transactional
     public void deleteItem(Long id) {
         Item item = findItemById(id);
         deleteItemImage(item.getImageUrl());
