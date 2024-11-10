@@ -1,7 +1,7 @@
 package com.spring_boots.spring_boots.item.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,6 +9,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@SuperBuilder
 public class ResponseItemDto {
 
     private Long id;

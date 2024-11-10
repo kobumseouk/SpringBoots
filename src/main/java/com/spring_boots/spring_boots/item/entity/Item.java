@@ -2,7 +2,6 @@ package com.spring_boots.spring_boots.item.entity;
 
 import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.common.BaseTimeEntity;
-import com.spring_boots.spring_boots.config.StringListConverter;
 import com.spring_boots.spring_boots.orders.entity.OrderItems;
 import jakarta.persistence.*;
 import lombok.*;

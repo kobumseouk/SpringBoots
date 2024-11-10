@@ -76,16 +76,6 @@ public class Event extends BaseTimeEntity {
     updateActiveStatus();
   }
 
-  // 빌더 패턴을 사용할 때 기본값을 설정하기 위한 정적 내부 클래스
-  public static class EventBuilder {
-    private List<String> contentImageUrl = new ArrayList<>();
-
-    public EventBuilder contentImageUrl(List<String> contentImageUrl) {
-      this.contentImageUrl = contentImageUrl != null ? contentImageUrl : new ArrayList<>();
-      return this;
-    }
-  }
-
   // 1. 생성자를 통한 초기화
   // 2. 빌더 패턴 사용
   // 3. 비즈니스 메서드 구현
