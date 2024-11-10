@@ -21,8 +21,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
   @Query("SELECT DISTINCT c.categoryThema FROM Category c")
   List<String> findDistinctThemas();
 
-  // int countByCategoryThema(String thema);
-
 
   // 카테고리 생성 시 배치 순서가 같거나 큰 기존의 카테고리의 배치는 + 1
   @Modifying

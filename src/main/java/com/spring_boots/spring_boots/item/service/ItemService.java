@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.spring_boots.spring_boots.category.entity.Category;
 import com.spring_boots.spring_boots.category.repository.CategoryRepository;
+import com.spring_boots.spring_boots.common.config.error.BadRequestException;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
@@ -13,6 +14,7 @@ import com.spring_boots.spring_boots.item.entity.Item;
 import com.spring_boots.spring_boots.item.mapper.ItemMapper;
 import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
@@ -22,11 +24,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ItemService {
     private final ItemMapper itemMapper;
     private final ItemRepository itemRepository;
@@ -37,19 +39,6 @@ public class ItemService {
     @Value("${aws.s3.bucket.name}")
     private String bucketName;
 
-    @Autowired
-    public ItemService(ItemMapper itemMapper,
-                       ItemRepository itemRepository,
-                       S3BucketService s3BucketService,
-                       CategoryRepository categoryRepository,
-                       AmazonS3 amazonS3) {
-        this.itemMapper = itemMapper;
-        this.itemRepository = itemRepository;
-        this.s3BucketService = s3BucketService;
-        this.categoryRepository = categoryRepository;
-        this.amazonS3 = amazonS3;
-    }
-
 
     // Item 전체 보기
     public Page<ResponseItemDto> getAllItems(int page, int size) {
@@ -59,29 +48,25 @@ public class ItemService {
     }
 
     // Item 단일 보기
-    public ResponseItemDto getItem(Long id)  {
-        Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: " + id));
-        System.out.println("Retrieved Item Image URL: " + item.getImageUrl());
-        return itemMapper.toResponseDto(item);
+    public ResponseItemDto getItem(Long id) {
+        return itemMapper.toResponseDto(findItemById(id));
+    }
+
+    // item_id에 해당하는 상품찾기
+    private Item findItemById(Long id) {
+        return itemRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: " + id));
     }
 
     // Item 만들기
-    public ResponseItemDto createItem(CreateItemDto itemDto, MultipartFile file) {
+    public ResponseItemDto createItem(CreateItemDto itemDto, MultipartFile file) throws IOException {
         Category category = categoryRepository.findById(itemDto.getCategoryId()) // categoryId로 Category 객체 조회
                 .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다.: " + itemDto.getCategoryId()));
-        String imageUrl = null;
-
-        if (file != null && !file.isEmpty()) { // 이미지 파일 존재 유무 확인
-            if (file.getSize() > 10 * 1024 * 1024) {
-                throw new RuntimeException("이미지 파일 크기는 10MB를 초과할 수 없습니다.");
-            }
-            try {
-                imageUrl = s3BucketService.uploadFile(file); // s3에 파일 업로드
-            } catch (IOException e) {
-                throw new RuntimeException("이미지 업로드 실패: " + e.getMessage());
-            }
+        if (file != null && !file.isEmpty()) {
+            validateImageFile(file);   // 이미지 크기 검증
+            String imageUrl = s3BucketService.uploadFile(file);  // 이미지 파일 업로드
+            itemDto.setImageUrl(imageUrl);  // DTO에 이미지 URL 설정
         }
-        itemDto.setImageUrl(imageUrl); // DTO에 이미지 URL 설정
 
         Item created = itemDto.toEntity();
         created.setCategory(category);
@@ -90,16 +75,22 @@ public class ItemService {
         return itemMapper.toResponseDto(result);
     }
 
+    // 이미지 크기 유효성 검증
+    private void validateImageFile(MultipartFile file) {
+        if (file.getSize() > 10 * 1024 * 1024) {
+            throw new BadRequestException("이미지_크기_초과", "이미지 파일 크기는 10MB를 초과할 수 없습니다.");
+        }
+    }
+
     // Item 수정하기
     public ResponseItemDto updateItem(Long id, UpdateItemDto itemDto) throws IOException {
         Item findItem = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("아이템을 찾을 수 없습니다: " + id));
-
         String existingImageUrl = findItem.getImageUrl(); // 기존 저장된 이미지 URL 담기
+
 
         //Item Name 수정
         Optional.ofNullable(itemDto.getItemName())
                 .ifPresent(findItem::setItemName);
-
 
         //Item Price 수정
         Optional.ofNullable(itemDto.getItemPrice())
@@ -119,29 +110,8 @@ public class ItemService {
             findItem.getItemColor().addAll(itemDto.getItemColor());
         }
 
-        // 카테고리 수정
-        if (itemDto.getCategoryId() != null) {
-            Category category = categoryRepository.findById(itemDto.getCategoryId())
-                    .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + itemDto.getCategoryId()));
-            findItem.setCategory(category); // 카테고리 설정
-        }
-
-        // Item Image 수정
-        if (itemDto.getFile() != null && !itemDto.getFile().isEmpty()) { // 수정하기 위해 HTML에 등록한 이미지 파일이 null값이 아닌 경우 동작
-            if (itemDto.getFile().getSize() > 10 * 1024 * 1024) {
-                throw new RuntimeException("이미지 파일 크기는 10MB를 초과할 수 없습니다.");
-            }
-
-            if (existingImageUrl != null) { // 기존 저장된 URL이 null인지 아닌지 체크
-                String key = existingImageUrl.substring(existingImageUrl.lastIndexOf("/") + 1);
-                amazonS3.deleteObject(new DeleteObjectRequest(bucketName, key));
-            }
-
-            String newImageUrl = s3BucketService.uploadFile(itemDto.getFile());
-            findItem.setImageUrl(newImageUrl);
-        } else {
-            findItem.setImageUrl(existingImageUrl);
-        }
+        updateItemImage(findItem, itemDto.getFile(), existingImageUrl);
+        updateItemCategory(findItem, itemDto.getCategoryId());
 
         //키워드 수정
         if (itemDto.getKeywords() != null) {
@@ -149,25 +119,43 @@ public class ItemService {
             findItem.getKeywords().addAll(itemDto.getKeywords()); // 새로운 키워드 추가
         }
 
-
         Item updated = itemRepository.save(findItem);
         return itemMapper.toResponseDto(updated);
     }
 
+    // S3 상품 이미지 업데이트
+    private void updateItemImage(Item item, MultipartFile file, String existingImageUrl) throws IOException {
+        if (file != null && !file.isEmpty()) {
+            validateImageFile(file);
+            deleteItemImage(existingImageUrl);
+            String newImageUrl = s3BucketService.uploadFile(file);
+            item.setImageUrl(newImageUrl);
+        }
+    }
+
+    // 상품의 카테고리 변경
+    private void updateItemCategory(Item item, Long categoryId) {
+        if (categoryId != null) {
+            Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다: " + categoryId));
+            item.setCategory(category);
+        }
+    }
+
     // Item 삭제하기
     public void deleteItem(Long id) {
-        Item item = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("상품을 찾을 수 없습니다: "+ id));
-
-        String imageUrl = item.getImageUrl();
-        if (imageUrl != null) {
-
-            String key = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-            amazonS3.deleteObject(new DeleteObjectRequest(bucketName, key));
-        }
-
+        Item item = findItemById(id);
+        deleteItemImage(item.getImageUrl());
         itemRepository.delete(item);
     }
 
+    // Item S3 이미지 삭제하기
+    private void deleteItemImage(String imageUrl) {
+        if (imageUrl != null) {
+            String key = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+            amazonS3.deleteObject(new DeleteObjectRequest(bucketName, key));
+        }
+    }
 
     // Category로 Item 조회 리스트
     public Page<ResponseItemDto> getItemsByCategoryWithSorting(Long categoryId, String sort, int page, int limit) {

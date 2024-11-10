@@ -1,10 +1,11 @@
 package com.spring_boots.spring_boots.item.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
+@SuperBuilder
 public class SearchItemDto extends ResponseItemDto {
   private String categoryName;
   private String categoryThema;

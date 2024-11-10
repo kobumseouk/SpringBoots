@@ -6,9 +6,7 @@ import com.spring_boots.spring_boots.category.repository.EventRepository;
 import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

@@ -1,18 +1,14 @@
 package com.spring_boots.spring_boots.item.controller;
 
-import com.spring_boots.spring_boots.common.config.error.ResourceNotFoundException;
+
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
 import com.spring_boots.spring_boots.item.dto.SearchItemDto;
 import com.spring_boots.spring_boots.item.dto.UpdateItemDto;
-import com.spring_boots.spring_boots.item.entity.Item;
 import com.spring_boots.spring_boots.item.service.ItemService;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,64 +30,43 @@ public class ItemApiController {
     // Item 만들기
     @PostMapping("/admin/items")
     public ResponseEntity<ResponseItemDto> createItem(@Valid @ModelAttribute CreateItemDto requestItemDto,
-                                                      @RequestParam("file")MultipartFile file) {
-        try {
-            if (file != null && Objects.requireNonNull(file.getContentType()).startsWith("image")) {
-                String imageUrl = s3BucketService.uploadFile(file);
-                requestItemDto.setImageUrl(imageUrl);
-
-            }
-            ResponseItemDto responseDto = itemService.createItem(requestItemDto, file);
-            return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                                                      @RequestParam("file")MultipartFile file) throws IOException {
+        if (file != null && Objects.requireNonNull(file.getContentType()).startsWith("image")) {
+            String imageUrl = s3BucketService.uploadFile(file);
+            requestItemDto.setImageUrl(imageUrl);
         }
+        ResponseItemDto responseDto = itemService.createItem(requestItemDto, file);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+
 
     }
-
 
     // Items 전체보기
     @GetMapping("/items")
     public ResponseEntity<Page<ResponseItemDto>> getItems(@RequestParam(defaultValue = "0") int page,
                                                           @RequestParam(defaultValue = "10") int size) {
-        Page<ResponseItemDto> result = itemService.getAllItems(page, size);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(itemService.getAllItems(page, size));
     }
-
 
     // Item 상세보기
     @GetMapping("/items/{itemId}")
     public ResponseEntity<ResponseItemDto> getItem(@PathVariable("itemId") Long id) {
-        try {
-            ResponseItemDto responseDto = itemService.getItem(id);
-            return new ResponseEntity<>(responseDto, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return ResponseEntity.ok(itemService.getItem(id));
     }
 
     // Item 삭제하기
     @DeleteMapping("/items/{itemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable("itemId") Long id) {
-        try {
-            itemService.deleteItem(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (ResourceNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // 404 오류
-        }catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 오류
-        }
+        itemService.deleteItem(id);
+        return ResponseEntity.noContent().build();
     }
 
     // Item 수정하기
     @PutMapping("/items/{itemId}")
-    public ResponseEntity<ResponseItemDto> updateItem (@Valid @PathVariable("itemId") Long id, @ModelAttribute UpdateItemDto updateItemDto) {
-        try {
-            ResponseItemDto responseDto = itemService.updateItem(id, updateItemDto);
-            return new ResponseEntity<>(responseDto, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<ResponseItemDto> updateItem (@Valid @PathVariable("itemId") Long id,
+                                                       @ModelAttribute UpdateItemDto updateItemDto) throws IOException{
+        ResponseItemDto responseDto = itemService.updateItem(id, updateItemDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     // CategoryId로 Items 조회하기 (페이지 네이션, 정렬 추가)
@@ -101,12 +76,9 @@ public class ItemApiController {
         @RequestParam(required = false, defaultValue = "default") String sort,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "8") int limit) {
-        try {
-            Page<ResponseItemDto> result = itemService.getItemsByCategoryWithSorting(categoryId, sort, page, limit);
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+
+        Page<ResponseItemDto> result = itemService.getItemsByCategoryWithSorting(categoryId, sort, page, limit);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     // 테마에 해당하는 모든 아이템 - 전체보기 고정 구현
