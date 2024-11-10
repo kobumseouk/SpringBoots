@@ -2,6 +2,7 @@ package com.spring_boots.spring_boots.item.service;
 
 import com.spring_boots.spring_boots.item.entity.SearchHistory;
 import com.spring_boots.spring_boots.item.repository.SearchHistoryRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SearchHistoryService {
   private final SearchHistoryRepository searchHistoryRepository;
-  private static final int MAX_SEARCH_HISTORY = 10;
 
   public void saveSearchKeyword(Long userId, String keyword) {
     // 중복 검색어 제거
@@ -30,19 +30,26 @@ public class SearchHistoryService {
 
     // 최근 10개만 유지
     List<SearchHistory> histories = searchHistoryRepository.findByUserIdOrderBySearchedAtDesc(userId);
-    if (histories.size() > MAX_SEARCH_HISTORY) {
-      for (int i = MAX_SEARCH_HISTORY; i < histories.size(); i++) {
+    if (histories.size() > 5) {
+      for (int i = 5; i < histories.size(); i++) {
         searchHistoryRepository.delete(histories.get(i));
       }
     }
   }
 
-  // 최근 검색어 정렬 조회
-  public List<String> getRecentSearches(Long userId, int limit) {
+  // 최근 검색기록 정렬 조회
+  public List<String> getRecentSearches(Long userId) {
     return searchHistoryRepository.findByUserIdOrderBySearchedAtDesc(userId)
         .stream()
         .map(SearchHistory::getKeyword)
-        .limit(limit)   // limit 이하로 검색기록 가져오기
         .collect(Collectors.toList());
   }
+
+  // 개별 검색어 삭제
+  @Transactional
+  public void deleteSearchHistory(Long userId, String keyword) {
+    searchHistoryRepository.deleteByUserIdAndKeyword(userId, keyword);
+  }
+
+
 }

@@ -1,6 +1,7 @@
 package com.spring_boots.spring_boots.item.controller;
 
 
+import com.spring_boots.spring_boots.common.config.error.BadRequestException;
 import com.spring_boots.spring_boots.item.dto.CreateItemDto;
 import com.spring_boots.spring_boots.item.dto.ResponseItemDto;
 import com.spring_boots.spring_boots.item.dto.SearchItemDto;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -115,12 +115,18 @@ public class ItemApiController {
 
     // 검색 기록 조회
     @GetMapping("/api/users/search-history")
-    public ResponseEntity<List<String>> getSearchHistory(
-        UserDto currentUser,
-        @RequestParam(defaultValue = "5") int limit) {
-
-        List<String> searchHistory = searchHistoryService.getRecentSearches(currentUser.getUserId(), limit);
+    public ResponseEntity<List<String>> getSearchHistory(UserDto currentUser) {
+        List<String> searchHistory = searchHistoryService.getRecentSearches(currentUser.getUserId());
         return ResponseEntity.ok(searchHistory);
+    }
+
+    // 검색 기록 개별 삭제
+    @DeleteMapping("/api/users/search-history/{keyword}")
+    public ResponseEntity<Void> deleteSearchHistory(
+        UserDto currentUser,
+        @PathVariable String keyword) {
+        searchHistoryService.deleteSearchHistory(currentUser.getUserId(), keyword);
+        return ResponseEntity.noContent().build();
     }
 
     // 상품 이름으로 조회
