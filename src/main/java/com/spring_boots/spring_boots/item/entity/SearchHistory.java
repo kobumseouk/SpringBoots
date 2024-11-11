@@ -7,15 +7,16 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDateTime;
 
-@RedisHash("SearchHistory")
+@RedisHash(value = "SearchHistory", timeToLive = 60 * 60 * 24 * 7)
 @Getter
 @Setter
 public class SearchHistory {
-  @Id
-  private String id;  // userId:keyword 형태로 저장
-  private Long userId;
+
   private String keyword;
   private LocalDateTime searchedAt;
 
-
+  public SearchHistory(String keyword) {
+    this.keyword = keyword;
+    this.searchedAt = LocalDateTime.now();
+  }
 }
