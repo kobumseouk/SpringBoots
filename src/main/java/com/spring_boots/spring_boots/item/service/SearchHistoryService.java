@@ -1,14 +1,11 @@
 package com.spring_boots.spring_boots.item.service;
 
 import com.spring_boots.spring_boots.item.entity.SearchHistory;
-import com.spring_boots.spring_boots.item.repository.SearchHistoryRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
