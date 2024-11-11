@@ -98,7 +98,7 @@ public class ItemApiController {
     }
 
     // 키워드 검색과 페이징 + 정렬 조회 - Items 조회
-    @GetMapping("/api/items/search")
+    @GetMapping("/items/search")
     public ResponseEntity<Page<SearchItemDto>> searchItems(
         @RequestParam String keyword,
         @RequestParam(required = false) String sort,
@@ -114,14 +114,14 @@ public class ItemApiController {
     }
 
     // 검색 기록 조회
-    @GetMapping("/api/users/search-history")
+    @GetMapping("/users/search-history")
     public ResponseEntity<List<String>> getSearchHistory(UserDto currentUser) {
         List<String> searchHistory = searchHistoryService.getRecentSearches(currentUser.getUserId());
         return ResponseEntity.ok(searchHistory);
     }
 
     // 검색 기록 개별 삭제
-    @DeleteMapping("/api/users/search-history/{keyword}")
+    @DeleteMapping("/users/search-history/{keyword}")
     public ResponseEntity<Void> deleteSearchHistory(
         UserDto currentUser,
         @PathVariable String keyword) {
