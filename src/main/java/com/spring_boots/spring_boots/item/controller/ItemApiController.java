@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -107,15 +108,21 @@ public class ItemApiController {
         UserDto currentUser) {
 
         // 로그인한 사용자인 경우에만 검색어 기록
-        Long userId = currentUser != null ? currentUser.getUserId() : null;
+        if (currentUser != null) {
+            searchHistoryService.saveSearchKeyword(currentUser.getUserId(), keyword);
+        }
 
-        Page<SearchItemDto> result = itemService.searchAndSortItems(keyword, sort, page, limit, userId);
+        Page<SearchItemDto> result = itemService.searchAndSortItems(keyword, sort, page, limit);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     // 검색 기록 조회
     @GetMapping("/users/search-history")
     public ResponseEntity<List<String>> getSearchHistory(UserDto currentUser) {
+        // 로그인하지 않은 사용자 처리
+        if (currentUser == null)
+            return ResponseEntity.ok(new ArrayList<>());
+
         List<String> searchHistory = searchHistoryService.getRecentSearches(currentUser.getUserId());
         return ResponseEntity.ok(searchHistory);
     }
@@ -125,6 +132,12 @@ public class ItemApiController {
     public ResponseEntity<Void> deleteSearchHistory(
         UserDto currentUser,
         @PathVariable String keyword) {
+
+        // 로그인하지 않은 사용자 처리
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
         searchHistoryService.deleteSearchHistory(currentUser.getUserId(), keyword);
         return ResponseEntity.noContent().build();
     }

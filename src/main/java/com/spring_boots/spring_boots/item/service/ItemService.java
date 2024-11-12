@@ -170,11 +170,8 @@ public class ItemService {
     }
 
     // 검색한 아이템 키워드 정렬 옵션
-    public Page<SearchItemDto> searchAndSortItems(String keyword, String sort, int page, int limit, Long userId) {
-        // 검색어 저장
-        if (userId != null) {
-            searchHistoryService.saveSearchKeyword(userId, keyword);
-        }
+    public Page<SearchItemDto> searchAndSortItems(String keyword, String sort, int page, int limit) {
+
 
         // 검색어를 소문자로 변환
         String searchKeyword = keyword.toLowerCase();
