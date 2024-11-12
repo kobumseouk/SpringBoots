@@ -96,27 +96,99 @@ async function updateUserMenu() {
 
 // 검색 기능 설정
 function setupSearchFunction() {
+  const searchContainer = document.querySelector('.search-container');
   const searchForm = document.querySelector('.search-container .field');
   const searchInput = document.querySelector('.search-input');
   const searchButton = document.querySelector('.search-button');
+  const searchHistoryDropdown = document.querySelector('.search-history-dropdown');
+  const searchHistoryList = document.querySelector('.search-history-list');
+  const clearAllButton = document.querySelector('.clear-all-button');
 
-  function performSearch(event) {
-    event.preventDefault();
-    const keyword = searchInput.value.trim();
+  // 검색 기록 로드
+  async function loadSearchHistory() {
+    try {
+      const response = await fetch('/api/users/search-history');
+      const searchHistory = await response.json();
+
+      searchHistoryList.innerHTML = searchHistory.map(term => `
+        <li class="search-history-item">
+          <span class="search-term">${term}</span>
+          <button class="delete-button" data-term="${term}">×</button>
+        </li>
+      `).join('');
+    } catch (error) {
+      console.error('검색 기록을 불러오는데 실패했습니다:', error);
+    }
+  }
+
+  // 검색 수행
+  async function performSearch(keyword) {
     if (keyword) {
       window.location.href = `/items/search?keyword=${encodeURIComponent(keyword)}`;
     }
   }
 
+  // 검색 기록 개별 삭제
+  async function deleteSearchTerm(term) {
+    try {
+      const response = await fetch(`/api/users/search-history/${encodeURIComponent(term)}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        await loadSearchHistory(); // 검색 기록 다시 로드
+      }
+    } catch (error) {
+      console.error('검색 기록 삭제 실패:', error);
+    }
+  }
+
+  // 검색어 입력창 포커스 시 드롭다운 표시
+  searchInput.addEventListener('focus', () => {
+    loadSearchHistory();
+    searchHistoryDropdown.classList.add('is-active');
+  });
+
+  // 검색어 입력창 외부 클릭 시 드롭다운 숨기기
+  document.addEventListener('click', (event) => {
+    if (!searchContainer.contains(event.target)) {
+      searchHistoryDropdown.classList.remove('is-active');
+    }
+  });
+
+  // 검색 기록 항목 클릭 이벤트
+  searchHistoryList.addEventListener('click', (event) => {
+    const searchTerm = event.target.closest('.search-history-item')?.querySelector('.search-term')?.textContent;
+    const deleteButton = event.target.closest('.delete-button');
+
+    if (deleteButton) {
+      event.stopPropagation();
+      deleteSearchTerm(deleteButton.dataset.term);
+    } else if (searchTerm) {
+      searchInput.value = searchTerm;
+      performSearch(searchTerm);
+    }
+  });
+
   // 폼 제출 이벤트 리스너
-  searchForm.addEventListener('submit', performSearch);
+  searchForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const keyword = searchInput.value.trim();
+    performSearch(keyword);
+  });
+
   // 검색 버튼 클릭 이벤트 리스너
-  searchButton.addEventListener('click', performSearch);
+  searchButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    const keyword = searchInput.value.trim();
+    performSearch(keyword);
+  });
 
   // 입력 필드에서 엔터키 입력 처리
   searchInput.addEventListener('keypress', function(event) {
     if (event.key === 'Enter') {
-      performSearch(event);
+      event.preventDefault();
+      const keyword = this.value.trim();
+      performSearch(keyword);
     }
   });
 }
