@@ -30,7 +30,15 @@ import java.util.List;
         @Index(name = "idx_search_category", columnList = "category_id, item_name")         // 카테고리별 상품명 검색 시
 })
 @Builder(toBuilder = true)
+@NamedEntityGraph(
+        name = "Item.withColorsAndKeywords",
+        attributeNodes = {
+                @NamedAttributeNode("itemColor"),
+                @NamedAttributeNode("keywords")
+        }
+)
 public class Item extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "item_id")
@@ -52,31 +60,18 @@ public class Item extends BaseTimeEntity {
     @Column(name = "item_maker")
     private String itemMaker;
 
-/*    @Column(name = "item_color")
-    @Convert(converter = StringListConverter.class)
-    @CollectionTable(
-        name = "item_colors",
-        joinColumns = @JoinColumn(name = "item_id"),
-        indexes = {
-            @Index(name = "idx_color", columnList = "color"),
-            @Index(name = "idx_color_item", columnList = "item_id, color")
-        }
-    )
-    private List<String> itemColor = new ArrayList<>();*/
-
     // 상품별 색상 리스트 테이블
     @ElementCollection
     @CollectionTable(
-        name = "item_colors",
-        joinColumns = @JoinColumn(name = "item_id"),
-        indexes = {
-            @Index(name = "idx_color", columnList = "item_color"),
-            @Index(name = "idx_color_item", columnList = "item_id, item_color")
-        }
+            name = "item_colors",
+            joinColumns = @JoinColumn(name = "item_id"),
+            indexes = {
+                    @Index(name = "idx_color", columnList = "item_color"),
+                    @Index(name = "idx_color_item", columnList = "item_id, item_color")
+            }
     )
     @Column(name = "item_color")
     private List<String> itemColor = new ArrayList<>();
-
 
     private LocalDateTime createdAt;
 
