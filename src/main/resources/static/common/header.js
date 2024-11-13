@@ -104,9 +104,26 @@ function setupSearchFunction() {
   const searchHistoryList = document.querySelector('.search-history-list');
   const clearAllButton = document.querySelector('.clear-all-button');
 
+  // 로그인 상태 확인
+  async function checkLoginStatus() {
+    try {
+      const userInfo = await Api.get('/api/users-info');
+      return userInfo.message === '사용자 있음';
+    } catch (error) {
+      console.error('사용자 정보 확인 실패:', error);
+      return false;
+    }
+  }
+
   // 검색 기록 로드
   async function loadSearchHistory() {
     try {
+      const isLoggedIn = await checkLoginStatus();
+      if (!isLoggedIn) {
+        searchHistoryDropdown.classList.remove('is-active');
+        return;
+      }
+
       const response = await fetch('/api/users/search-history');
       const searchHistory = await response.json();
 
@@ -142,11 +159,20 @@ function setupSearchFunction() {
     }
   }
 
-  // 검색어 입력창 포커스 시 드롭다운 표시
-  searchInput.addEventListener('focus', () => {
-    loadSearchHistory();
-    searchHistoryDropdown.classList.add('is-active');
-  });
+  // 검색 기록 전체 삭제
+  async function clearAllSearchHistory() {
+    try {
+      const response = await fetch('/api/users/search-history', {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        searchHistoryList.innerHTML = ''; // 목록 비우기
+      }
+    } catch (error) {
+      console.error('검색 기록 전체 삭제 실패:', error);
+    }
+  }
+
 
   // 검색어 입력창 외부 클릭 시 드롭다운 숨기기
   document.addEventListener('click', (event) => {
@@ -191,6 +217,25 @@ function setupSearchFunction() {
       performSearch(keyword);
     }
   });
+
+  // 검색어 입력창 포커스 시 드롭다운 표시
+  searchInput.addEventListener('focus', async () => {
+    const isLoggedIn = await checkLoginStatus();
+    if (isLoggedIn) {
+      loadSearchHistory();
+      searchHistoryDropdown.classList.add('is-active');
+    }
+  });
+
+
+  // 전체 삭제 버튼 클릭 이벤트
+  if (clearAllButton) {   // querySelector로 찾은 요소의 null 여부 확인 - 검색 기록 여부
+    clearAllButton.addEventListener('click', async (event) => {
+      event.stopPropagation();   // 이벤트 버블링을 방지
+      await clearAllSearchHistory();
+    });
+  }
+
 }
 
 // 카테고리 메뉴 활성화 설정

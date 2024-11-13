@@ -142,6 +142,18 @@ public class ItemApiController {
         return ResponseEntity.noContent().build();
     }
 
+    // 검색 기록 전체 삭제
+    @DeleteMapping("/users/search-history")
+    public ResponseEntity<Void> deleteAllSearchHistory(UserDto currentUser) {
+        // 로그인하지 않은 사용자 처리
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        searchHistoryService.deleteAllSearchHistory(currentUser.getUserId());
+        return ResponseEntity.noContent().build();
+    }
+
     // 상품 이름으로 조회
     @GetMapping("/items/list/search/name")
     public ResponseEntity<Page<ResponseItemDto>> searchItemsByName (@RequestParam String itemName,
