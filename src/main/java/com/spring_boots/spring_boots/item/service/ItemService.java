@@ -15,10 +15,10 @@ import com.spring_boots.spring_boots.item.mapper.ItemMapper;
 import com.spring_boots.spring_boots.item.repository.ItemRepository;
 import com.spring_boots.spring_boots.s3Bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -33,8 +33,10 @@ public class ItemService {
     private final ItemMapper itemMapper;
     private final ItemRepository itemRepository;
     private final S3BucketService s3BucketService;
+    private final SearchHistoryService searchHistoryService;
     private final CategoryRepository categoryRepository;
     private final AmazonS3 amazonS3;
+
 
     @Value("${aws.s3.bucket.name}")
     private String bucketName;
@@ -59,6 +61,7 @@ public class ItemService {
     }
 
     // Item 만들기
+    @Transactional
     public ResponseItemDto createItem(CreateItemDto itemDto, MultipartFile file) throws IOException {
         Category category = categoryRepository.findById(itemDto.getCategoryId()) // categoryId로 Category 객체 조회
                 .orElseThrow(() -> new ResourceNotFoundException("카테고리를 찾을 수 없습니다.: " + itemDto.getCategoryId()));
@@ -83,6 +86,7 @@ public class ItemService {
     }
 
     // Item 수정하기
+    @Transactional
     public ResponseItemDto updateItem(Long id, UpdateItemDto itemDto) throws IOException {
         Item findItem = itemRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("아이템을 찾을 수 없습니다: " + id));
         String existingImageUrl = findItem.getImageUrl(); // 기존 저장된 이미지 URL 담기
@@ -143,6 +147,7 @@ public class ItemService {
     }
 
     // Item 삭제하기
+    @Transactional
     public void deleteItem(Long id) {
         Item item = findItemById(id);
         deleteItemImage(item.getImageUrl());
@@ -166,6 +171,8 @@ public class ItemService {
 
     // 검색한 아이템 키워드 정렬 옵션
     public Page<SearchItemDto> searchAndSortItems(String keyword, String sort, int page, int limit) {
+
+
         // 검색어를 소문자로 변환
         String searchKeyword = keyword.toLowerCase();
         Pageable pageable = createPageableWithSort(sort, page, limit);
