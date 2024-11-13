@@ -118,12 +118,6 @@ function setupSearchFunction() {
   // 검색 기록 로드
   async function loadSearchHistory() {
     try {
-      const isLoggedIn = await checkLoginStatus();
-      if (!isLoggedIn) {
-        searchHistoryDropdown.classList.remove('is-active');
-        return;
-      }
-
       const response = await fetch('/api/users/search-history');
       const searchHistory = await response.json();
 
