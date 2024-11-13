@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class SearchHistoryService {
   private static final String KEY_PREFIX = "SearchLog";
   private static final long LIMIT = 5;
 
-  // 검색 기록 저장
+  // 검색 기록 저장 - 파이프라인 적용
   public void saveSearchKeyword(Long userId, String keyword) {
     try {
       String key = KEY_PREFIX + userId;
@@ -26,7 +27,7 @@ public class SearchHistoryService {
       ListOperations<String, String> listOps = searchLogRedisTemplate.opsForList();
 
       // 중복 검색어 제거
-      listOps.remove(key, 0, keyword);
+      listOps.remove(key, 0, keyword);  // 0 : 모든 일치 항목 -> 중복 제거 후 추가
 
       // 새 검색어 추가 (왼쪽에서부터)
       listOps.leftPush(key, keyword);
@@ -45,9 +46,9 @@ public class SearchHistoryService {
       ListOperations<String, String> listOps = searchLogRedisTemplate.opsForList();
 
       // 전체 리스트 가져오기
-      List<String> histories = listOps.range(key, 0, -1);
+      List<String> histories = listOps.range(key, 0, -1);   // -1 : 인덱스 끝까지 지정
 
-      return histories != null ? histories : new ArrayList<>();
+      return Optional.ofNullable(histories).orElse(new ArrayList<>());
     } catch (Exception e) {
       log.error("검색어 조회 중 오류 발생: ", e);
       return new ArrayList<>();
@@ -59,7 +60,7 @@ public class SearchHistoryService {
     try {
       String key = KEY_PREFIX + userId;
       ListOperations<String, String> listOps = searchLogRedisTemplate.opsForList();
-      listOps.remove(key, 0, keyword);
+      listOps.remove(key, 0, keyword);  // 0 : 모든 일치 항목
     } catch (Exception e) {
       log.error("검색어 삭제 중 오류 발생: ", e);
     }
