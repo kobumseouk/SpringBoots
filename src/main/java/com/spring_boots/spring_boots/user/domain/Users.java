@@ -18,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users", indexes = {
@@ -31,6 +30,13 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NamedEntityGraph(
+        name = "Users.withUsersInfoAndOrders",
+        attributeNodes = {
+                @NamedAttributeNode("usersInfoList"),
+                @NamedAttributeNode("ordersList")
+        }
+)
 public class Users extends BaseTimeEntity implements UserDetails {
 
     @Id
