@@ -3,7 +3,7 @@
 
 <img src="/uploads/5ca2093e2e0d072fc764d88d1693523a/image.png" alt="왜안되징" width="200px" /> 
 
-![logo](https://github.com/user-attachments/assets/ce55cfb1-c849-4023-afdb-783a3be0df51)
+<img src="https://github.com/user-attachments/assets/ce55cfb1-c849-4023-afdb-783a3be0df51" width="200px"/> 
 
 ## 프로젝트 소개
 Spring-boots는 사용자가 신발을 편리하게 구매할 수 있도록 다양한 기능을 제공하는 웹 기반 쇼핑몰입니다. 관리자 기능, 상품 카테고리 분류, 장바구니 시스템, 주문 기능을 지원하며, 소셜 로그인 및 JWT 기반 보안 인증을 제공합니다.
@@ -21,8 +21,6 @@ Spring-boots는 사용자가 신발을 편리하게 구매할 수 있도록 다�
 
 
 ## ERD
-<img src="/uploads/02566675f63487a3de55101f5fefb7fe/image.png" />
-
 ![erd](https://github.com/user-attachments/assets/af0d2023-fa50-4b8d-93ff-1c5f1c11e66d)
 
 ## 기술 스택
