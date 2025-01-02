@@ -1,8 +1,5 @@
 # Spring-boots : 신발 판매 쇼핑몰
 
-
-<img src="/uploads/5ca2093e2e0d072fc764d88d1693523a/image.png" alt="왜안되징" width="200px" /> 
-
 <img src="https://github.com/user-attachments/assets/ce55cfb1-c849-4023-afdb-783a3be0df51" width="200px"/> 
 
 ## 프로젝트 소개
